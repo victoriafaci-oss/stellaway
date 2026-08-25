@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix StellaWay - Astronomía y Recursos Starlight",
+  "description": "Aplicación de observación estelar, seguimiento del Gran Eclipse Solar Total 2026, miradores Starlight, estado del cielo en tiempo real, calendario astronómico y asistente AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

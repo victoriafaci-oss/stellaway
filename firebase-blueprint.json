@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "userProfile": {
+      "title": "User Profile",
+      "description": "User account information and subscription metadata",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "UID of the user" },
+        "email": { "type": "string", "description": "Email address" },
+        "displayName": { "type": "string", "description": "Full name" },
+        "photoURL": { "type": "string", "description": "Avatar URL" },
+        "subscriptionPlan": { "type": "string", "description": "Plan name: free2days, mensual, or anual" },
+        "trialPhone": { "type": "string", "description": "Verified phone for 2-day free trial" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of creation" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp of last update" }
+      },
+      "required": ["userId", "email"]
+    },
+    "astroJournal": {
+      "title": "Astro Journal Entry",
+      "description": "Stargazing observation journal entry logged by user",
+      "type": "object",
+      "properties": {
+        "entryId": { "type": "string", "description": "Unique entry ID" },
+        "userId": { "type": "string", "description": "Owner user UID" },
+        "date": { "type": "string", "description": "Observation date" },
+        "spotName": { "type": "string", "description": "Observation spot name" },
+        "targetObject": { "type": "string", "description": "Celestial object observed" },
+        "notes": { "type": "string", "description": "Detailed observation notes" },
+        "rating": { "type": "number", "description": "Rating out of 5" },
+        "imageUrl": { "type": "string", "description": "Optional image URL" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["entryId", "userId", "date", "spotName"]
+    },
+    "savedSpot": {
+      "title": "Saved Stargazing Spot",
+      "description": "User saved observation location",
+      "type": "object",
+      "properties": {
+        "spotId": { "type": "string", "description": "Unique spot ID" },
+        "userId": { "type": "string", "description": "Owner user UID" },
+        "name": { "type": "string", "description": "Spot name" },
+        "lat": { "type": "number", "description": "Latitude" },
+        "lng": { "type": "number", "description": "Longitude" },
+        "bortle": { "type": "number", "description": "Bortle dark sky scale (1-9)" },
+        "notes": { "type": "string", "description": "Spot details" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["spotId", "userId", "name", "lat", "lng"]
+    },
+    "calendarSyncLog": {
+      "title": "Google Calendar Sync Log",
+      "description": "Tracks events synced by user to Google Calendar",
+      "type": "object",
+      "properties": {
+        "logId": { "type": "string", "description": "Unique log ID" },
+        "userId": { "type": "string", "description": "Owner user UID" },
+        "eventTitle": { "type": "string", "description": "Title of calendar event" },
+        "googleEventId": { "type": "string", "description": "Event ID in Google Calendar" },
+        "eventDate": { "type": "string", "description": "Date of event" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["logId", "userId", "googleEventId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/userProfile" },
+      "description": "User profile document"
+    },
+    "/users/{userId}/journal/{entryId}": {
+      "schema": { "$ref": "#/entities/astroJournal" },
+      "description": "User stargazing journal entries"
+    },
+    "/users/{userId}/spots/{spotId}": {
+      "schema": { "$ref": "#/entities/savedSpot" },
+      "description": "User saved dark sky spots"
+    },
+    "/users/{userId}/calendarSyncs/{logId}": {
+      "schema": { "$ref": "#/entities/calendarSyncLog" },
+      "description": "Log of synced Google Calendar events"
+    }
+  }
+}

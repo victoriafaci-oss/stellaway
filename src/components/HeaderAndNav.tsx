@@ -1,0 +1,323 @@
+import React, { useState } from 'react';
+import { ActiveTab } from '../types';
+import { useLanguage } from '../context/LanguageContext';
+import { StellaLogo } from './StellaLogo';
+
+interface HeaderAndNavProps {
+  activeTab: ActiveTab;
+  setActiveTab: (tab: ActiveTab) => void;
+  nightVision: boolean;
+  setNightVision: React.Dispatch<React.SetStateAction<boolean>>;
+  onGoBack?: () => void;
+}
+
+export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
+  activeTab,
+  setActiveTab,
+  nightVision,
+  setNightVision,
+  onGoBack,
+}) => {
+  const { t } = useLanguage();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const handleNavClick = (tab: ActiveTab) => {
+    setActiveTab(tab);
+    setDrawerOpen(false);
+  };
+
+  return (
+    <>
+      {/* Mobile Drawer Overlay */}
+      {drawerOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-md z-40"
+          onClick={() => setDrawerOpen(false)}
+        />
+      )}
+
+      {/* Mobile Side Drawer */}
+      <nav
+        className={`md:hidden fixed left-0 top-0 h-full w-80 bg-[#170E28] border-r border-[#FEE685]/20 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out py-8 flex flex-col justify-between ${
+          drawerOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div>
+          <div className="px-6 mb-8 flex items-center justify-between">
+            <StellaLogo size="md" showSubtitle subtitleText="Starlight Explorer" />
+            <button
+              onClick={() => setDrawerOpen(false)}
+              className="text-white/70 hover:text-white p-1.5 rounded-lg bg-white/10"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+
+          <ul className="flex flex-col gap-2 px-4 text-base">
+            <li>
+              <button
+                onClick={() => handleNavClick('dashboard')}
+                className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'dashboard'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+              >
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'dashboard' ? "'FILL' 1" : "'FILL' 0" }}>
+                  dashboard
+                </span>
+                <span>{t('dashboard', 'Dashboard Eclipse')}</span>
+              </button>
+            </li>
+
+            <li>
+              <button
+                onClick={() => handleNavClick('spots')}
+                className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'spots'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+              >
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'spots' ? "'FILL' 1" : "'FILL' 0" }}>
+                  near_me
+                </span>
+                <span>{t('spots', 'Buscar localización')}</span>
+              </button>
+            </li>
+
+            <li>
+              <button
+                onClick={() => handleNavClick('events')}
+                className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'events'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+              >
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'events' ? "'FILL' 1" : "'FILL' 0" }}>
+                  flare
+                </span>
+                <span>{t('events', 'Evento estelar')}</span>
+              </button>
+            </li>
+
+            <li>
+              <button
+                onClick={() => handleNavClick('weather')}
+                className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'weather'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+              >
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'weather' ? "'FILL' 1" : "'FILL' 0" }}>
+                  cloud_sync
+                </span>
+                <span>{t('weather', 'Previsión del tiempo')}</span>
+              </button>
+            </li>
+
+            <li>
+              <button
+                onClick={() => handleNavClick('assistant')}
+                className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'assistant'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+              >
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'assistant' ? "'FILL' 1" : "'FILL' 0" }}>
+                  smart_toy
+                </span>
+                <span>{t('assistant', 'Asistente Estelar AI')}</span>
+              </button>
+            </li>
+
+            <li>
+              <button
+                onClick={() => handleNavClick('profile')}
+                className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'profile'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+              >
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'profile' ? "'FILL' 1" : "'FILL' 0" }}>
+                  account_circle
+                </span>
+                <span>{t('profile', 'Perfil y Diario')}</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div className="px-6">
+          <div className="bg-[#24153F] rounded-2xl p-3.5 flex items-center justify-between border border-[#FEE685]/20">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#FF3B30]">visibility</span>
+              <span className="text-xs font-bold text-white">{t('redLight', 'Luz Roja / Campo')}</span>
+            </div>
+            <button
+              onClick={() => setNightVision(!nightVision)}
+              className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center ${
+                nightVision ? 'bg-[#FF3B30] justify-end' : 'bg-white/20 justify-start'
+              }`}
+            >
+              <div className="w-5 h-5 rounded-full bg-white shadow-md" />
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Desktop Navigation Drawer (Fixed left sidebar) */}
+      <nav className="hidden md:flex bg-[#140B22] h-full w-80 border-r border-[#FEE685]/20 shadow-2xl flex-col py-8 fixed left-0 top-0 z-40 justify-between">
+        <div>
+          <div
+            onClick={() => handleNavClick('dashboard')}
+            className="px-6 mb-8 cursor-pointer flex items-center gap-3 group"
+          >
+            <StellaLogo size="lg" showSubtitle subtitleText="Starlight Explorer" />
+          </div>
+
+          <ul className="flex flex-col gap-1.5 px-4 font-body-md text-body-md">
+            <li>
+              <button
+                onClick={() => handleNavClick('dashboard')}
+                className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
+                  activeTab === 'dashboard'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+                id="nav-link-dashboard"
+              >
+                <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: activeTab === 'dashboard' ? "'FILL' 1" : "'FILL' 0" }}>
+                  dashboard
+                </span>
+                <span>{t('dashboard', 'Dashboard Eclipse')}</span>
+              </button>
+            </li>
+
+            {/* THREE PRIMARY REQUESTED TABS */}
+            <li>
+              <button
+                onClick={() => handleNavClick('spots')}
+                className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
+                  activeTab === 'spots'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+                id="nav-link-spots"
+              >
+                <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: activeTab === 'spots' ? "'FILL' 1" : "'FILL' 0" }}>
+                  near_me
+                </span>
+                <span>{t('spots', 'Buscar localización')}</span>
+              </button>
+            </li>
+
+            <li>
+              <button
+                onClick={() => handleNavClick('events')}
+                className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
+                  activeTab === 'events'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+                id="nav-link-events"
+              >
+                <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: activeTab === 'events' ? "'FILL' 1" : "'FILL' 0" }}>
+                  flare
+                </span>
+                <span>{t('events', 'Evento estelar')}</span>
+              </button>
+            </li>
+
+            <li>
+              <button
+                onClick={() => handleNavClick('weather')}
+                className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
+                  activeTab === 'weather'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+                id="nav-link-weather"
+              >
+                <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: activeTab === 'weather' ? "'FILL' 1" : "'FILL' 0" }}>
+                  cloud_sync
+                </span>
+                <span>{t('weather', 'Previsión del tiempo')}</span>
+              </button>
+            </li>
+
+            <div className="my-2 border-t border-white/10" />
+
+            <li>
+              <button
+                onClick={() => handleNavClick('assistant')}
+                className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
+                  activeTab === 'assistant'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+                id="nav-link-assistant"
+              >
+                <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: activeTab === 'assistant' ? "'FILL' 1" : "'FILL' 0" }}>
+                  smart_toy
+                </span>
+                <span>{t('assistant', 'Asistente Estelar AI')}</span>
+              </button>
+            </li>
+
+            <li>
+              <button
+                onClick={() => handleNavClick('profile')}
+                className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
+                  activeTab === 'profile'
+                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+                id="nav-link-profile"
+              >
+                <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: activeTab === 'profile' ? "'FILL' 1" : "'FILL' 0" }}>
+                  account_circle
+                </span>
+                <span>{t('profile', 'Perfil y Diario')}</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        {/* Night Vision Footer Toggle */}
+        <div className="px-6">
+          <button
+            onClick={() => setNightVision(!nightVision)}
+            className={`w-full p-3.5 rounded-2xl border transition-all flex items-center justify-between ${
+              nightVision
+                ? 'bg-[#FF3B30]/20 border-[#FF3B30] text-[#FF3B30] shadow-[0_0_15px_rgba(255,59,48,0.3)]'
+                : 'bg-[#24153F] border-[#FEE685]/20 text-white/90 hover:bg-[#321C58]'
+            }`}
+            id="btn-desktop-night-vision"
+          >
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {nightVision ? 'visibility_off' : 'visibility'}
+              </span>
+              <div className="text-left">
+                <p className="text-xs font-bold uppercase tracking-wider">
+                  {nightVision ? t('redLightActive', 'Modo Luz Roja Activo') : t('redLight', 'Luz Roja / Campo')}
+                </p>
+                <p className="text-[10px] text-white/60">Preserva visión nocturna</p>
+              </div>
+            </div>
+            <div
+              className={`w-4 h-4 rounded-full border-2 ${
+                nightVision ? 'bg-[#FF3B30] border-white' : 'border-white/40'
+              }`}
+            />
+          </button>
+        </div>
+      </nav>
+    </>
+  );
+};

@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --deep-space: #1E1233;
+    --deep-space-darker: #130B22;
+    --star-gold: #FEE685;
+    --pastel-gold-bg: #FFF8D6;
+    --pastel-gold-dark: #120D1C;
+    --nebula-purple: #7C4DFF;
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --night-vision-red: #FF3B30;
+  }
+
+  body {
+    background-color: #1E1233;
+    background-image: 
+      radial-gradient(circle at 50% -10%, #3d2466 0%, transparent 60%),
+      radial-gradient(circle at 10% 30%, #2f194d 0%, transparent 50%),
+      radial-gradient(circle at 90% 70%, #2d184a 0%, #130B22 90%);
+    min-height: 100vh;
+    color: #e1e3e4;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+.font-luxury {
+  font-family: 'Cinzel', 'Playfair Display', serif;
+}
+
+.font-serif-elegant {
+  font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+}
+
+/* High-Contrast Luxury Pastel Yellow Cards (Outdoor Daylight Readable & Eye-Friendly) */
+.card-pastel-gold {
+  background: linear-gradient(145deg, #FFFDEB 0%, #FFF4C2 60%, #FEEC9C 100%);
+  border: 1px solid #E6CA65;
+  color: #120D1C;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.35), 0 0 15px rgba(254, 230, 133, 0.18);
+}
+
+.card-pastel-gold-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-pastel-gold-hover:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFF8D6 60%, #FEF0AC 100%);
+  border-color: #D4AF37;
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.45), 0 0 25px rgba(254, 230, 133, 0.35);
+}
+
+.card-pastel-gold-subtle {
+  background: linear-gradient(145deg, #FFFBF0 0%, #FFF6D1 100%);
+  border: 1px solid #EAD58B;
+  color: #120D1C;
+}
+
+.glass-panel, .glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.gold-glow {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.35);
+}
+
+.gold-glow-lg {
+  box-shadow: 0 0 35px rgba(255, 215, 0, 0.5);
+}
+
+.eclipse-ring {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #FFD700 var(--progress, 75%), 
+    rgba(255, 255, 255, 0.1) 0deg
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 0 45px rgba(255, 215, 0, 0.3);
+  animation: pulse-glow-gold 4s infinite alternate;
+}
+
+@media (min-width: 768px) {
+  .eclipse-ring {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+.eclipse-ring::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: #180F2B;
+  z-index: 1;
+}
+
+.eclipse-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+@keyframes pulse-glow-gold {
+  0% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+  100% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.5); }
+}
+
+.progress-bar-bg {
+  background: rgba(255, 255, 255, 0.1);
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  background: #FFD700;
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease-out;
+}
+
+/* Red Night Vision Mode */
+.night-vision-mode {
+  filter: sepia(1) hue-rotate(-50deg) saturate(5) contrast(1.2);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #111415;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FFD700;
+}
