@@ -11,10 +11,11 @@ import { AssistantView } from './components/AssistantView';
 import { ProfileView } from './components/ProfileView';
 import { WelcomePaywallView } from './components/WelcomePaywallView';
 import { StarrySkyBackground } from './components/StarrySkyBackground';
+import { LandingPage } from './components/LandingPage';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('welcome');
-  const [tabHistory, setTabHistory] = useState<ActiveTab[]>(['welcome']);
+  const [activeTab, setActiveTab] = useState<ActiveTab>('landing');
+  const [tabHistory, setTabHistory] = useState<ActiveTab[]>(['landing']);
   const [nightVision, setNightVision] = useState<boolean>(false);
   const [modalType, setModalType] = useState<ModalType>(null);
 
@@ -23,12 +24,21 @@ export default function App() {
     const isSubscribed = localStorage.getItem('stellaway_subscription_active');
     const trialExpires = localStorage.getItem('stellaway_trial_expires');
     if (isSubscribed === 'true' || (trialExpires && Number(trialExpires) > Date.now())) {
-      // Returning active users start on dashboard if they prefer
+      // Returning active users go directly to dashboard
+      setActiveTab('dashboard');
+      setTabHistory(['dashboard']);
     }
   }, []);
 
   const navigateTo = (newTab: ActiveTab) => {
-    // Enforce paywall: if user has no subscription or valid trial, stay on welcome
+    // If navigating to landing, always allow
+    if (newTab === 'landing') {
+      setTabHistory(['landing']);
+      setActiveTab('landing');
+      return;
+    }
+
+    // Enforce paywall: if user has no subscription or valid trial, redirect to welcome
     const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
     const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
     const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
@@ -36,6 +46,7 @@ export default function App() {
 
     if (!hasAccess && newTab !== 'welcome') {
       setActiveTab('welcome');
+      setTabHistory(['welcome']);
       return;
     }
 
@@ -56,6 +67,18 @@ export default function App() {
       setActiveTab('dashboard');
     }
   };
+
+  // Landing page renders standalone (no nav/topbar)
+  if (activeTab === 'landing') {
+    return (
+      <LandingPage
+        onEnterApp={() => {
+          setActiveTab('welcome');
+          setTabHistory(['welcome']);
+        }}
+      />
+    );
+  }
 
   return (
     <div

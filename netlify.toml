@@ -1,0 +1,60 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[dev]
+  command = "vite"
+  port = 3000
+  targetPort = 5173
+  publish = "dist"
+  autoLaunch = false
+
+# Redirigir todas las llamadas /api/* hacia las Netlify Functions
+[[redirects]]
+  from = "/api/health"
+  to = "/.netlify/functions/health"
+  status = 200
+
+[[redirects]]
+  from = "/api/sky-conditions"
+  to = "/.netlify/functions/sky-conditions"
+  status = 200
+
+[[redirects]]
+  from = "/api/payment-config"
+  to = "/.netlify/functions/payment-config"
+  status = 200
+
+[[redirects]]
+  from = "/api/create-stripe-checkout"
+  to = "/.netlify/functions/create-stripe-checkout"
+  status = 200
+
+[[redirects]]
+  from = "/api/create-paypal-order"
+  to = "/.netlify/functions/create-paypal-order"
+  status = 200
+
+[[redirects]]
+  from = "/api/verify-trial-phone"
+  to = "/.netlify/functions/verify-trial-phone"
+  status = 200
+
+[[redirects]]
+  from = "/api/assistant"
+  to = "/.netlify/functions/assistant"
+  status = 200
+
+# SPA fallback — DEBE ir al final, después de todos los redirects específicos
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["netlify/functions/**"]
+
+[build.environment]
+  NODE_VERSION = "20"
