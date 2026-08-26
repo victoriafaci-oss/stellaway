@@ -423,7 +423,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           <p className="text-sm uppercase tracking-widest text-amber-300/70 font-semibold">
             ⏳ Cuenta regresiva al Eclipse Total
           </p>
-          <div className="flex items-start gap-4 md:gap-6">
+          <div className="flex flex-wrap justify-center items-start gap-2 sm:gap-4 md:gap-6">
             <CountCell value={countdown.days} label="Días" />
             <span className="text-amber-400/60 text-3xl font-thin mt-3">:</span>
             <CountCell value={countdown.hours} label="Horas" />
