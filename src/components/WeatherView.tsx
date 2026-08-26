@@ -765,98 +765,98 @@ export const WeatherView: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Metrics Bar on Starry Stage - Completely Unclipped & High Visibility in Luxury Pastel Gold */}
+        {/* Bottom Metrics Bar on Starry Stage - Completely Unclipped & High Visibility in Celestial Sky Blue Glass */}
         <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="card-pastel-gold p-4 rounded-2xl border border-[#E6CA65] shadow-md">
-            <span className="text-xs text-[#24153F] uppercase font-['JetBrains_Mono'] font-extrabold block mb-1.5 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-base">air</span>
+          <div className="card-pastel-gold p-4 rounded-2xl border border-[#7DD3FC]/50 shadow-md backdrop-blur-md">
+            <span className="text-xs text-[#BAE6FD] uppercase font-['JetBrains_Mono'] font-bold block mb-1.5 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-base text-[#7DD3FC]">air</span>
               Velocidad Viento
             </span>
-            <span className="text-lg sm:text-xl font-extrabold text-[#120D1C] font-['JetBrains_Mono'] block">
+            <span className="text-lg sm:text-xl font-extrabold text-white font-['JetBrains_Mono'] block drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
               {currentDisplayData.windKmH} km/h ({currentDisplayData.windDirection})
             </span>
           </div>
 
-          <div className="card-pastel-gold p-4 rounded-2xl border border-[#E6CA65] shadow-md">
-            <span className="text-xs text-[#24153F] uppercase font-['JetBrains_Mono'] font-extrabold block mb-1.5 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-base">visibility</span>
+          <div className="card-pastel-gold p-4 rounded-2xl border border-[#7DD3FC]/50 shadow-md backdrop-blur-md">
+            <span className="text-xs text-[#BAE6FD] uppercase font-['JetBrains_Mono'] font-bold block mb-1.5 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-base text-[#7DD3FC]">visibility</span>
               Transparencia
             </span>
-            <span className="text-lg sm:text-xl font-extrabold text-[#120D1C] font-['JetBrains_Mono'] block">
+            <span className="text-lg sm:text-xl font-extrabold text-white font-['JetBrains_Mono'] block drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
               {currentDisplayData.transparencyMag} mag
             </span>
           </div>
 
-          <div className="card-pastel-gold p-4 rounded-2xl border border-[#E6CA65] shadow-md">
-            <span className="text-xs text-[#24153F] uppercase font-['JetBrains_Mono'] font-extrabold block mb-1.5 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-base">brightness_3</span>
+          <div className="card-pastel-gold p-4 rounded-2xl border border-[#7DD3FC]/50 shadow-md backdrop-blur-md">
+            <span className="text-xs text-[#BAE6FD] uppercase font-['JetBrains_Mono'] font-bold block mb-1.5 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-base text-[#7DD3FC]">brightness_3</span>
               Fase Lunar
             </span>
-            <span className="text-lg sm:text-xl font-extrabold text-[#120D1C] block font-['Plus_Jakarta_Sans']">
+            <span className="text-lg sm:text-xl font-extrabold text-white block font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
               {currentDisplayData.moonPhaseName} ({currentDisplayData.moonIlluminationPct}%)
             </span>
           </div>
 
-          <div className="card-pastel-gold p-4 rounded-2xl border border-[#E6CA65] shadow-md">
-            <span className="text-xs text-[#24153F] uppercase font-['JetBrains_Mono'] font-extrabold block mb-1.5 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-base">dark_mode</span>
+          <div className="card-pastel-gold p-4 rounded-2xl border border-[#7DD3FC]/50 shadow-md backdrop-blur-md">
+            <span className="text-xs text-[#BAE6FD] uppercase font-['JetBrains_Mono'] font-bold block mb-1.5 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-base text-[#7DD3FC]">dark_mode</span>
               Oscuridad Bortle
             </span>
-            <span className="text-lg sm:text-xl font-extrabold text-[#120D1C] font-['JetBrains_Mono'] block">
+            <span className="text-lg sm:text-xl font-extrabold text-white font-['JetBrains_Mono'] block drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
               Clase {currentDisplayData.bortleClass} (SQM {currentDisplayData.sqm})
             </span>
           </div>
         </div>
       </div>
 
-      {/* Detail Clouds Breakdown Grid in Luxury Pastel Gold */}
+      {/* Detail Clouds Breakdown Grid in Celestial Sky Blue Glass */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div className="card-pastel-gold rounded-3xl p-6 border border-[#E6CA65] shadow-xl">
+        <div className="card-pastel-gold rounded-3xl p-6 border border-[#7DD3FC]/50 shadow-xl backdrop-blur-md">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-sm font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans']">Nubes Bajas (0 - 2000m)</span>
-            <span className="text-sm font-extrabold text-[#24153F] font-['JetBrains_Mono']">{currentDisplayData.lowCloudsPct}%</span>
+            <span className="text-sm font-extrabold text-white font-['Plus_Jakarta_Sans']">Nubes Bajas (0 - 2000m)</span>
+            <span className="text-sm font-extrabold text-[#7DD3FC] font-['JetBrains_Mono']">{currentDisplayData.lowCloudsPct}%</span>
           </div>
-          <div className="w-full h-3.5 rounded-full bg-white/70 overflow-hidden border border-[#E6CA65]">
-            <div className="h-full bg-gradient-to-r from-[#24153F] to-[#0D5C35] transition-all duration-500" style={{ width: `${currentDisplayData.lowCloudsPct}%` }} />
+          <div className="w-full h-3.5 rounded-full bg-[#082F49]/80 overflow-hidden border border-[#38BDF8]/40">
+            <div className="h-full bg-gradient-to-r from-[#0369A1] to-[#059669] transition-all duration-500" style={{ width: `${currentDisplayData.lowCloudsPct}%` }} />
           </div>
-          <p className="text-xs text-[#2B2538] font-medium mt-3">Afectan la visibilidad del horizonte y miradores de baja altitud.</p>
+          <p className="text-xs text-[#E0F2FE] font-medium mt-3">Afectan la visibilidad del horizonte y miradores de baja altitud.</p>
         </div>
 
-        <div className="card-pastel-gold rounded-3xl p-6 border border-[#E6CA65] shadow-xl">
+        <div className="card-pastel-gold rounded-3xl p-6 border border-[#7DD3FC]/50 shadow-xl backdrop-blur-md">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-sm font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans']">Nubes Medias (2000 - 6000m)</span>
-            <span className="text-sm font-extrabold text-[#24153F] font-['JetBrains_Mono']">{currentDisplayData.midCloudsPct}%</span>
+            <span className="text-sm font-extrabold text-white font-['Plus_Jakarta_Sans']">Nubes Medias (2000 - 6000m)</span>
+            <span className="text-sm font-extrabold text-[#7DD3FC] font-['JetBrains_Mono']">{currentDisplayData.midCloudsPct}%</span>
           </div>
-          <div className="w-full h-3.5 rounded-full bg-white/70 overflow-hidden border border-[#E6CA65]">
-            <div className="h-full bg-gradient-to-r from-[#24153F] to-[#B45309] transition-all duration-500" style={{ width: `${currentDisplayData.midCloudsPct}%` }} />
+          <div className="w-full h-3.5 rounded-full bg-[#082F49]/80 overflow-hidden border border-[#38BDF8]/40">
+            <div className="h-full bg-gradient-to-r from-[#0369A1] to-[#D97706] transition-all duration-500" style={{ width: `${currentDisplayData.midCloudsPct}%` }} />
           </div>
-          <p className="text-xs text-[#2B2538] font-medium mt-3">Altocúmulos y nimboestratos. Pueden filtrar estrellas medianas.</p>
+          <p className="text-xs text-[#E0F2FE] font-medium mt-3">Altocúmulos y nimboestratos. Pueden filtrar estrellas medianas.</p>
         </div>
 
-        <div className="card-pastel-gold rounded-3xl p-6 border border-[#E6CA65] shadow-xl">
+        <div className="card-pastel-gold rounded-3xl p-6 border border-[#7DD3FC]/50 shadow-xl backdrop-blur-md">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-sm font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans']">Nubes Altas (&gt; 6000m)</span>
-            <span className="text-sm font-extrabold text-[#24153F] font-['JetBrains_Mono']">{currentDisplayData.highCloudsPct}%</span>
+            <span className="text-sm font-extrabold text-white font-['Plus_Jakarta_Sans']">Nubes Altas (&gt; 6000m)</span>
+            <span className="text-sm font-extrabold text-[#7DD3FC] font-['JetBrains_Mono']">{currentDisplayData.highCloudsPct}%</span>
           </div>
-          <div className="w-full h-3.5 rounded-full bg-white/70 overflow-hidden border border-[#E6CA65]">
-            <div className="h-full bg-gradient-to-r from-[#24153F] to-[#7C4DFF] transition-all duration-500" style={{ width: `${currentDisplayData.highCloudsPct}%` }} />
+          <div className="w-full h-3.5 rounded-full bg-[#082F49]/80 overflow-hidden border border-[#38BDF8]/40">
+            <div className="h-full bg-gradient-to-r from-[#0369A1] to-[#7C3AED] transition-all duration-500" style={{ width: `${currentDisplayData.highCloudsPct}%` }} />
           </div>
-          <p className="text-xs text-[#2B2538] font-medium mt-3">Cirros finos. Causan halo lunar pero permiten estrellas brillantes.</p>
+          <p className="text-xs text-[#E0F2FE] font-medium mt-3">Cirros finos. Causan halo lunar pero permiten estrellas brillantes.</p>
         </div>
       </div>
 
-      {/* Stargazing Recommendation Box in Luxury Pastel Gold */}
-      <div className="card-pastel-gold rounded-3xl p-6 md:p-8 border-2 border-[#D4AF37] shadow-2xl">
+      {/* Stargazing Recommendation Box in Celestial Sky Blue Glass */}
+      <div className="card-pastel-gold rounded-3xl p-6 md:p-8 border border-[#7DD3FC]/50 shadow-2xl backdrop-blur-md">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#24153F] text-[#FEE685] flex items-center justify-center shrink-0 font-extrabold shadow-md">
+          <div className="w-12 h-12 rounded-2xl bg-[#082F49]/80 text-[#7DD3FC] border border-[#38BDF8]/50 flex items-center justify-center shrink-0 font-extrabold shadow-md">
             <span className="material-symbols-outlined text-2xl">auto_awesome</span>
           </div>
 
           <div>
-            <h3 className="text-lg font-extrabold text-[#120D1C] mb-1 font-['Plus_Jakarta_Sans']">
+            <h3 className="text-lg font-extrabold text-white mb-1 font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
               Recomendación StellaWay para {activeTab === 'custom_location' ? activeCityWeather.cityName : 'esta noche'}
             </h3>
-            <p className="text-sm text-[#2B2538] font-medium leading-relaxed font-['Plus_Jakarta_Sans']">
+            <p className="text-sm md:text-base text-[#E0F2FE] font-medium leading-relaxed font-['Plus_Jakarta_Sans']">
               {currentDisplayData.lowCloudsPct < 15
                 ? `Excelente previsión astronómica para ${activeTab === 'custom_location' ? activeCityWeather.cityName : 'la zona'}. Transparencia atmosférica de ${currentDisplayData.transparencyMag} mag y Bortle ${currentDisplayData.bortleClass}. Ideal para fotografía de gran campo, observación de nebulosas y seguimiento solar con filtros homologados.`
                 : `Se prevé cierta nubosidad o turbulencia en ${activeTab === 'custom_location' ? activeCityWeather.cityName : 'esta condición'}. Se recomienda verificar claros locales o dirigirse a miradores de mayor elevación.`}

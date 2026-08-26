@@ -4,6 +4,7 @@ import { SupportedLanguage, TRANSLATIONS, LANGUAGE_OPTIONS, LanguageOption } fro
 interface LanguageContextType {
   language: SupportedLanguage;
   setLanguage: (lang: SupportedLanguage) => void;
+  toggleLanguage: () => void;
   t: (key: string, fallback?: string) => string;
   languageOptions: LanguageOption[];
 }
@@ -11,6 +12,7 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType>({
   language: 'es',
   setLanguage: () => {},
+  toggleLanguage: () => {},
   t: (key) => key,
   languageOptions: LANGUAGE_OPTIONS,
 });
@@ -19,17 +21,29 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [language, setLanguageState] = useState<SupportedLanguage>('es');
 
   useEffect(() => {
-    const saved = localStorage.getItem('stellaway_language') as SupportedLanguage;
-    if (saved && TRANSLATIONS[saved]) {
-      setLanguageState(saved);
+    try {
+      const saved = localStorage.getItem('stellaway_language') as SupportedLanguage;
+      if (saved && (saved === 'es' || saved === 'en')) {
+        setLanguageState(saved);
+      }
+    } catch {
+      // ignore
     }
   }, []);
 
   const setLanguage = (lang: SupportedLanguage) => {
-    if (TRANSLATIONS[lang]) {
+    if (lang === 'es' || lang === 'en') {
       setLanguageState(lang);
-      localStorage.setItem('stellaway_language', lang);
+      try {
+        localStorage.setItem('stellaway_language', lang);
+      } catch {
+        // ignore
+      }
     }
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'es' ? 'en' : 'es');
   };
 
   const t = (key: string, fallback?: string): string => {
@@ -45,7 +59,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, languageOptions: LANGUAGE_OPTIONS }}>
+    <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage, t, languageOptions: LANGUAGE_OPTIONS }}>
       {children}
     </LanguageContext.Provider>
   );

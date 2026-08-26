@@ -85,14 +85,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
 
   return (
     <div className="flex-1 px-4 md:px-8 max-w-5xl mx-auto w-full pt-20 md:pt-12 pb-28 md:pb-16">
-      {/* Profile Header in Luxury Pastel Gold */}
-      <div className="card-pastel-gold rounded-3xl p-6 md:p-8 border-2 border-[#D4AF37] mb-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+      {/* Profile Header in Celestial Sky Blue Glass */}
+      <div className="card-pastel-gold rounded-3xl p-6 md:p-8 border border-[#7DD3FC]/50 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl backdrop-blur-md">
         <div className="flex items-center gap-5">
-          <div className="w-20 h-20 rounded-full bg-[#24153F] border-2 border-[#D4AF37] p-1 flex items-center justify-center shrink-0 shadow-lg overflow-hidden">
+          <div className="w-20 h-20 rounded-full bg-[#082F49]/80 border border-[#38BDF8]/60 p-1 flex items-center justify-center shrink-0 shadow-lg overflow-hidden">
             {user?.photoURL ? (
               <img src={user.photoURL} alt={user.displayName || 'Usuario'} className="w-full h-full object-cover rounded-full" />
             ) : (
-              <span className="material-symbols-outlined text-[#FEE685] text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+              <span className="material-symbols-outlined text-[#7DD3FC] text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                 account_circle
               </span>
             )}
@@ -100,18 +100,18 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
 
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans']">
+              <h1 className="text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
                 {user ? user.displayName || 'Observador Google' : 'Observador StellaWay'}
               </h1>
-              <span className="px-2.5 py-0.5 rounded-full bg-[#24153F] text-[#FEE685] text-[10px] font-extrabold uppercase tracking-wider">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#082F49]/90 text-[#7DD3FC] border border-[#38BDF8]/40 text-[10px] font-extrabold uppercase tracking-wider">
                 {user ? 'Google & Firebase Sync' : 'Socio Starlight'}
               </span>
             </div>
 
-            <p className="text-sm text-[#2B2538] font-medium mt-1">
+            <p className="text-sm text-[#BAE6FD] font-medium mt-1">
               {user ? user.email : 'Ubicación principal: Castellón & Arco Mediterráneo'}
             </p>
-            <p className="text-xs text-[#24153F] font-extrabold font-['JetBrains_Mono'] mt-1">
+            <p className="text-xs text-[#7DD3FC] font-extrabold font-['JetBrains_Mono'] mt-1">
               Días de observación registrados: {displayLogs.length} sesiones
             </p>
           </div>
@@ -122,7 +122,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
           {user ? (
             <button
               onClick={() => logout()}
-              className="px-5 py-3 rounded-2xl bg-red-100 hover:bg-red-200 text-red-900 border border-red-300 font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+              className="px-5 py-3 rounded-2xl bg-red-900/40 hover:bg-red-900/60 text-red-200 border border-red-500/40 font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
             >
               <span className="material-symbols-outlined text-base">logout</span>
               Cerrar Sesión Google
@@ -130,7 +130,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
           ) : (
             <button
               onClick={() => signIn()}
-              className="px-6 py-3 rounded-2xl bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-lg cursor-pointer"
+              className="px-6 py-3 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-lg cursor-pointer border border-[#7DD3FC]/50"
             >
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 48 48">
                 <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
@@ -147,7 +147,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
             className={`px-5 py-3 rounded-2xl border font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
               nightVision
                 ? 'bg-[#FF3B30] text-white border-white shadow-lg'
-                : 'bg-white/70 hover:bg-white text-[#120D1C] border-[#E6CA65]'
+                : 'bg-[#082F49]/80 hover:bg-[#082F49] text-white border-[#38BDF8]/50'
             }`}
           >
             <span className="material-symbols-outlined text-lg">
@@ -161,11 +161,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
       {/* Observation Logbook Section */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#FFD700]">edit_note</span>
+          <h2 className="text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+            <span className="material-symbols-outlined text-[#7DD3FC]">edit_note</span>
             Diario de Observación
           </h2>
-          <p className="text-xs text-white/80 font-medium">
+          <p className="text-xs text-[#BAE6FD] font-medium">
             {user
               ? 'Tus observaciones se sincronizan automáticamente en la nube con Firebase'
               : 'Registra tus observaciones nocturnas (conéctate con Google para sincronizar entre dispositivos)'}
@@ -174,55 +174,55 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-5 py-2.5 rounded-2xl bg-[#FEE685] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-white transition-all shadow-lg flex items-center gap-2 cursor-pointer"
+          className="px-5 py-2.5 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center gap-2 cursor-pointer border border-[#7DD3FC]/50"
         >
           <span className="material-symbols-outlined text-base">add</span>
           {t('newSessionBtn', 'Nueva Salida')}
         </button>
       </div>
 
-      {/* Log list in Luxury Pastel Gold */}
+      {/* Log list in Celestial Sky Blue Glass */}
       <div className="space-y-4">
         {displayLogs.map((log) => (
-          <div key={log.id} className="card-pastel-gold rounded-3xl p-6 border border-[#E6CA65] shadow-xl hover:shadow-2xl transition-all">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E6CA65] pb-3 mb-3">
+          <div key={log.id} className="card-pastel-gold rounded-3xl p-6 border border-[#7DD3FC]/50 shadow-xl hover:shadow-2xl transition-all backdrop-blur-md">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#38BDF8]/40 pb-3 mb-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-['JetBrains_Mono'] text-[#24153F] font-extrabold">📅 {log.date}</span>
-                <span className="text-[#594A70]">•</span>
-                <span className="text-xs text-[#120D1C] font-extrabold">📍 {log.location}</span>
+                <span className="text-xs font-['JetBrains_Mono'] text-[#7DD3FC] font-extrabold">📅 {log.date}</span>
+                <span className="text-[#38BDF8]">•</span>
+                <span className="text-xs text-[#BAE6FD] font-extrabold">📍 {log.location}</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-xs bg-[#24153F] text-[#FEE685] font-['JetBrains_Mono'] font-extrabold px-2.5 py-0.5 rounded-full">
+                <span className="text-xs bg-[#082F49]/90 text-[#7DD3FC] border border-[#38BDF8]/40 font-['JetBrains_Mono'] font-extrabold px-2.5 py-0.5 rounded-full">
                   Bortle {log.bortle}
                 </span>
-                <span className="text-xs text-[#B45309] font-bold">{'★'.repeat(log.rating)}</span>
+                <span className="text-xs text-[#FEE685] font-bold">{'★'.repeat(log.rating)}</span>
               </div>
             </div>
 
-            <h3 className="text-lg font-extrabold text-[#120D1C] mb-2">{log.targetObject}</h3>
-            <p className="text-xs text-[#24153F] font-bold font-['JetBrains_Mono'] mb-3">
+            <h3 className="text-lg font-extrabold text-white mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">{log.targetObject}</h3>
+            <p className="text-xs text-[#7DD3FC] font-bold font-['JetBrains_Mono'] mb-3">
               ⚙️ {log.telescopeEquipment}
             </p>
-            <p className="text-sm text-[#120D1C] font-medium leading-relaxed bg-white/70 p-3.5 rounded-2xl border border-[#E6CA65]">
+            <p className="text-sm text-[#E0F2FE] font-medium leading-relaxed bg-[#082F49]/80 p-3.5 rounded-2xl border border-[#38BDF8]/40">
               "{log.notes}"
             </p>
           </div>
         ))}
       </div>
 
-      {/* Add Log Modal in Luxury Pastel Gold */}
+      {/* Add Log Modal in Celestial Sky Blue Glass */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="card-pastel-gold w-full max-w-lg rounded-3xl p-6 md:p-8 border-2 border-[#D4AF37] shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[#E6CA65] pb-4 mb-4">
-              <h3 className="text-xl font-extrabold text-[#120D1C] flex items-center gap-2 font-['Plus_Jakarta_Sans']">
-                <span className="material-symbols-outlined text-[#24153F]">edit_note</span>
+          <div className="card-pastel-gold w-full max-w-lg rounded-3xl p-6 md:p-8 border border-[#7DD3FC]/60 shadow-2xl space-y-4 backdrop-blur-xl">
+            <div className="flex items-center justify-between border-b border-[#38BDF8]/40 pb-4 mb-4">
+              <h3 className="text-xl font-extrabold text-white flex items-center gap-2 font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+                <span className="material-symbols-outlined text-[#7DD3FC]">edit_note</span>
                 Registrar Salida de Observación
               </h3>
               <button 
                 onClick={() => setShowAddModal(false)} 
-                className="text-[#24153F] hover:text-black p-2 rounded-2xl bg-white/70 hover:bg-white border border-[#E6CA65] cursor-pointer"
+                className="text-white hover:text-white/80 p-2 rounded-2xl bg-[#082F49]/80 hover:bg-[#082F49] border border-[#38BDF8]/40 cursor-pointer"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
@@ -230,60 +230,60 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
 
             <form onSubmit={handleAddLog} className="space-y-4 text-sm">
               <div>
-                <label className="block text-xs font-bold text-[#24153F] mb-1">Lugar de Observación</label>
+                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Lugar de Observación</label>
                 <input
                   type="text"
                   value={newLog.location}
                   onChange={(e) => setNewLog({ ...newLog, location: e.target.value })}
-                  className="w-full bg-white border border-[#E6CA65] rounded-xl px-3.5 py-2.5 text-[#120D1C] text-sm focus:border-[#24153F] outline-none font-medium"
+                  className="w-full bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl px-3.5 py-2.5 text-white text-sm focus:border-[#7DD3FC] outline-none font-medium placeholder-[#7DD3FC]/50"
                   placeholder="Ej: Observatorio Penyagolosa"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#24153F] mb-1">Objetos Observados</label>
+                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Objetos Observados</label>
                 <input
                   type="text"
                   required
                   value={newLog.targetObject}
                   onChange={(e) => setNewLog({ ...newLog, targetObject: e.target.value })}
-                  className="w-full bg-white border border-[#E6CA65] rounded-xl px-3.5 py-2.5 text-[#120D1C] text-sm focus:border-[#24153F] outline-none font-medium"
-                  placeholder="Ej: Saturno, Nebulosa de Orión M42"
+                  className="w-full bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl px-3.5 py-2.5 text-white text-sm focus:border-[#7DD3FC] outline-none font-medium placeholder-[#7DD3FC]/50"
+                  placeholder="Ej: Saturno, M31 Andrómeda, Orión"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#24153F] mb-1">Equipo Utilizado</label>
+                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Equipo Utilizado</label>
                 <input
                   type="text"
                   value={newLog.telescopeEquipment}
                   onChange={(e) => setNewLog({ ...newLog, telescopeEquipment: e.target.value })}
-                  className="w-full bg-white border border-[#E6CA65] rounded-xl px-3.5 py-2.5 text-[#120D1C] text-sm focus:border-[#24153F] outline-none font-medium"
+                  className="w-full bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl px-3.5 py-2.5 text-white text-sm focus:border-[#7DD3FC] outline-none font-medium placeholder-[#7DD3FC]/50"
                   placeholder="Ej: Telescopio 130EQ + Ocular 10mm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#24153F] mb-1">Notas y Detalles del Seeing</label>
+                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Notas y Detalles del Seeing</label>
                 <textarea
                   rows={3}
                   value={newLog.notes}
                   onChange={(e) => setNewLog({ ...newLog, notes: e.target.value })}
-                  className="w-full bg-white border border-[#E6CA65] rounded-xl px-3.5 py-2.5 text-[#120D1C] text-sm focus:border-[#24153F] outline-none font-medium"
+                  className="w-full bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl px-3.5 py-2.5 text-white text-sm focus:border-[#7DD3FC] outline-none font-medium placeholder-[#7DD3FC]/50"
                   placeholder="Describe la nitidez, viento, o lo que pudiste apreciar..."
                 />
               </div>
 
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <label className="block text-xs font-bold text-[#24153F] mb-1">Clase Bortle (1-9)</label>
+                  <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Clase Bortle (1-9)</label>
                   <select
                     value={newLog.bortle}
                     onChange={(e) => setNewLog({ ...newLog, bortle: Number(e.target.value) })}
-                    className="w-full bg-white border border-[#E6CA65] rounded-xl px-3 py-2 text-[#120D1C] text-sm focus:border-[#24153F] outline-none font-bold"
+                    className="w-full bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl px-3 py-2 text-white text-sm focus:border-[#7DD3FC] outline-none font-bold"
                   >
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((b) => (
-                      <option key={b} value={b}>
+                      <option key={b} value={b} className="bg-[#082F49] text-white">
                         Bortle {b}
                       </option>
                     ))}
@@ -291,14 +291,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
                 </div>
 
                 <div className="flex-1">
-                  <label className="block text-xs font-bold text-[#24153F] mb-1">Valoración (1-5 ★)</label>
+                  <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Valoración (1-5 ★)</label>
                   <select
                     value={newLog.rating}
                     onChange={(e) => setNewLog({ ...newLog, rating: Number(e.target.value) })}
-                    className="w-full bg-white border border-[#E6CA65] rounded-xl px-3 py-2 text-[#120D1C] text-sm focus:border-[#24153F] outline-none font-bold"
+                    className="w-full bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl px-3 py-2 text-white text-sm focus:border-[#7DD3FC] outline-none font-bold"
                   >
                     {[5, 4, 3, 2, 1].map((r) => (
-                      <option key={r} value={r}>
+                      <option key={r} value={r} className="bg-[#082F49] text-white">
                         {r} Estrellas
                       </option>
                     ))}
@@ -306,17 +306,17 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#E6CA65] flex justify-end gap-3">
+              <div className="pt-4 border-t border-[#38BDF8]/40 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-5 py-2.5 rounded-2xl bg-white/70 hover:bg-white text-[#120D1C] font-bold text-xs uppercase border border-[#E6CA65] cursor-pointer"
+                  className="px-5 py-2.5 rounded-2xl bg-[#082F49]/80 hover:bg-[#082F49] text-white font-bold text-xs uppercase border border-[#38BDF8]/40 cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-2xl bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold text-xs uppercase cursor-pointer transition-all shadow-md"
+                  className="px-6 py-2.5 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase cursor-pointer transition-all shadow-md border border-[#7DD3FC]/50"
                 >
                   Guardar en Diario
                 </button>

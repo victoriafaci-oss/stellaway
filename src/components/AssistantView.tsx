@@ -49,6 +49,7 @@ export const AssistantView: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
+          language,
           conversationHistory: messages.slice(-6).map((m) => ({
             role: m.role,
             content: m.content
@@ -86,16 +87,21 @@ export const AssistantView: React.FC = () => {
   return (
     <div className="flex-1 px-4 md:px-8 max-w-4xl mx-auto w-full pt-20 md:pt-12 pb-28 md:pb-16 flex flex-col h-[calc(100vh-5rem)]">
       {/* Header */}
-      <header className="py-4 border-b border-white/10 mb-4 flex items-center justify-between shrink-0">
+      <header className="py-4 border-b border-[#38BDF8]/30 mb-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#7C4DFF]/30 border border-[#FFD700]/40 flex items-center justify-center shadow-[0_0_15px_rgba(255,215,0,0.2)]">
-            <span className="material-symbols-outlined text-[#FFD700] text-2xl">smart_toy</span>
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#0284C7] to-[#082F49] border border-[#38BDF8]/60 flex items-center justify-center shadow-lg shadow-sky-950/40">
+            <span className="material-symbols-outlined text-[#7DD3FC] text-2xl">smart_toy</span>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">Stella AI Stargazing Assistant</h1>
-            <p className="text-xs text-[#FFD700] flex items-center gap-1">
+            <h1 className="text-xl font-black text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2">
+              <span>Asistente IA Starlight</span>
+              <span className="px-2 py-0.5 rounded-full bg-[#0284C7]/30 border border-[#38BDF8]/50 text-[10px] text-[#7DD3FC] font-mono uppercase">
+                Stella 2.5
+              </span>
+            </h1>
+            <p className="text-xs text-[#7DD3FC] flex items-center gap-1.5 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Gemini 3.6 Flash Powered
+              <span>Conexión Activa 24/7 • Experta en Astroturismo, Eclipses y Óptica</span>
             </p>
           </div>
         </div>

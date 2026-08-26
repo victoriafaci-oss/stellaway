@@ -1,4 +1,4 @@
-export type ActiveTab = 'dashboard' | 'spots' | 'events' | 'weather' | 'assistant' | 'profile';
+export type ActiveTab = 'welcome' | 'dashboard' | 'spots' | 'events' | 'weather' | 'assistant' | 'profile';
 
 export type WeatherType = 'clear' | 'rain' | 'snow' | 'wind' | 'clouds' | 'storm';
 
@@ -37,6 +37,8 @@ export interface CelestialEvent {
   category: 'lluvia_estrellas' | 'alineacion' | 'visualizacion_planetas' | 'eclipse' | 'fase_lunar';
   categoryLabel: string;
   date: string;
+  startDateISO: string; // YYYY-MM-DD
+  endDateISO: string;   // YYYY-MM-DD
   peakTime: string;
   description: string;
   bestVisibilityZone: string;

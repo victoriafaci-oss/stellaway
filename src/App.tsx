@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ActiveTab, ModalType } from './types';
 import { HeaderAndNav } from './components/HeaderAndNav';
 import { TopBar } from './components/TopBar';
@@ -9,14 +9,36 @@ import { EventsView } from './components/EventsView';
 import { WeatherView } from './components/WeatherView';
 import { AssistantView } from './components/AssistantView';
 import { ProfileView } from './components/ProfileView';
+import { WelcomePaywallView } from './components/WelcomePaywallView';
+import { StarrySkyBackground } from './components/StarrySkyBackground';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
-  const [tabHistory, setTabHistory] = useState<ActiveTab[]>(['dashboard']);
+  const [activeTab, setActiveTab] = useState<ActiveTab>('welcome');
+  const [tabHistory, setTabHistory] = useState<ActiveTab[]>(['welcome']);
   const [nightVision, setNightVision] = useState<boolean>(false);
   const [modalType, setModalType] = useState<ModalType>(null);
 
+  useEffect(() => {
+    // Check if user is returning with active subscription
+    const isSubscribed = localStorage.getItem('stellaway_subscription_active');
+    const trialExpires = localStorage.getItem('stellaway_trial_expires');
+    if (isSubscribed === 'true' || (trialExpires && Number(trialExpires) > Date.now())) {
+      // Returning active users start on dashboard if they prefer
+    }
+  }, []);
+
   const navigateTo = (newTab: ActiveTab) => {
+    // Enforce paywall: if user has no subscription or valid trial, stay on welcome
+    const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
+    const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
+    const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
+    const hasAccess = isSubscribed || isTrialValid;
+
+    if (!hasAccess && newTab !== 'welcome') {
+      setActiveTab('welcome');
+      return;
+    }
+
     if (newTab !== activeTab) {
       setTabHistory((prev) => [...prev, newTab]);
       setActiveTab(newTab);
@@ -41,13 +63,8 @@ export default function App() {
         nightVision ? 'night-vision-mode' : ''
       }`}
     >
-      {/* Dynamic Cosmic Background */}
-      <div
-        className="fixed inset-0 pointer-events-none -z-10 bg-[#2D1B4E]"
-        style={{
-          backgroundImage: 'radial-gradient(circle at 50% -20%, #4f3d72 0%, #2D1B4E 75%)',
-        }}
-      />
+      {/* Dynamic Cosmic Background with Twinkling Stars & Meteor Streaks */}
+      <StarrySkyBackground nightVision={nightVision} />
 
       {/* Main Drawer / Sidebar & Bottom Mobile Navigation */}
       <HeaderAndNav
@@ -56,6 +73,7 @@ export default function App() {
         nightVision={nightVision}
         setNightVision={setNightVision}
         onGoBack={handleGoBack}
+        openModal={(type) => setModalType(type)}
       />
 
       {/* Global Modals Container */}
@@ -68,7 +86,7 @@ export default function App() {
 
       {/* Active Tab View Rendering */}
       <main className="flex-1 flex flex-col w-full">
-        {/* Top Header Bar across all pages with Back, Home, Settings, and Menu */}
+        {/* Top Header Bar across all inner pages with Back, Settings, and Menu */}
         <TopBar
           activeTab={activeTab}
           setActiveTab={navigateTo}
@@ -78,6 +96,14 @@ export default function App() {
           setNightVision={setNightVision}
           openModal={(type) => setModalType(type)}
         />
+
+        {activeTab === 'welcome' && (
+          <WelcomePaywallView
+            onEnterApp={() => navigateTo('dashboard')}
+            onNavigateTab={(tab) => navigateTo(tab)}
+            nightVision={nightVision}
+          />
+        )}
 
         {activeTab === 'dashboard' && (
           <DashboardView

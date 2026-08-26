@@ -16,7 +16,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
   setActiveTab,
   openModal,
 }) => {
-  const { language, setLanguage, languageOptions } = useLanguage();
+  const { language, setLanguage, languageOptions, t } = useLanguage();
   const [settingsTab, setSettingsTab] = useState<'perfil' | 'tarifas' | 'pagos' | 'idiomas'>('tarifas');
   const [selectedPlan, setSelectedPlan] = useState<'free2days' | 'mensual' | 'anual'>('free2days');
   const [tempLanguage, setTempLanguage] = useState<SupportedLanguage>(language);
@@ -74,18 +74,18 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
 
       {/* MODAL 1: AJUSTES (SETTINGS) */}
       {modalType === 'settings' && (
-        <div className="card-pastel-gold relative w-full max-w-xl border-2 border-[#D4AF37] rounded-3xl p-4 sm:p-6 shadow-2xl z-10 overflow-hidden flex flex-col max-h-[85vh]">
+        <div className="card-pastel-gold relative w-full max-w-xl border-2 border-[#38BDF8] rounded-3xl p-4 sm:p-6 shadow-2xl z-10 overflow-hidden flex flex-col max-h-[85vh]">
           {/* Header with Navigation: Atrás (curved arrow) & Inicio (casita) */}
-          <div className="flex items-center justify-between pb-3 border-b border-[#E6CA65] mb-4 gap-2">
+          <div className="flex items-center justify-between pb-3 border-b border-[#38BDF8]/60 mb-4 gap-2">
             <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="w-9 h-9 rounded-2xl bg-[#24153F] text-[#FEE685] flex items-center justify-center font-extrabold shadow-md shrink-0">
+              <div className="w-9 h-9 rounded-2xl bg-[#0284C7] text-white flex items-center justify-center font-black shadow-md shrink-0">
                 <span className="material-symbols-outlined text-lg">settings</span>
               </div>
               <div className="truncate">
-                <h2 className="text-base sm:text-lg font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans'] truncate">
+                <h2 className="text-base sm:text-lg font-black text-[#030712] font-['Plus_Jakarta_Sans'] truncate">
                   Ajustes & Configuración
                 </h2>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">Perfil, suscripciones y métodos de pago</p>
+                <p className="text-[11px] text-[#082F49] font-black truncate">Perfil, suscripciones y métodos de pago</p>
               </div>
             </div>
 
@@ -93,7 +93,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
             <div className="flex items-center gap-1.5 shrink-0">
               <button
                 onClick={closeModal}
-                className="px-2.5 py-1.5 bg-white/70 hover:bg-white text-[#120D1C] border border-[#E6CA65] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer"
+                className="px-2.5 py-1.5 bg-white hover:bg-[#F0F9FF] text-[#030712] border border-[#38BDF8] rounded-xl text-xs font-black flex items-center gap-1 cursor-pointer shadow-xs"
                 title="Atrás (Volver)"
               >
                 <span className="material-symbols-outlined text-sm">undo</span>
@@ -102,7 +102,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
 
               <button
                 onClick={handleGoHome}
-                className="px-2.5 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer shadow-md"
+                className="px-2.5 py-1.5 bg-[#0369A1] hover:bg-[#0284C7] text-white rounded-xl text-xs font-black flex items-center gap-1 cursor-pointer shadow-md"
                 title="Ir a Inicio"
               >
                 <span className="material-symbols-outlined text-sm">home</span>
@@ -111,33 +111,33 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
 
               <button
                 onClick={closeModal}
-                className="p-1.5 rounded-xl bg-white/70 hover:bg-white text-[#24153F] hover:text-black border border-[#E6CA65] transition-all cursor-pointer"
+                className="p-1.5 rounded-xl bg-white hover:bg-[#F0F9FF] text-[#030712] hover:text-black border border-[#38BDF8] transition-all cursor-pointer shadow-xs"
                 title="Cerrar"
               >
-                <span className="material-symbols-outlined text-base">close</span>
+                <span className="material-symbols-outlined text-base font-bold">close</span>
               </button>
             </div>
           </div>
 
           {/* Sub-Tabs: Tarifas & Suscripción | Perfil | Idiomas | Métodos de pago */}
-          <div className="flex border-b border-[#E6CA65] mb-4 gap-1 sm:gap-3 overflow-x-auto shrink-0">
+          <div className="flex border-b border-[#38BDF8]/60 mb-4 gap-1 sm:gap-3 overflow-x-auto shrink-0">
             <button
               onClick={() => setSettingsTab('tarifas')}
-              className={`pb-2.5 px-2.5 font-['Plus_Jakarta_Sans'] text-xs sm:text-sm font-extrabold transition-all relative flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-                settingsTab === 'tarifas' ? 'text-[#24153F]' : 'text-[#594A70] hover:text-[#120D1C]'
+              className={`pb-2.5 px-2.5 font-['Plus_Jakarta_Sans'] text-xs sm:text-sm font-black transition-all relative flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                settingsTab === 'tarifas' ? 'text-[#0284C7]' : 'text-[#082F49] hover:text-[#030712]'
               }`}
             >
               <span className="material-symbols-outlined text-base">stars</span>
               Tarifas & Suscripción
               {settingsTab === 'tarifas' && (
-                <div className="absolute bottom-0 inset-x-0 h-0.5 bg-[#24153F] rounded-t-full shadow-[0_0_6px_#24153F]" />
+                <div className="absolute bottom-0 inset-x-0 h-0.5 bg-[#0284C7] rounded-t-full shadow-[0_0_6px_#0284C7]" />
               )}
             </button>
 
             <button
               onClick={() => setSettingsTab('perfil')}
-              className={`pb-2.5 px-2.5 font-['Plus_Jakarta_Sans'] text-xs sm:text-sm font-extrabold transition-all relative flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-                settingsTab === 'perfil' ? 'text-[#24153F]' : 'text-[#594A70] hover:text-[#120D1C]'
+              className={`pb-2.5 px-2.5 font-['Plus_Jakarta_Sans'] text-xs sm:text-sm font-black transition-all relative flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                settingsTab === 'perfil' ? 'text-[#0284C7]' : 'text-[#082F49] hover:text-[#030712]'
               }`}
             >
               <span className="material-symbols-outlined text-base">account_circle</span>
@@ -179,17 +179,17 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
             {/* TAB TARIFAS DE SUSCRIPCIÓN */}
             {settingsTab === 'tarifas' && (
               <div className="space-y-3">
-                <div className="p-3 bg-white/70 rounded-2xl border border-[#E6CA65] text-xs">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#24153F] block mb-0.5 font-['JetBrains_Mono']">
+                <div className="p-3 bg-[#082F49]/80 rounded-2xl border border-[#38BDF8]/40 text-xs text-white">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#38BDF8] block mb-0.5 font-['JetBrains_Mono']">
                     Planes & Tarifas StellaWay Explorer
                   </span>
-                  <p className="text-[#120D1C] font-medium">
-                    Elige el plan de suscripción que mejor se adapte a tu nivel de observación astronómica.
+                  <p className="text-[#BAE6FD] font-medium">
+                    Elige tu suscripción para acceso ilimitado a telemetría, mapas Bortle 1-9 satelitales y cobertura del Eclipse 2026.
                   </p>
                 </div>
 
                 <div className="space-y-3">
-                  {/* Plan 1: 2 días gratis */}
+                  {/* Plan 1: 48 Horas Gratis (Única opción con verificación por número de teléfono) */}
                   <div
                     onClick={() => {
                       setSelectedPlan('free2days');
@@ -197,36 +197,36 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     }}
                     className={`p-3.5 rounded-2xl border transition-all cursor-pointer relative ${
                       selectedPlan === 'free2days'
-                        ? 'bg-white border-2 border-[#24153F] shadow-lg'
-                        : 'bg-white/60 border border-[#E6CA65] hover:bg-white'
+                        ? 'bg-white border-2 border-[#0284C7] shadow-lg text-[#082F49]'
+                        : 'bg-white/80 border border-[#38BDF8]/40 hover:bg-white text-[#082F49]'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="px-2.5 py-0.5 bg-blue-100 text-blue-900 border border-blue-300 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
-                            Prueba Ilimitada (Gratis)
+                          <span className="px-2.5 py-0.5 bg-sky-100 text-sky-900 border border-sky-300 rounded-full text-[10px] font-black uppercase tracking-wider">
+                            Prueba Gratuita
                           </span>
                           {selectedPlan === 'free2days' && (
-                            <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-[10px] font-extrabold">
-                              Seleccionado
+                            <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-[10px] font-black">
+                              ✓ Seleccionado
                             </span>
                           )}
                         </div>
-                        <h4 className="text-sm font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans']">
-                          2 Días Gratis (Acceso Completo Ilimitado)
+                        <h4 className="text-sm font-black text-[#082F49] font-['Plus_Jakarta_Sans']">
+                          48 Horas Gratis (Acceso Total Ilimitado)
                         </h4>
-                        <p className="text-xs text-[#2B2538] mt-1 leading-relaxed font-medium">
-                          Acceso total e ilimitado a todas las herramientas de la app (telemetría, meteorología HD, diario, asistente IA) durante 48 horas.
+                        <p className="text-xs text-[#334155] mt-1 leading-relaxed font-medium">
+                          Acceso total a todas las herramientas durante 48 horas sin coste.
                         </p>
-                        <span className="inline-block mt-1.5 text-[10px] font-extrabold text-[#B45309] bg-amber-100 px-2.5 py-1 rounded-md border border-amber-300">
-                          📱 Verificación única por número de móvil (1 prueba por teléfono/dispositivo).
+                        <span className="inline-block mt-1.5 text-[10px] font-black text-amber-900 bg-amber-100 px-2.5 py-1 rounded-md border border-amber-300">
+                          📱 Verificación única por número de teléfono móvil (1 prueba por dispositivo).
                         </span>
                       </div>
 
                       <div className="text-right shrink-0">
-                        <span className="text-lg font-black text-[#24153F] font-['JetBrains_Mono']">0 €</span>
-                        <span className="text-[10px] text-[#594A70] font-bold block">48 horas</span>
+                        <span className="text-lg font-black text-[#0284C7] font-['JetBrains_Mono']">0 €</span>
+                        <span className="text-[10px] text-[#64748B] font-bold block">48 horas</span>
                       </div>
                     </div>
                   </div>
@@ -239,33 +239,33 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     }}
                     className={`p-3.5 rounded-2xl border transition-all cursor-pointer relative ${
                       selectedPlan === 'mensual'
-                        ? 'bg-white border-2 border-[#24153F] shadow-lg'
-                        : 'bg-white/60 border border-[#E6CA65] hover:bg-white'
+                        ? 'bg-white border-2 border-[#0284C7] shadow-lg text-[#082F49]'
+                        : 'bg-white/80 border border-[#38BDF8]/40 hover:bg-white text-[#082F49]'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="px-2.5 py-0.5 bg-[#24153F] text-[#FEE685] rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+                          <span className="px-2.5 py-0.5 bg-[#0284C7] text-white rounded-full text-[10px] font-black uppercase tracking-wider">
                             Plan Mensual
                           </span>
                           {selectedPlan === 'mensual' && (
-                            <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-[10px] font-extrabold">
-                              Seleccionado
+                            <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-[10px] font-black">
+                              ✓ Seleccionado
                             </span>
                           )}
                         </div>
-                        <h4 className="text-sm font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans']">
+                        <h4 className="text-sm font-black text-[#082F49] font-['Plus_Jakarta_Sans']">
                           Cuota Mensual Starlight Pro
                         </h4>
-                        <p className="text-xs text-[#2B2538] mt-1 leading-relaxed font-medium">
-                          Acceso ilimitado a telemetría en tiempo real, mapas HD de contaminación lumínica y avisos de meteorología. Cancelación en cualquier momento.
+                        <p className="text-xs text-[#334155] mt-1 leading-relaxed font-medium">
+                          Acceso ilimitado continuo con Stripe o PayPal. Cancelación en cualquier momento.
                         </p>
                       </div>
 
                       <div className="text-right shrink-0">
-                        <span className="text-lg font-black text-[#24153F] font-['JetBrains_Mono']">3,99 €</span>
-                        <span className="text-[10px] text-[#594A70] font-bold block">/ mes</span>
+                        <span className="text-lg font-black text-[#0284C7] font-['JetBrains_Mono']">3,99 €</span>
+                        <span className="text-[10px] text-[#64748B] font-bold block">/ mes</span>
                       </div>
                     </div>
                   </div>
@@ -278,50 +278,50 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     }}
                     className={`p-3.5 rounded-2xl border transition-all cursor-pointer relative ${
                       selectedPlan === 'anual'
-                        ? 'bg-white border-2 border-[#24153F] shadow-lg'
-                        : 'bg-white/60 border border-[#E6CA65] hover:bg-white'
+                        ? 'bg-white border-2 border-amber-500 shadow-lg text-[#082F49]'
+                        : 'bg-white/80 border border-[#38BDF8]/40 hover:bg-white text-[#082F49]'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="px-2.5 py-0.5 bg-amber-200 text-amber-900 border border-amber-300 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
-                            ⭐ Recomendado (Mejor Oferta)
+                          <span className="px-2.5 py-0.5 bg-amber-200 text-amber-900 border border-amber-300 rounded-full text-[10px] font-black uppercase tracking-wider">
+                            ⭐ Recomendado (Ahorro 58%)
                           </span>
                           {selectedPlan === 'anual' && (
-                            <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-[10px] font-extrabold">
-                              Seleccionado
+                            <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-[10px] font-black">
+                              ✓ Seleccionado
                             </span>
                           )}
                         </div>
-                        <h4 className="text-sm font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans']">
+                        <h4 className="text-sm font-black text-[#082F49] font-['Plus_Jakarta_Sans']">
                           Cuota Anual Starlight Pass
                         </h4>
-                        <p className="text-xs text-[#2B2538] mt-1 leading-relaxed font-medium">
-                          Acceso completo durante 12 meses para disfrutar de toda la cobertura astroturística y el Eclipse Solar 2026 al mejor precio anual.
+                        <p className="text-xs text-[#334155] mt-1 leading-relaxed font-medium">
+                          12 meses de cobertura completa para el Gran Eclipse Total 2026 y lluvias estelares.
                         </p>
                       </div>
 
                       <div className="text-right shrink-0">
-                        <span className="text-lg font-black text-[#24153F] font-['JetBrains_Mono']">19,99 €</span>
-                        <span className="text-[10px] text-[#594A70] font-bold block">/ año</span>
+                        <span className="text-lg font-black text-[#0284C7] font-['JetBrains_Mono']">19,99 €</span>
+                        <span className="text-[10px] text-[#64748B] font-bold block">/ año</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Verification Box for 2 Days Free Trial */}
+                {/* Single Verification Box for Phone Number when 48h Free Trial is Selected */}
                 {selectedPlan === 'free2days' && (
-                  <div className="p-4 bg-white/80 rounded-2xl border-2 border-[#D4AF37] space-y-3 my-2 shadow-sm">
+                  <div className="p-4 bg-white rounded-2xl border-2 border-[#38BDF8] space-y-3 my-2 shadow-sm text-[#082F49]">
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[#B45309] text-lg">smartphone</span>
-                      <h5 className="text-xs font-extrabold text-[#24153F] uppercase tracking-wider">
-                        Verificación por Número de Teléfono (Prueba Gratuita 2 Días)
+                      <span className="material-symbols-outlined text-[#0284C7] text-lg">smartphone</span>
+                      <h5 className="text-xs font-black text-[#082F49] uppercase tracking-wider">
+                        Verificación por Número de Teléfono (48 Horas Gratis)
                       </h5>
                     </div>
 
-                    <p className="text-xs text-[#120D1C] leading-relaxed font-medium">
-                      Para garantizar que cada usuario disfrute de acceso completo e ilimitado de 2 días sin repetir la oferta en el mismo dispositivo, verifica tu número móvil.
+                    <p className="text-xs text-[#334155] leading-relaxed font-medium">
+                      Para garantizar 1 sola prueba de 48 horas por persona y dispositivo, introduce tu número de teléfono móvil para recibir un código SMS gratuito.
                     </p>
 
                     {registeredTrialPhone ? (
@@ -329,11 +329,11 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-emerald-700 text-lg">verified</span>
                           <div>
-                            <span className="font-extrabold text-[#120D1C] block">Prueba de 2 Días Activa</span>
-                            <span className="text-[11px] text-emerald-900 font-['JetBrains_Mono'] font-bold">Teléfono vinculado: {registeredTrialPhone}</span>
+                            <span className="font-black text-[#082F49] block">Prueba de 48 Horas Activa</span>
+                            <span className="text-[11px] text-emerald-900 font-['JetBrains_Mono'] font-bold">Teléfono: {registeredTrialPhone}</span>
                           </div>
                         </div>
-                        <span className="px-2.5 py-1 bg-emerald-600 text-white font-extrabold text-[10px] rounded-full uppercase">Acceso Total</span>
+                        <span className="px-2.5 py-1 bg-emerald-600 text-white font-black text-[10px] rounded-full uppercase">Acceso Total</span>
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -352,7 +352,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                               const deviceUsed = localStorage.getItem('stellaway_device_trial_used');
 
                               if (usedPhones.includes(cleanPhone) || deviceUsed === 'true') {
-                                setTrialErrorMsg(`⚠️ El teléfono (${cleanPhone}) o este dispositivo ya ha disfrutado de la prueba gratuita de 2 días. Para continuar con acceso ilimitado, selecciona el plan mensual (3,99 €) o anual (19,99 €).`);
+                                setTrialErrorMsg(`⚠️ El teléfono (${cleanPhone}) o este dispositivo ya ha disfrutado de los 2 Días Gratis. Para continuar con acceso ilimitado, selecciona el Plan Mensual (3,99 €) o Anual (19,99 €).`);
                                 return;
                               }
 
@@ -361,7 +361,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                             className="space-y-2"
                           >
                             <div>
-                              <label className="text-[11px] font-bold text-[#24153F] block mb-1">
+                              <label className="text-[11px] font-black text-[#082F49] block mb-1">
                                 Número de Teléfono Móvil
                               </label>
                               <div className="flex gap-2">
@@ -374,11 +374,11 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                                     setTrialErrorMsg('');
                                   }}
                                   placeholder="+34 612 345 678"
-                                  className="flex-1 px-3 py-2 bg-white border border-[#E6CA65] rounded-xl text-[#120D1C] text-xs placeholder-[#594A70] focus:outline-none focus:border-[#24153F] font-bold"
+                                  className="flex-1 px-3 py-2 bg-[#F0F9FF] border border-[#38BDF8] rounded-xl text-[#082F49] text-xs placeholder-[#64748B] focus:outline-none focus:border-[#0284C7] font-bold"
                                 />
                                 <button
                                   type="submit"
-                                  className="px-4 py-2 bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold rounded-xl text-xs uppercase cursor-pointer transition-all shrink-0 shadow-md"
+                                  className="px-4 py-2 bg-[#0284C7] hover:bg-[#0369A1] text-white font-black rounded-xl text-xs uppercase cursor-pointer transition-all shrink-0 shadow-md"
                                 >
                                   Enviar SMS
                                 </button>
@@ -398,19 +398,20 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                               localStorage.setItem('stellaway_device_trial_used', 'true');
                               localStorage.setItem('stellaway_trial_phone', cleanPhone);
                               localStorage.setItem('stellaway_trial_expires', String(Date.now() + 172800000));
+                              localStorage.setItem('stellaway_subscription_active', 'true');
 
                               setRegisteredTrialPhone(cleanPhone);
                               setSmsSentStep(false);
                               setTrialErrorMsg('');
                             }}
-                            className="space-y-2 bg-white p-3.5 rounded-xl border border-[#E6CA65]"
+                            className="space-y-2 bg-[#F0F9FF] p-3.5 rounded-xl border border-[#38BDF8]"
                           >
                             <p className="text-xs text-emerald-800 font-bold flex items-center gap-1">
                               <span className="material-symbols-outlined text-sm">sms</span>
                               Código de verificación SMS enviado a {phoneInput}.
                             </p>
                             <div>
-                              <label className="text-[10px] text-[#594A70] font-bold block mb-0.5">Código SMS (Ej: 1234)</label>
+                              <label className="text-[10px] text-[#082F49] font-bold block mb-0.5">Código SMS (Ej: 1234)</label>
                               <div className="flex gap-2">
                                 <input
                                   type="text"
@@ -418,13 +419,13 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                                   value={smsCodeInput}
                                   onChange={(e) => setSmsCodeInput(e.target.value)}
                                   placeholder="1234"
-                                  className="flex-1 px-3 py-1.5 bg-white border border-[#E6CA65] rounded-lg text-[#120D1C] text-xs font-mono font-bold focus:outline-none focus:border-[#24153F]"
+                                  className="flex-1 px-3 py-1.5 bg-white border border-[#38BDF8] rounded-lg text-[#082F49] text-xs font-mono font-bold focus:outline-none focus:border-[#0284C7]"
                                 />
                                 <button
                                   type="submit"
-                                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-lg text-xs uppercase cursor-pointer transition-all shrink-0"
+                                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-lg text-xs uppercase cursor-pointer transition-all shrink-0 shadow-md"
                                 >
-                                  Activar 2 Días Gratis
+                                  Activar 48 Horas Gratis
                                 </button>
                               </div>
                             </div>
@@ -441,36 +442,26 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                   </div>
                 )}
 
-                <button
-                  onClick={() => {
-                    if (selectedPlan === 'free2days' && !registeredTrialPhone) {
-                      const cleanPhone = phoneInput.trim().replace(/\s+/g, '');
-                      const usedPhones = JSON.parse(localStorage.getItem('stellaway_used_trial_phones') || '[]');
-                      const deviceUsed = localStorage.getItem('stellaway_device_trial_used');
+                <div className="flex gap-2 pt-2">
+                  <button
+                    onClick={() => {
+                      closeModal();
+                      setActiveTab('welcome');
+                    }}
+                    className="flex-1 py-3 bg-[#082F49] hover:bg-[#0C4A6E] text-white font-black rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 border border-[#38BDF8]/40 shadow-lg cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">open_in_new</span>
+                    <span>Portal de Suscripciones Completo</span>
+                  </button>
 
-                      if (!cleanPhone || cleanPhone.length < 9) {
-                        setTrialErrorMsg('⚠️ Para activar los 2 Días Gratis de acceso completo, debes introducir tu número de teléfono móvil.');
-                        return;
-                      }
-
-                      if (usedPhones.includes(cleanPhone) || deviceUsed === 'true') {
-                        setTrialErrorMsg(`⚠️ El número (${cleanPhone}) o este dispositivo ya ha canjeado los 2 Días Gratis de prueba. No se puede repetir la oferta. Selecciona el Plan Mensual (3,99 €) o Anual (19,99 €).`);
-                        return;
-                      }
-
-                      usedPhones.push(cleanPhone);
-                      localStorage.setItem('stellaway_used_trial_phones', JSON.stringify(usedPhones));
-                      localStorage.setItem('stellaway_device_trial_used', 'true');
-                      localStorage.setItem('stellaway_trial_phone', cleanPhone);
-                      setRegisteredTrialPhone(cleanPhone);
-                    }
-                    setSettingsTab('pagos');
-                  }}
-                  className="w-full py-3 bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg cursor-pointer mt-2"
-                >
-                  <span className="material-symbols-outlined text-base">credit_card</span>
-                  <span>Confirmar Plan ({selectedPlan === 'free2days' ? '2 Días Gratis' : selectedPlan === 'mensual' ? '3,99 €/mes' : '19,99 €/año'})</span>
-                </button>
+                  <button
+                    onClick={() => setSettingsTab('pagos')}
+                    className="flex-1 py-3 bg-[#0284C7] hover:bg-[#0369A1] text-white font-black rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">credit_card</span>
+                    <span>Pasarela de Pago</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -568,15 +559,15 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
 
                     <div className="flex items-center justify-between bg-white/70 p-3 rounded-2xl border border-[#E6CA65] text-xs">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-6 rounded bg-emerald-600 flex items-center justify-center font-bold text-[10px] text-white">
-                          BIZUM
+                        <div className="w-8 h-6 rounded bg-[#0070BA] flex items-center justify-center font-black text-[10px] text-white">
+                          PP
                         </div>
                         <div>
-                          <span className="font-extrabold text-[#120D1C] block">Bizum vinculado</span>
-                          <span className="text-[10px] text-[#594A70] font-bold">+34 612 *** 789</span>
+                          <span className="font-extrabold text-[#120D1C] block">PayPal Express</span>
+                          <span className="text-[10px] text-[#594A70] font-bold">usuario@paypal.com</span>
                         </div>
                       </div>
-                      <button className="text-[11px] text-[#594A70] hover:text-[#120D1C] font-bold">Editar</button>
+                      <span className="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
                     </div>
 
                     <div className="flex items-center justify-between bg-white/70 p-3 rounded-2xl border border-[#E6CA65] text-xs">
@@ -689,52 +680,42 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
             {settingsTab === 'idiomas' && (
               <div className="space-y-4">
                 <p className="text-xs text-[#120D1C] font-['Plus_Jakarta_Sans'] font-medium">
-                  Selecciona el idioma de la aplicación StellaWay Explorer y haz clic en el botón de confirmación:
+                  Selecciona el idioma de la aplicación StellaWay Explorer:
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {languageOptions.map((lang) => (
                     <button
                       key={lang.code}
-                      onClick={() => setTempLanguage(lang.code)}
-                      className={`p-3 rounded-2xl border flex items-center justify-between transition-all cursor-pointer ${
-                        tempLanguage === lang.code
+                      onClick={() => handleConfirmLanguage(lang.code)}
+                      className={`p-3.5 rounded-2xl border flex items-center justify-between transition-all cursor-pointer ${
+                        language === lang.code
                           ? 'bg-white border-2 border-[#24153F] text-[#120D1C] font-extrabold shadow-md'
                           : 'bg-white/60 border border-[#E6CA65] text-[#120D1C] hover:bg-white'
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
-                        <span className="text-xl">{lang.flag}</span>
+                        <span className="text-2xl">{lang.flag}</span>
                         <div className="text-left">
                           <span className="text-xs block font-bold text-[#120D1C]">{lang.name}</span>
-                          <span className="text-[9px] text-[#594A70] font-['JetBrains_Mono'] font-bold">{lang.note}</span>
+                          <span className="text-[10px] text-[#594A70] font-['JetBrains_Mono'] font-bold">{lang.note}</span>
                         </div>
                       </div>
 
-                      {tempLanguage === lang.code && (
-                        <span className="material-symbols-outlined text-[#24153F] text-base">check_circle</span>
+                      {language === lang.code && (
+                        <span className="material-symbols-outlined text-[#24153F] text-lg font-bold">check_circle</span>
                       )}
                     </button>
                   ))}
                 </div>
 
-                {/* Confirm Language Button & Feedback */}
-                <div className="pt-2 border-t border-[#E6CA65] space-y-2">
-                  <button
-                    onClick={() => handleConfirmLanguage()}
-                    className="w-full py-3 bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg cursor-pointer active:scale-95 transition-all"
-                  >
-                    <span className="material-symbols-outlined text-base">check</span>
-                    <span>Confirmar y Aplicar Idioma ({languageOptions.find((o) => o.code === tempLanguage)?.name})</span>
-                  </button>
-
-                  {langSuccessMsg && (
-                    <div className="p-3 bg-emerald-100 border border-emerald-300 rounded-2xl text-xs text-emerald-900 font-extrabold flex items-center gap-2 animate-fadeIn">
-                      <span className="material-symbols-outlined text-emerald-700 text-lg">verified</span>
-                      <span>{langSuccessMsg}</span>
-                    </div>
-                  )}
-                </div>
+                {/* Feedback */}
+                {langSuccessMsg && (
+                  <div className="p-3 bg-emerald-100 border border-emerald-300 rounded-2xl text-xs text-emerald-900 font-extrabold flex items-center gap-2 animate-fadeIn">
+                    <span className="material-symbols-outlined text-emerald-700 text-lg">verified</span>
+                    <span>{langSuccessMsg}</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -858,10 +839,15 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                 <span className="material-symbols-outlined text-xl">language</span>
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-xs sm:text-sm font-extrabold text-[#120D1C] group-hover:text-[#24153F] transition-colors font-['Plus_Jakarta_Sans'] truncate">
-                  Idiomas / Language
-                </h3>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">Español, Galego, Euskara, Português, Italiano, etc.</p>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-extrabold text-[#120D1C] group-hover:text-[#24153F] transition-colors font-['Plus_Jakarta_Sans'] truncate">
+                    {t('languages', 'Idiomas / Languages')}
+                  </h3>
+                  <span className="text-[10px] font-extrabold bg-[#24153F] text-[#FFF8D6] px-2 py-0.5 rounded-full border border-[#E6CA65]">
+                    {language === 'es' ? '🇪🇸 Español' : '🇬🇧 English'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#594A70] font-bold truncate">Cambiar entre Español e English</p>
               </div>
               <span className="material-symbols-outlined text-[#594A70] group-hover:text-[#24153F] text-base shrink-0">arrow_forward</span>
             </button>
@@ -1296,51 +1282,51 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
           {/* Modal Body Content */}
           <div className="overflow-y-auto flex-1 pr-1 space-y-4">
             <p className="text-xs text-[#120D1C] font-['Plus_Jakarta_Sans'] font-medium">
-              Selecciona el idioma deseado para StellaWay Explorer y pulsa el botón de confirmación:
+              Selecciona tu idioma preferido (se aplicará al instante en toda la aplicación):
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {languageOptions.map((lang) => (
                 <button
                   key={lang.code}
-                  onClick={() => setTempLanguage(lang.code)}
-                  className={`p-3 rounded-2xl border flex items-center justify-between transition-all cursor-pointer ${
-                    tempLanguage === lang.code
-                      ? 'bg-white border-2 border-[#24153F] text-[#120D1C] font-extrabold shadow-md'
-                      : 'bg-white/60 border border-[#E6CA65] text-[#120D1C] hover:bg-white'
+                  onClick={() => handleConfirmLanguage(lang.code)}
+                  className={`p-4 rounded-2xl border flex items-center justify-between transition-all cursor-pointer ${
+                    language === lang.code
+                      ? 'bg-white border-2 border-[#24153F] text-[#120D1C] font-extrabold shadow-lg scale-[1.02]'
+                      : 'bg-white/60 border border-[#E6CA65] text-[#120D1C] hover:bg-white hover:border-[#24153F]'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-xl">{lang.flag}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{lang.flag}</span>
                     <div className="text-left">
-                      <span className="text-xs block font-bold text-[#120D1C]">{lang.name}</span>
-                      <span className="text-[9px] text-[#594A70] font-['JetBrains_Mono'] font-bold">{lang.note}</span>
+                      <span className="text-sm block font-extrabold text-[#120D1C]">{lang.name}</span>
+                      <span className="text-[10px] text-[#594A70] font-['JetBrains_Mono'] font-bold">{lang.note}</span>
                     </div>
                   </div>
 
-                  {tempLanguage === lang.code && (
-                    <span className="material-symbols-outlined text-[#24153F] text-base">check_circle</span>
+                  {language === lang.code && (
+                    <span className="material-symbols-outlined text-[#24153F] text-xl font-bold">check_circle</span>
                   )}
                 </button>
               ))}
             </div>
 
-            {/* Confirmation Button & Banner */}
-            <div className="pt-3 border-t border-[#E6CA65] space-y-2">
+            {/* Notification / Banner */}
+            {langSuccessMsg && (
+              <div className="p-3.5 bg-emerald-100 border border-emerald-300 rounded-2xl text-xs text-emerald-900 font-extrabold flex items-center gap-2 animate-fadeIn shadow-sm">
+                <span className="material-symbols-outlined text-emerald-700 text-lg">verified</span>
+                <span>{langSuccessMsg}</span>
+              </div>
+            )}
+
+            <div className="pt-2">
               <button
-                onClick={() => handleConfirmLanguage()}
+                onClick={closeModal}
                 className="w-full py-3 bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg cursor-pointer active:scale-95 transition-all"
               >
-                <span className="material-symbols-outlined text-base">check_circle</span>
-                <span>Confirmar y Aplicar Idioma ({languageOptions.find((o) => o.code === tempLanguage)?.name})</span>
+                <span className="material-symbols-outlined text-base">done_all</span>
+                <span>Guardar y Volver</span>
               </button>
-
-              {langSuccessMsg && (
-                <div className="p-3 bg-emerald-100 border border-emerald-300 rounded-2xl text-xs text-emerald-900 font-extrabold flex items-center gap-2 animate-fadeIn">
-                  <span className="material-symbols-outlined text-emerald-700 text-lg">verified</span>
-                  <span>{langSuccessMsg}</span>
-                </div>
-              )}
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ interface HeaderAndNavProps {
   nightVision: boolean;
   setNightVision: React.Dispatch<React.SetStateAction<boolean>>;
   onGoBack?: () => void;
+  openModal?: (type: any) => void;
 }
 
 export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
@@ -17,11 +18,25 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
   nightVision,
   setNightVision,
   onGoBack,
+  openModal,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleNavClick = (tab: ActiveTab) => {
+    // Check if user has active subscription or valid trial
+    const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
+    const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
+    const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
+    const hasAccess = isSubscribed || isTrialValid;
+
+    if (!hasAccess && tab !== 'welcome') {
+      // Redirigir a la pantalla de planes y suscripción si no ha pagado ni verificado 48h
+      setActiveTab('welcome');
+      setDrawerOpen(false);
+      return;
+    }
+
     setActiveTab(tab);
     setDrawerOpen(false);
   };
@@ -56,17 +71,38 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
           <ul className="flex flex-col gap-2 px-4 text-base">
             <li>
               <button
+                onClick={() => handleNavClick('welcome')}
+                className={`w-full flex items-center justify-between px-5 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'welcome'
+                    ? 'bg-gradient-to-r from-[#38BDF8] to-[#0284C7] text-white font-extrabold shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'welcome' ? "'FILL' 1" : "'FILL' 0" }}>
+                    stars
+                  </span>
+                  <span>{t('subscription', 'Planes & Suscripción')}</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-amber-400 text-black text-[9px] font-black uppercase">
+                  48h Gratis
+                </span>
+              </button>
+            </li>
+
+            <li>
+              <button
                 onClick={() => handleNavClick('dashboard')}
                 className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
                   activeTab === 'dashboard'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
               >
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'dashboard' ? "'FILL' 1" : "'FILL' 0" }}>
                   dashboard
                 </span>
-                <span>{t('dashboard', 'Dashboard Eclipse')}</span>
+                <span>{t('dashboard', 'Dashboard Eclipse 2027')}</span>
               </button>
             </li>
 
@@ -75,7 +111,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('spots')}
                 className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
                   activeTab === 'spots'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
               >
@@ -91,7 +127,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('events')}
                 className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
                   activeTab === 'events'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
               >
@@ -107,7 +143,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('weather')}
                 className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
                   activeTab === 'weather'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
               >
@@ -123,7 +159,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('assistant')}
                 className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
                   activeTab === 'assistant'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
               >
@@ -139,7 +175,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('profile')}
                 className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
                   activeTab === 'profile'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
               >
@@ -149,6 +185,29 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 <span>{t('profile', 'Perfil y Diario')}</span>
               </button>
             </li>
+
+            <div className="my-2 border-t border-white/10" />
+
+            {/* Language Selection in Mobile Drawer */}
+            {openModal && (
+              <li>
+                <button
+                  onClick={() => {
+                    setDrawerOpen(false);
+                    openModal('languages');
+                  }}
+                  className="w-full flex items-center justify-between px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/15 text-white/90 border border-white/10 transition-all font-semibold text-xs"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-lg text-[#FEE685]">language</span>
+                    <span>{t('languages', 'Idioma')}</span>
+                  </div>
+                  <span className="text-[11px] font-extrabold bg-[#24153F] text-[#FFF8D6] px-2.5 py-0.5 rounded-full border border-[#E6CA65]">
+                    {language === 'es' ? '🇪🇸 Español' : '🇬🇧 English'}
+                  </span>
+                </button>
+              </li>
+            )}
           </ul>
         </div>
 
@@ -183,10 +242,32 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
           <ul className="flex flex-col gap-1.5 px-4 font-body-md text-body-md">
             <li>
               <button
+                onClick={() => handleNavClick('welcome')}
+                className={`w-full flex items-center justify-between px-5 py-3 rounded-2xl transition-all duration-200 ${
+                  activeTab === 'welcome'
+                    ? 'bg-gradient-to-r from-[#38BDF8] to-[#0284C7] text-white font-extrabold shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+                id="nav-link-welcome"
+              >
+                <div className="flex items-center gap-3.5">
+                  <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: activeTab === 'welcome' ? "'FILL' 1" : "'FILL' 0" }}>
+                    stars
+                  </span>
+                  <span>{t('subscription', 'Planes & Suscripción')}</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-amber-400 text-black text-[9px] font-black uppercase">
+                  48h Gratis
+                </span>
+              </button>
+            </li>
+
+            <li>
+              <button
                 onClick={() => handleNavClick('dashboard')}
                 className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
                   activeTab === 'dashboard'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
                 id="nav-link-dashboard"
@@ -194,7 +275,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: activeTab === 'dashboard' ? "'FILL' 1" : "'FILL' 0" }}>
                   dashboard
                 </span>
-                <span>{t('dashboard', 'Dashboard Eclipse')}</span>
+                <span>{t('dashboard', 'Dashboard Eclipse 2027')}</span>
               </button>
             </li>
 
@@ -204,7 +285,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('spots')}
                 className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
                   activeTab === 'spots'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
                 id="nav-link-spots"
@@ -221,7 +302,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('events')}
                 className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
                   activeTab === 'events'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
                 id="nav-link-events"
@@ -238,7 +319,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('weather')}
                 className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
                   activeTab === 'weather'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
                 id="nav-link-weather"
@@ -257,7 +338,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('assistant')}
                 className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
                   activeTab === 'assistant'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
                 id="nav-link-assistant"
@@ -274,7 +355,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('profile')}
                 className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
                   activeTab === 'profile'
-                    ? 'bg-gradient-to-r from-[#FFF8D6] to-[#FEE685] text-[#120D1C] font-extrabold border border-[#E6CA65] shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
                 id="nav-link-profile"
@@ -285,6 +366,27 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 <span>{t('profile', 'Perfil y Diario')}</span>
               </button>
             </li>
+
+            <div className="my-2 border-t border-white/10" />
+
+            {/* Language Selection in Desktop Sidebar */}
+            {openModal && (
+              <li>
+                <button
+                  onClick={() => openModal('languages')}
+                  className="w-full flex items-center justify-between px-5 py-2.5 rounded-2xl bg-white/5 hover:bg-white/15 text-white/90 border border-white/10 transition-all font-semibold text-xs cursor-pointer"
+                  id="nav-link-language"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-lg text-[#FEE685]">language</span>
+                    <span>{t('languages', 'Idioma')}</span>
+                  </div>
+                  <span className="text-[11px] font-extrabold bg-[#24153F] text-[#FFF8D6] px-2.5 py-0.5 rounded-full border border-[#E6CA65]">
+                    {language === 'es' ? '🇪🇸 ES' : '🇬🇧 EN'}
+                  </span>
+                </button>
+              </li>
+            )}
           </ul>
         </div>
 

@@ -30,54 +30,29 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <div className="w-full bg-[#130B22]/95 backdrop-blur-xl border-b border-[#FEE685]/20 px-3 sm:px-6 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-lg shadow-black/40 relative">
-      {/* Left Area: Unified 3-Bars Menu Button + Idiomas + (Atrás & Inicio ONLY on Subpages) */}
+      {/* Left Area: Unified 3-Bars Menu Button + (Atrás & Inicio ONLY on Subpages) */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 z-10">
         {/* Unified Menu Button (Las 3 barras) */}
         <button
           onClick={() => openModal('quickMenu')}
-          className="px-2 sm:px-2.5 py-1.5 bg-gradient-to-b from-[#FFF8D6] to-[#FEE685] hover:from-white hover:to-[#FFF3B0] border border-[#E6CA65] text-[#120D1C] font-extrabold rounded-xl transition-all cursor-pointer active:scale-95 flex items-center justify-center shadow-md shadow-black/20"
-          title="Menú Principal (Todas las opciones)"
+          className="px-2.5 sm:px-3 py-2 bg-gradient-to-b from-[#FFF8D6] to-[#FEE685] hover:from-white hover:to-[#FFF3B0] border border-[#E6CA65] text-[#120D1C] font-extrabold rounded-xl transition-all cursor-pointer active:scale-95 flex items-center justify-center shadow-md shadow-black/20"
+          title="Menú Principal (Herramientas y Opciones)"
           id="btn-top-menu-unified"
         >
           <span className="material-symbols-outlined text-lg sm:text-xl font-bold">menu</span>
         </button>
 
-        {/* Botón de Idioma al lado del menú de 3 barras */}
-        <button
-          onClick={() => openModal('languages')}
-          className="px-2 py-1.5 rounded-xl bg-[#24153F] border border-[#FEE685]/40 hover:border-[#FEE685] text-white font-extrabold text-[10px] sm:text-xs flex items-center gap-1 transition-all cursor-pointer active:scale-95 shadow-sm hover:bg-[#321C58]"
-          title="Cambiar idioma de la app"
-          id="btn-top-language-tab"
-        >
-          <span className="text-xs">{currentLangOption.flag}</span>
-          <span className="font-bold uppercase tracking-tight text-[#FEE685] text-[10px]">{language}</span>
-        </button>
-
-        {/* ONLY ON SUBPAGES: Atrás & Inicio */}
+        {/* ONLY ON SUBPAGES: Atrás */}
         {activeTab !== 'dashboard' && (
-          <>
-            {/* Button 1: Atrás */}
-            <button
-              onClick={onGoBack}
-              className="px-2 sm:px-2.5 py-1.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-[11px] font-bold font-['Plus_Jakarta_Sans'] flex items-center gap-1 transition-all cursor-pointer active:scale-95 shadow-sm"
-              title="Página anterior / Ir atrás"
-              id="btn-nav-prev"
-            >
-              <span className="material-symbols-outlined text-sm font-bold">undo</span>
-              <span className="hidden md:inline">Atrás</span>
-            </button>
-
-            {/* Button 2: Inicio */}
-            <button
-              onClick={() => setActiveTab('dashboard')}
-              className="px-2 sm:px-2.5 py-1.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-[11px] font-bold font-['Plus_Jakarta_Sans'] flex items-center gap-1 transition-all cursor-pointer active:scale-95 shadow-sm"
-              title="Ir a Inicio (Home)"
-              id="btn-nav-home"
-            >
-              <span className="material-symbols-outlined text-sm">home</span>
-              <span className="hidden md:inline">Inicio</span>
-            </button>
-          </>
+          <button
+            onClick={onGoBack}
+            className="px-2 sm:px-2.5 py-1.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-[11px] font-bold font-['Plus_Jakarta_Sans'] flex items-center gap-1 transition-all cursor-pointer active:scale-95 shadow-sm"
+            title="Página anterior / Ir atrás"
+            id="btn-nav-prev"
+          >
+            <span className="material-symbols-outlined text-sm font-bold">undo</span>
+            <span className="hidden md:inline">Atrás</span>
+          </button>
         )}
       </div>
 

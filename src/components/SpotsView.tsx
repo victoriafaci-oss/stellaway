@@ -382,7 +382,7 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
                 <div
                   key={spot.id}
                   onClick={() => setSelectedSpot(spot)}
-                  className="card-pastel-gold card-pastel-gold-hover rounded-3xl overflow-hidden shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between"
+                  className="card-pastel-gold card-pastel-gold-hover rounded-3xl overflow-hidden shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between border-2 border-[#38BDF8]"
                 >
                   <div>
                     <div className="h-48 md:h-56 relative overflow-hidden">
@@ -395,16 +395,16 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
 
                       <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
                         {spot.certified ? (
-                          <span className="bg-[#24153F] text-[#FEE685] text-[10px] px-2.5 py-1 rounded-full font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-md border border-[#FEE685]/40">
+                          <span className="bg-[#0284C7] text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow-md border border-[#BAE6FD]">
                             ⭐ Certificado Starlight
                           </span>
                         ) : (
-                          <span className="bg-[#0D5C35] text-white text-[10px] px-2.5 py-1 rounded-full font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-md">
+                          <span className="bg-[#059669] text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow-md">
                             🌄 Lugar Óptimo (Punto Libre)
                           </span>
                         )}
 
-                        <span className="bg-black/80 backdrop-blur-md text-[#FEE685] font-['JetBrains_Mono'] text-xs px-2.5 py-1 rounded-full font-bold border border-[#FEE685]/40">
+                        <span className="bg-black/80 backdrop-blur-md text-[#38BDF8] font-['JetBrains_Mono'] text-xs px-2.5 py-1 rounded-full font-black border border-[#38BDF8]/40">
                           Bortle {spot.bortleClass}
                         </span>
                       </div>
@@ -416,39 +416,39 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
                       </div>
 
                       <div className="absolute bottom-3 left-4 right-4">
-                        <span className="text-xs text-[#FEE685] font-extrabold uppercase tracking-wider drop-shadow">
+                        <span className="text-xs text-[#7DD3FC] font-black uppercase tracking-wider drop-shadow">
                           {spot.region}
                         </span>
-                        <h3 className="text-xl font-extrabold text-white font-['Plus_Jakarta_Sans'] drop-shadow">
+                        <h3 className="text-xl md:text-2xl font-black text-white font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                           {spot.name}
                         </h3>
                       </div>
                     </div>
 
                     <div className="p-6">
-                      <p className="text-sm text-[#2B2538] font-medium leading-relaxed mb-4 line-clamp-3">
+                      <p className="text-sm md:text-base text-[#030712] font-bold leading-relaxed mb-4 line-clamp-3">
                         {spot.description}
                       </p>
 
-                      <div className="grid grid-cols-2 gap-3 text-xs font-['JetBrains_Mono'] mb-4 p-3.5 rounded-2xl bg-white/70 border border-[#E6CA65]">
+                      <div className="grid grid-cols-2 gap-3 text-xs font-['JetBrains_Mono'] mb-4 p-3.5 rounded-2xl bg-white/90 border border-[#38BDF8]/60 shadow-sm">
                         <div>
-                          <span className="text-[#594A70] block font-bold">Altitud:</span>
-                          <span className="text-[#120D1C] font-extrabold">{spot.elevationMeters}m snm</span>
+                          <span className="text-[#082F49] block font-black">Altitud:</span>
+                          <span className="text-[#030712] font-black text-sm">{spot.elevationMeters}m snm</span>
                         </div>
                         <div>
-                          <span className="text-[#594A70] block font-bold">Calidad Cielo (SQM):</span>
-                          <span className="text-[#120D1C] font-extrabold">{spot.sqm} mag/arcsec²</span>
+                          <span className="text-[#082F49] block font-black">Calidad Cielo (SQM):</span>
+                          <span className="text-[#030712] font-black text-sm">{spot.sqm} mag/arcsec²</span>
                         </div>
                       </div>
 
                       {spot.subAreas && spot.subAreas.length > 0 && (
                         <div className="mb-4">
-                          <span className="text-[11px] font-extrabold text-[#24153F] uppercase block mb-1.5 font-['JetBrains_Mono']">
+                          <span className="text-[11px] font-black text-[#082F49] uppercase block mb-1.5 font-['JetBrains_Mono']">
                             📍 Zonas y Puntos de Interés:
                           </span>
                           <div className="flex flex-wrap gap-1.5">
                             {spot.subAreas.map((area, idx) => (
-                              <span key={idx} className="text-[10px] bg-[#E8D48A] text-[#120D1C] px-2.5 py-1 rounded-lg border border-[#D5BE6E] font-bold">
+                              <span key={idx} className="text-[11px] bg-white text-[#030712] px-2.5 py-1 rounded-lg border border-[#38BDF8]/60 font-black shadow-sm">
                                 📍 {area}
                               </span>
                             ))}
@@ -458,7 +458,7 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
 
                       <div className="flex flex-wrap gap-1.5">
                         {spot.facilities.map((fac, idx) => (
-                          <span key={idx} className="text-[11px] bg-white/60 text-[#120D1C] font-semibold px-2.5 py-1 rounded-md border border-[#E6CA65]">
+                          <span key={idx} className="text-[11px] bg-white/80 text-[#030712] font-black px-2.5 py-1 rounded-md border border-[#38BDF8]/40 shadow-xs">
                             • {fac}
                           </span>
                         ))}
@@ -472,7 +472,7 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
                         e.stopPropagation();
                         setSelectedSpot(spot);
                       }}
-                      className="w-full py-3.5 rounded-2xl bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all border border-[#FEE685]/30 cursor-pointer shadow-md"
+                      className="w-full py-3.5 rounded-2xl bg-[#0369A1] hover:bg-[#0284C7] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
                     >
                       <span className="material-symbols-outlined text-base">map</span>
                       {t('viewDetails', 'Ver Ficha Completa y Ruta')}
@@ -720,39 +720,39 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
                 return (
                   <div
                     key={spot.id}
-                    className="card-pastel-gold card-pastel-gold-hover rounded-3xl p-6 shadow-xl transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+                    className="card-pastel-gold card-pastel-gold-hover rounded-3xl p-6 shadow-xl transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-[#7DD3FC]/50 backdrop-blur-md"
                   >
                     <div className="flex items-center gap-4">
                       <img
                         src={spot.imageUrl}
                         alt={spot.name}
-                        className="w-20 h-20 rounded-2xl object-cover border border-[#E6CA65] shrink-0 shadow-md"
+                        className="w-20 h-20 rounded-2xl object-cover border border-[#38BDF8]/60 shrink-0 shadow-md"
                       />
 
                       <div>
                         <div className="flex flex-wrap items-center gap-2 mb-1">
-                          <span className="px-2.5 py-0.5 rounded-lg bg-[#24153F] text-[#FEE685] text-[10px] font-extrabold font-['JetBrains_Mono'] uppercase">
+                          <span className="px-2.5 py-0.5 rounded-lg bg-[#082F49]/90 text-[#7DD3FC] border border-[#38BDF8]/50 text-[10px] font-extrabold font-['JetBrains_Mono'] uppercase">
                             A {distanceKm} km de ti
                           </span>
                           {spot.certified ? (
-                            <span className="text-[10px] bg-[#E8D48A] text-[#120D1C] border border-[#D5BE6E] px-2 py-0.5 rounded-lg font-extrabold">
+                            <span className="text-[10px] bg-[#082F49]/90 text-[#FEE685] border border-[#FEE685]/50 px-2 py-0.5 rounded-lg font-extrabold">
                               ⭐ Starlight
                             </span>
                           ) : (
-                            <span className="text-[10px] bg-[#D1F2D9] text-[#0D5C35] border border-[#A2E2B4] px-2 py-0.5 rounded-lg font-extrabold">
+                            <span className="text-[10px] bg-[#059669]/90 text-white px-2 py-0.5 rounded-lg font-extrabold">
                               🌄 Punto Libre
                             </span>
                           )}
-                          <span className="text-xs text-[#594A70] font-['JetBrains_Mono'] font-bold">
+                          <span className="text-xs text-[#BAE6FD] font-['JetBrains_Mono'] font-bold">
                             Bortle {spot.bortleClass}
                           </span>
                         </div>
 
-                        <h4 className="text-lg font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans']">
+                        <h4 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
                           {spot.name}
                         </h4>
 
-                        <p className="text-xs text-[#2B2538] font-medium line-clamp-1 mt-0.5">
+                        <p className="text-xs text-[#BAE6FD] font-medium line-clamp-1 mt-0.5">
                           {spot.region} • {spot.country || 'España'} • Altitud: {spot.elevationMeters}m
                         </p>
                       </div>
@@ -763,7 +763,7 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
                         href={`https://www.google.com/maps/search/?api=1&query=${spot.latitude},${spot.longitude}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 md:flex-none px-5 py-3 rounded-2xl bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                        className="flex-1 md:flex-none px-5 py-3 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md border border-[#7DD3FC]/50"
                       >
                         <span className="material-symbols-outlined text-base">near_me</span>
                         {t('getDirections', 'Cómo Llegar')} ({distanceKm} km)
@@ -771,7 +771,7 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
 
                       <button
                         onClick={() => setSelectedSpot(spot)}
-                        className="px-4 py-3 rounded-2xl bg-white/70 hover:bg-white text-[#120D1C] font-bold text-xs transition-all border border-[#E6CA65] cursor-pointer shadow-sm"
+                        className="px-4 py-3 rounded-2xl bg-[#082F49]/80 hover:bg-[#082F49] text-white font-extrabold text-xs transition-all border border-[#38BDF8]/50 cursor-pointer shadow-sm"
                       >
                         Ficha
                       </button>
@@ -784,42 +784,42 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
         </div>
       )}
 
-      {/* Spot Detail Modal in Luxury Pastel Yellow with Black Letters */}
+      {/* Spot Detail Modal in Celestial Sky Blue Glass */}
       {selectedSpot && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="card-pastel-gold w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 md:p-8 shadow-2xl border-2 border-[#D4AF37]">
-            <div className="flex items-center justify-between border-b border-[#E6CA65] pb-4 mb-4">
+          <div className="card-pastel-gold w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 md:p-8 shadow-2xl border border-[#7DD3FC]/60 backdrop-blur-xl">
+            <div className="flex items-center justify-between border-b border-[#38BDF8]/40 pb-4 mb-4">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs text-[#24153F] font-extrabold uppercase tracking-wider">
+                  <span className="text-xs text-[#BAE6FD] font-extrabold uppercase tracking-wider">
                     {selectedSpot.region} ({selectedSpot.country || 'España'})
                   </span>
                   {selectedSpot.certified ? (
-                    <span className="px-2.5 py-0.5 bg-[#24153F] text-[#FEE685] font-extrabold text-[9px] rounded-full uppercase">
+                    <span className="px-2.5 py-0.5 bg-[#082F49]/90 text-[#FEE685] border border-[#FEE685]/50 font-extrabold text-[10px] rounded-full uppercase">
                       ⭐ Certificado Starlight
                     </span>
                   ) : (
-                    <span className="px-2.5 py-0.5 bg-[#0D5C35] text-white font-extrabold text-[9px] rounded-full uppercase">
+                    <span className="px-2.5 py-0.5 bg-[#059669] text-white font-extrabold text-[10px] rounded-full uppercase">
                       🌄 Punto Libre Óptimo
                     </span>
                   )}
                 </div>
-                <h3 className="text-2xl font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans']">{selectedSpot.name}</h3>
+                <h3 className="text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">{selectedSpot.name}</h3>
               </div>
               <button
                 onClick={() => setSelectedSpot(null)}
-                className="text-[#120D1C]/70 hover:text-black p-2 rounded-full hover:bg-black/10 cursor-pointer"
+                className="text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 cursor-pointer"
               >
                 <span className="material-symbols-outlined font-bold">close</span>
               </button>
             </div>
 
             <div className="space-y-6">
-              <div className="h-56 rounded-2xl overflow-hidden relative border border-[#E6CA65] shadow-md">
+              <div className="h-56 rounded-2xl overflow-hidden relative border border-[#38BDF8]/60 shadow-md">
                 <img src={selectedSpot.imageUrl} alt={selectedSpot.name} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                 <div className="absolute bottom-4 left-4 flex gap-2">
-                  <span className="bg-[#24153F] text-[#FEE685] text-xs font-extrabold px-3 py-1 rounded-full font-['JetBrains_Mono']">
+                  <span className="bg-[#0284C7] text-white text-xs font-extrabold px-3 py-1 rounded-full font-['JetBrains_Mono'] shadow-sm">
                     Bortle Clase {selectedSpot.bortleClass}
                   </span>
                   <span className="bg-black/80 text-white backdrop-blur-md text-xs font-bold px-3 py-1 rounded-full font-['JetBrains_Mono']">
@@ -828,31 +828,31 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
                 </div>
               </div>
 
-              <p className="text-base text-[#120D1C] font-medium leading-relaxed">
+              <p className="text-base text-[#E0F2FE] font-medium leading-relaxed">
                 {selectedSpot.description}
               </p>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-white/70 border border-[#E6CA65] text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-[#082F49]/80 border border-[#38BDF8]/40 text-xs">
                 <div>
-                  <span className="text-[#594A70] block uppercase font-['JetBrains_Mono'] font-bold">Elevación:</span>
-                  <span className="text-[#120D1C] font-extrabold text-sm">{selectedSpot.elevationMeters}m</span>
+                  <span className="text-[#7DD3FC] block uppercase font-['JetBrains_Mono'] font-bold">Elevación:</span>
+                  <span className="text-white font-extrabold text-sm">{selectedSpot.elevationMeters}m</span>
                 </div>
                 <div>
-                  <span className="text-[#594A70] block uppercase font-['JetBrains_Mono'] font-bold">Mejor Época:</span>
-                  <span className="text-[#120D1C] font-extrabold text-sm">{selectedSpot.bestSeason}</span>
+                  <span className="text-[#7DD3FC] block uppercase font-['JetBrains_Mono'] font-bold">Mejor Época:</span>
+                  <span className="text-white font-extrabold text-sm">{selectedSpot.bestSeason}</span>
                 </div>
                 <div>
-                  <span className="text-[#594A70] block uppercase font-['JetBrains_Mono'] font-bold">Coordenadas:</span>
-                  <span className="text-[#120D1C] font-extrabold text-sm font-['JetBrains_Mono']">{selectedSpot.latitude}, {selectedSpot.longitude}</span>
+                  <span className="text-[#7DD3FC] block uppercase font-['JetBrains_Mono'] font-bold">Coordenadas:</span>
+                  <span className="text-white font-extrabold text-sm font-['JetBrains_Mono']">{selectedSpot.latitude}, {selectedSpot.longitude}</span>
                 </div>
               </div>
 
               {selectedSpot.subAreas && selectedSpot.subAreas.length > 0 && (
                 <div>
-                  <h4 className="font-extrabold text-[#24153F] text-sm uppercase tracking-wider mb-2">Puntos de Interés y Accesos:</h4>
+                  <h4 className="font-extrabold text-[#7DD3FC] text-sm uppercase tracking-wider mb-2">Puntos de Interés y Accesos:</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedSpot.subAreas.map((area, i) => (
-                      <span key={i} className="px-3 py-1.5 rounded-xl bg-[#E8D48A] text-[#120D1C] text-xs font-bold border border-[#D5BE6E] flex items-center gap-1 shadow-sm">
+                      <span key={i} className="px-3 py-1.5 rounded-xl bg-[#082F49]/90 text-[#E0F2FE] text-xs font-extrabold border border-[#38BDF8]/40 flex items-center gap-1 shadow-sm">
                         📍 {area}
                       </span>
                     ))}
@@ -861,29 +861,29 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
               )}
 
               <div>
-                <h4 className="font-extrabold text-[#24153F] text-sm uppercase tracking-wider mb-2">Servicios en el Punto:</h4>
+                <h4 className="font-extrabold text-[#7DD3FC] text-sm uppercase tracking-wider mb-2">Servicios en el Punto:</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedSpot.facilities.map((fac, i) => (
-                    <span key={i} className="px-3 py-1.5 rounded-xl bg-white/70 text-[#120D1C] text-xs font-semibold border border-[#E6CA65]">
+                    <span key={i} className="px-3 py-1.5 rounded-xl bg-[#082F49]/70 text-white text-xs font-medium border border-[#38BDF8]/30 shadow-xs">
                       ✓ {fac}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#E6CA65] flex flex-col sm:flex-row gap-3">
+              <div className="pt-4 border-t border-[#38BDF8]/40 flex flex-col sm:flex-row gap-3">
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${selectedSpot.latitude},${selectedSpot.longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 py-3.5 rounded-2xl bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+                  className="flex-1 py-3.5 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer border border-[#7DD3FC]/50"
                 >
                   <span className="material-symbols-outlined text-lg">near_me</span>
                   Abrir Ruta en Google Maps
                 </a>
                 <button
                   onClick={() => setSelectedSpot(null)}
-                  className="px-6 py-3.5 rounded-2xl bg-white/80 text-[#120D1C] font-bold text-xs uppercase tracking-wider hover:bg-white transition-all cursor-pointer border border-[#E6CA65]"
+                  className="px-6 py-3.5 rounded-2xl bg-[#082F49]/80 text-white font-extrabold text-xs uppercase tracking-wider hover:bg-[#082F49] transition-all cursor-pointer border border-[#38BDF8]/40"
                 >
                   Cerrar
                 </button>

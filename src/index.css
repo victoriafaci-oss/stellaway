@@ -33,29 +33,96 @@
   font-family: 'Cormorant Garamond', 'Playfair Display', serif;
 }
 
-/* High-Contrast Luxury Pastel Yellow Cards (Outdoor Daylight Readable & Eye-Friendly) */
-.card-pastel-gold {
-  background: linear-gradient(145deg, #FFFDEB 0%, #FFF4C2 60%, #FEEC9C 100%);
-  border: 1px solid #E6CA65;
-  color: #120D1C;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.35), 0 0 15px rgba(254, 230, 133, 0.18);
+/* Twinkling Stars & Shooting Star Animations */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
 }
 
-.card-pastel-gold-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.animate-twinkle {
+  animation: twinkle 3s infinite ease-in-out;
 }
 
-.card-pastel-gold-hover:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(145deg, #FFFFFF 0%, #FFF8D6 60%, #FEF0AC 100%);
-  border-color: #D4AF37;
-  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.45), 0 0 25px rgba(254, 230, 133, 0.35);
+@keyframes shootingStarAnim {
+  0% {
+    transform: translateX(0) translateY(0) rotate(-35deg) scaleX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(-50px) translateY(50px) rotate(-35deg) scaleX(1);
+  }
+  45% {
+    opacity: 0.8;
+  }
+  70% {
+    transform: translateX(-350px) translateY(350px) rotate(-35deg) scaleX(1.4);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(-400px) translateY(400px) rotate(-35deg) scaleX(0);
+    opacity: 0;
+  }
+}
+
+.shooting-star {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,1), rgba(254,230,133,0.8), rgba(125,211,252,0.4), transparent);
+  border-radius: 999px;
+  filter: drop-shadow(0 0 8px rgba(254, 230, 133, 0.9));
+  pointer-events: none;
+}
+
+.shooting-star-1 {
+  top: 12%;
+  right: 18%;
+  width: 140px;
+  animation: shootingStarAnim 7s infinite ease-in-out 1.5s;
+}
+
+.shooting-star-2 {
+  top: 28%;
+  right: 8%;
+  width: 180px;
+  animation: shootingStarAnim 9s infinite ease-in-out 5s;
+}
+
+.shooting-star-3 {
+  top: 45%;
+  right: 30%;
+  width: 110px;
+  animation: shootingStarAnim 8s infinite ease-in-out 8.5s;
+}
+
+/* Celestial Sky Blue Glass Cards, Tabs & Modals (Uniform Semi-Transparent Glass across all views) */
+.card-pastel-gold, .card-celestial-gold, .card-celestial-blue, .card-celestial-blue-glass {
+  background: linear-gradient(145deg, rgba(14, 116, 144, 0.42) 0%, rgba(2, 132, 199, 0.32) 50%, rgba(56, 189, 248, 0.25) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(125, 211, 252, 0.5);
+  color: #FFFFFF;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 25px rgba(56, 189, 248, 0.25);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-pastel-gold-hover, .card-celestial-blue:hover, .card-celestial-blue-glass:hover {
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-pastel-gold-hover:hover, .card-celestial-blue:hover, .card-celestial-blue-glass:hover {
+  transform: translateY(-3px) scale(1.015);
+  background: linear-gradient(145deg, rgba(14, 165, 233, 0.55) 0%, rgba(2, 132, 199, 0.45) 50%, rgba(56, 189, 248, 0.35) 100%);
+  border-color: rgba(186, 230, 253, 0.85);
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.6), 0 0 35px rgba(125, 211, 252, 0.4);
 }
 
 .card-pastel-gold-subtle {
-  background: linear-gradient(145deg, #FFFBF0 0%, #FFF6D1 100%);
-  border: 1px solid #EAD58B;
-  color: #120D1C;
+  background: linear-gradient(145deg, rgba(14, 116, 144, 0.28) 0%, rgba(2, 132, 199, 0.2) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  color: #FFFFFF;
 }
 
 .glass-panel, .glass-card {
