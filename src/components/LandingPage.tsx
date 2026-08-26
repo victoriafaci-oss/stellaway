@@ -5,7 +5,7 @@ interface LandingPageProps {
 }
 
 // ---- Countdown to Eclipse Aug 2, 2027 ----
-const ECLIPSE_DATE = new Date('2027-08-02T19:30:00Z');
+const ECLIPSE_DATE = new Date('2027-08-02T10:45:00Z');
 
 function useCountdown() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -100,8 +100,8 @@ const features = [
   },
   {
     icon: '🔭',
-    title: 'Eclipse Solar 2026',
-    desc: 'Seguimiento en tiempo real del Gran Eclipse Total del 12 de agosto de 2026 en Castellón. Rutas, campamentos y alertas.',
+    title: 'Eclipse Solar 2027',
+    desc: 'Seguimiento en tiempo real del Gran Eclipse Total del 2 de agosto de 2027 en Castellón. Rutas, campamentos y alertas.',
     color: 'from-amber-500/20 to-orange-600/20',
     border: 'border-amber-400/30',
     glow: 'shadow-amber-500/20',
@@ -145,7 +145,7 @@ const plans = [
     period: '/ año',
     highlight: true,
     cta: 'Comenzar Ahora',
-    features: ['Todo lo incluido en gratis', 'Eclipse 2026 — acceso VIP', 'Alertas astronómicas', 'Sin anuncios · Prioridad'],
+    features: ['Todo lo incluido en gratis', 'Eclipse 2027 — acceso VIP', 'Alertas astronómicas', 'Sin anuncios · Prioridad'],
     color: 'from-amber-500/25 to-yellow-600/20',
     border: 'border-amber-400/50',
     badge: '⭐ Más Popular',
@@ -175,7 +175,7 @@ const testimonials = [
   {
     name: 'Miguel T.',
     role: 'Aficionado · Valencia',
-    text: 'Llevo años buscando una app que uniera clima, mapas y el Eclipse 2026. ¡Por fin existe! Stella IA me resolvió todas mis dudas.',
+    text: 'Llevo años buscando una app que uniera clima, mapas y el Eclipse 2027. ¡Por fin existe! Stella IA me resolvió todas mis dudas.',
     avatar: '🔭',
   },
   {
@@ -274,7 +274,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm text-white/60">
           <a href="#features" className="hover:text-white transition-colors">Funciones</a>
-          <a href="#eclipse" className="hover:text-white transition-colors">Eclipse 2026</a>
+          <a href="#eclipse" className="hover:text-white transition-colors">Eclipse 2027</a>
           <a href="#pricing" className="hover:text-white transition-colors">Precios</a>
         </div>
         <button
@@ -349,7 +349,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
             color: '#FFD700',
           }}
         >
-          <span>🌑</span> Gran Eclipse Total · 12 Agosto 2026 · España
+          <span>🌑</span> Gran Eclipse Total · 2 Agosto 2027 · España
         </div>
 
         <h1
@@ -378,7 +378,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           style={{ color: 'rgba(255,255,255,0.65)' }}
         >
           Mapas Bortle, asistente IA, clima astronómico y el mayor evento celeste del siglo —
-          el <strong className="text-white">Eclipse Total Solar 2026</strong> — todo en una sola app.
+          el <strong className="text-white">Eclipse Total Solar 2027</strong> — todo en una sola app.
         </p>
 
         {/* CTA buttons */}
@@ -432,7 +432,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
             <span className="text-amber-400/60 text-3xl font-thin mt-3">:</span>
             <CountCell value={countdown.seconds} label="Seg" />
           </div>
-          <p className="text-xs text-white/35">12 Agosto 2026 · 21:30h (hora española) · Castellón, España</p>
+          <p className="text-xs text-white/35">2 Agosto 2027 · 10:45h (hora española) · Castellón, España</p>
         </div>
 
         {/* Scroll indicator */}
@@ -592,15 +592,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 style={{ lineHeight: 1.25 }}
               >
                 Gran Eclipse Total Solar
-                <span className="block text-amber-300">12 Agosto 2026</span>
+                <span className="block text-amber-300">2 Agosto 2027</span>
               </h2>
               <p className="text-white/60 mb-6 leading-relaxed">
-                El eclipse solar total más esperado del siglo cruzará España por Castellón y la costa mediterránea. StellaWay te lleva al mejor punto de observación con rutas, clima en tiempo real y campamentos astroturísticos.
+                El eclipse solar total más esperado del siglo será visible principalmente en la franja sur: Cádiz, Ceuta, Melilla, Málaga, costa de Granada y Almería).. StellaWay te lleva al mejor punto de observación con rutas, clima en tiempo real y campamentos astroturísticos.
               </p>
               <ul className="space-y-2 mb-8">
                 {[
-                  '📍 Zona de totalidad: Castellón, Arco Mediterráneo',
-                  '⏱ Duración de totalidad: hasta 2 min 50 seg',
+                  '📍 Zona de totalidad:Cádiz, Málaga, Granada (costa), Almería (costa) y las ciudades autónomas de Ceuta y Melilla. ',
+                  '⏱ Duración de totalidad: hasta 4 min 23 seg',
                   '🔭 Campamentos de observación exclusivos',
                   '📡 Alertas y telemetría en tiempo real',
                 ].map((item) => (
@@ -790,7 +790,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
             El universo te espera
           </h2>
           <p className="text-white/55 mb-8 text-lg max-w-xl mx-auto leading-relaxed">
-            Únete a la comunidad de astrónomos que ya usan StellaWay para explorar el cosmos. Comienza gratis hoy — el Gran Eclipse 2026 se acerca.
+            Únete a la comunidad de astrónomos que ya usan StellaWay para explorar el cosmos. Comienza gratis hoy — el Gran Eclipse 2027 se acerca.
           </p>
           <button
             onClick={onEnterApp}
@@ -822,7 +822,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           </span>
         </div>
         <p className="text-white/30 text-sm mb-2">
-          Astronomía · Astroturismo · Eclipse Total 2026 · Castellón, España
+          Astronomía · Astroturismo · Eclipse Total 2027 ·  España
         </p>
         <p className="text-white/20 text-xs">
           © {new Date().getFullYear()} StellaWay · Reserva Natural Starlight · Hecho con ♥ bajo el cielo mediterráneo
