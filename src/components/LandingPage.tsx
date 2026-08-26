@@ -4,8 +4,8 @@ interface LandingPageProps {
   onEnterApp: () => void;
 }
 
-// ---- Countdown to Eclipse Aug 12, 2026 ----
-const ECLIPSE_DATE = new Date('2026-08-12T19:30:00Z');
+// ---- Countdown to Eclipse Aug 2, 2027 ----
+const ECLIPSE_DATE = new Date('2027-08-02T19:30:00Z');
 
 function useCountdown() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
