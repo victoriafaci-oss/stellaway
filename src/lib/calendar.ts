@@ -22,7 +22,7 @@ export async function createGoogleCalendarEvent(
 
   const body = {
     summary: `✨ StellaWay: ${eventData.summary}`,
-    description: `${eventData.description}\n\nOrganizado con StellaWay Explorer - Astroturismo España`,
+    description: `${eventData.description}\n\nOrganizado con StellaWay Astroturismo - Cielos de España`,
     location: eventData.location || 'Observación Astronómica',
     start: {
       dateTime: eventData.startDateTime,

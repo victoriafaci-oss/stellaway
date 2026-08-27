@@ -59,7 +59,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
       >
         <div>
           <div className="px-6 mb-8 flex items-center justify-between">
-            <StellaLogo size="md" showSubtitle subtitleText="Starlight Explorer" />
+            <StellaLogo size="md" showSubtitle subtitleText="Astroturismo" />
             <button
               onClick={() => setDrawerOpen(false)}
               className="text-white/70 hover:text-white p-1.5 rounded-lg bg-white/10"
@@ -236,7 +236,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
             onClick={() => handleNavClick('dashboard')}
             className="px-6 mb-8 cursor-pointer flex items-center gap-3 group"
           >
-            <StellaLogo size="lg" showSubtitle subtitleText="Starlight Explorer" />
+            <StellaLogo size="lg" showSubtitle subtitleText="Astroturismo" />
           </div>
 
           <ul className="flex flex-col gap-1.5 px-4 font-body-md text-body-md">

@@ -181,7 +181,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <div className="space-y-3">
                 <div className="p-3 bg-[#082F49]/80 rounded-2xl border border-[#38BDF8]/40 text-xs text-white">
                   <span className="text-[10px] font-black uppercase tracking-wider text-[#38BDF8] block mb-0.5 font-['JetBrains_Mono']">
-                    Planes & Tarifas StellaWay Explorer
+                    Planes & Tarifas StellaWay Astroturismo
                   </span>
                   <p className="text-[#BAE6FD] font-medium">
                     Elige tu suscripción para acceso ilimitado a telemetría, mapas Bortle 1-9 satelitales y cobertura del Eclipse 2026.
@@ -680,7 +680,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
             {settingsTab === 'idiomas' && (
               <div className="space-y-4">
                 <p className="text-xs text-[#120D1C] font-['Plus_Jakarta_Sans'] font-medium">
-                  Selecciona el idioma de la aplicación StellaWay Explorer:
+                  Selecciona el idioma de la aplicación StellaWay Astroturismo:
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -771,6 +771,31 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
 
           {/* Menu items compact grid */}
           <div className="overflow-y-auto space-y-2.5 pr-1">
+            {/* 0. Stella IA (Featured at top) */}
+            <button
+              onClick={() => {
+                closeModal();
+                setActiveTab('assistant');
+              }}
+              className="p-3.5 rounded-2xl bg-gradient-to-r from-[#0284C7]/20 via-[#38BDF8]/25 to-[#0284C7]/20 hover:from-[#0284C7]/30 hover:to-[#0284C7]/30 border-2 border-[#0284C7] shadow-md transition-all flex items-center gap-3 text-left group cursor-pointer w-full"
+            >
+              <div className="w-10 h-10 rounded-xl bg-[#0284C7] text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                <span className="material-symbols-outlined text-xl text-amber-300">smart_toy</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-black text-[#082F49] group-hover:text-[#0284C7] transition-colors font-['Plus_Jakarta_Sans'] truncate">
+                    Stella IA (Asistente Estelar)
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-black uppercase tracking-wider">
+                    Online
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#0369A1] font-bold truncate">Consultas astronómicas, telescopios y eclipse 2027</p>
+              </div>
+              <span className="material-symbols-outlined text-[#0284C7] text-base shrink-0">arrow_forward</span>
+            </button>
+
             {/* 1. Hostelería */}
             <button
               onClick={() => {

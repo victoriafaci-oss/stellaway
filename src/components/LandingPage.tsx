@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { StellaLogo } from './StellaLogo';
 
 interface LandingPageProps {
   onEnterApp: () => void;
@@ -91,6 +92,14 @@ function StarsCanvas() {
 // ---- Features data ----
 const features = [
   {
+    icon: '🔴',
+    title: 'Modo Luz Roja (Visión Nocturna)',
+    desc: 'Preserva la adaptación retiniana a la oscuridad absoluta bajo cielos Bortle 1-4. Consulta mapas estelares y telescopios sin cegarte ni deslumbrar a otros observadores.',
+    color: 'from-rose-500/20 to-red-600/20',
+    border: 'border-rose-400/30',
+    glow: 'shadow-rose-500/20',
+  },
+  {
     icon: '🌑',
     title: 'Mapas Bortle Interactivos',
     desc: 'Descubre los mejores lugares de cielo oscuro en el Arco Mediterráneo con mapas de contaminación lumínica en tiempo real.',
@@ -101,7 +110,7 @@ const features = [
   {
     icon: '🔭',
     title: 'Eclipse Solar 2027',
-    desc: 'Seguimiento en tiempo real del Gran Eclipse Total del 2 de agosto de 2027 en Castellón. Rutas, campamentos y alertas.',
+    desc: 'Seguimiento en tiempo real del Gran Eclipse Total del 2 de agosto de 2027 en España. Rutas, campamentos y alertas.',
     color: 'from-amber-500/20 to-orange-600/20',
     border: 'border-amber-400/30',
     glow: 'shadow-amber-500/20',
@@ -121,46 +130,6 @@ const features = [
     color: 'from-emerald-500/20 to-teal-600/20',
     border: 'border-emerald-400/30',
     glow: 'shadow-emerald-500/20',
-  },
-];
-
-// ---- Pricing plans ----
-const plans = [
-  {
-    id: 'free',
-    name: '48h Gratis',
-    price: '0 €',
-    period: '48 horas',
-    highlight: false,
-    cta: 'Probar Gratis',
-    features: ['Todos los mapas Bortle', 'Asistente Stella IA', 'Clima astronómico', 'Verificación por SMS'],
-    color: 'from-slate-700/60 to-slate-800/60',
-    border: 'border-white/10',
-    badge: null,
-  },
-  {
-    id: 'anual',
-    name: 'Starlight Pass',
-    price: '19,99 €',
-    period: '/ año',
-    highlight: true,
-    cta: 'Comenzar Ahora',
-    features: ['Todo lo incluido en gratis', 'Eclipse 2027 — acceso VIP', 'Alertas astronómicas', 'Sin anuncios · Prioridad'],
-    color: 'from-amber-500/25 to-yellow-600/20',
-    border: 'border-amber-400/50',
-    badge: '⭐ Más Popular',
-  },
-  {
-    id: 'mensual',
-    name: 'Starlight Pro',
-    price: '3,99 €',
-    period: '/ mes',
-    highlight: false,
-    cta: 'Suscribirse',
-    features: ['Acceso mensual completo', 'Eventos y efemérides', 'Mapas Bortle HD', 'Cancelar cuando quieras'],
-    color: 'from-violet-600/20 to-purple-700/20',
-    border: 'border-violet-400/30',
-    badge: null,
   },
 ];
 
@@ -258,40 +227,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
       <nav
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4"
         style={{
-          background: 'rgba(14, 8, 30, 0.75)',
+          background: 'rgba(14, 8, 30, 0.85)',
           backdropFilter: 'blur(20px)',
           borderBottom: '1px solid rgba(255,255,255,0.07)',
         }}
       >
         <div className="flex items-center gap-3">
-          <span className="text-2xl">🌑</span>
-          <span
-            className="font-luxury text-xl font-bold"
-            style={{ color: '#FFD700', letterSpacing: '0.05em' }}
-          >
-            StellaWay
-          </span>
+          <StellaLogo size="sm" />
         </div>
-        <div className="hidden md:flex items-center gap-8 text-sm text-white/60">
-          <a href="#features" className="hover:text-white transition-colors">Funciones</a>
-          <a href="#eclipse" className="hover:text-white transition-colors">Eclipse 2027</a>
-          <a href="#pricing" className="hover:text-white transition-colors">Precios</a>
+        <div className="flex items-center gap-8 text-sm text-white/70">
+          <a href="#features" className="hover:text-amber-300 transition-colors">Funciones</a>
+          <a href="#eclipse" className="hover:text-amber-300 transition-colors">Eclipse 2027</a>
+          <a href="#testimonios" className="hover:text-amber-300 transition-colors hidden sm:inline">Comunidad</a>
         </div>
-        <button
-          onClick={onEnterApp}
-          id="nav-cta-btn"
-          className="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
-          style={{
-            background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-            color: '#1a0a00',
-            boxShadow: '0 0 20px rgba(255,215,0,0.35)',
-          }}
-        >
-          Entrar a la app →
-        </button>
       </nav>
 
-      {/* ═══════════════════ HERO ═══════════════════ */}
+      {/* ═══════════════════ HERO (CTA BUTTON #1) ═══════════════════ */}
       <section
         className="relative z-10 flex flex-col items-center justify-center text-center min-h-screen px-4 pt-20 pb-16"
         style={{ paddingTop: '100px' }}
@@ -381,24 +332,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           el <strong className="text-white">Eclipse Total Solar 2027</strong> — todo en una sola app.
         </p>
 
-        {/* CTA buttons */}
+        {/* CTA 1: Primary Hero Button */}
         <div className="flex flex-col sm:flex-row gap-4 mb-16">
           <button
             onClick={onEnterApp}
             id="hero-cta-primary"
-            className="px-8 py-4 rounded-2xl text-base font-bold transition-all duration-300 hover:scale-105 active:scale-95"
+            className="px-10 py-4 rounded-2xl text-lg font-black transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-3 shadow-2xl"
             style={{
               background: 'linear-gradient(135deg, #FFD700, #FFA500)',
               color: '#1a0a00',
-              boxShadow: '0 0 35px rgba(255,215,0,0.45), 0 4px 20px rgba(0,0,0,0.4)',
+              boxShadow: '0 0 35px rgba(255,215,0,0.5), 0 4px 20px rgba(0,0,0,0.4)',
             }}
           >
-            🚀 Empezar Gratis — 48h sin compromiso
+            <span>Lo Quiero</span>
+            <span className="text-xl">→</span>
           </button>
           <a
             href="#features"
             id="hero-cta-secondary"
-            className="px-8 py-4 rounded-2xl text-base font-semibold transition-all duration-300 hover:scale-105"
+            className="px-8 py-4 rounded-2xl text-base font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center"
             style={{
               background: 'rgba(255,255,255,0.06)',
               border: '1.5px solid rgba(255,255,255,0.18)',
@@ -432,7 +384,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
             <span className="text-amber-400/60 text-3xl font-thin mt-3">:</span>
             <CountCell value={countdown.seconds} label="Seg" />
           </div>
-          <p className="text-xs text-white/35">2 Agosto 2027 · 10:45h (hora española) · Castellón, España</p>
+          <p className="text-xs text-white/35">2 Agosto 2027 · 10:45h (hora española) · España</p>
         </div>
 
         {/* Scroll indicator */}
@@ -514,7 +466,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
         </div>
       </section>
 
-      {/* ═══════════════════ ECLIPSE SPOTLIGHT ═══════════════════ */}
+      {/* ═══════════════════ ECLIPSE SPOTLIGHT (NO BUTTON) ═══════════════════ */}
       <section className="relative z-10 py-24 px-4 overflow-hidden">
         {/* Background glow */}
         <div
@@ -575,7 +527,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                   className="absolute font-luxury font-bold top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                   style={{ color: 'rgba(255,215,0,0.9)', fontSize: 11, letterSpacing: '0.1em', zIndex: 10, whiteSpace: 'nowrap' }}
                 >
-                  2026
+                  2027
                 </div>
               </div>
             </div>
@@ -595,11 +547,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                 <span className="block text-amber-300">2 Agosto 2027</span>
               </h2>
               <p className="text-white/60 mb-6 leading-relaxed">
-                El eclipse solar total más esperado del siglo será visible principalmente en la franja sur: Cádiz, Ceuta, Melilla, Málaga, costa de Granada y Almería).. StellaWay te lleva al mejor punto de observación con rutas, clima en tiempo real y campamentos astroturísticos.
+                El eclipse solar total más esperado del siglo será visible principalmente en la franja sur: Cádiz, Ceuta, Melilla, Málaga, costa de Granada y Almería. StellaWay te lleva al mejor punto de observación con rutas, clima en tiempo real y campamentos astroturísticos.
               </p>
-              <ul className="space-y-2 mb-8">
+              <ul className="space-y-2">
                 {[
-                  '📍 Zona de totalidad:Cádiz, Málaga, Granada (costa), Almería (costa) y las ciudades autónomas de Ceuta y Melilla. ',
+                  '📍 Zona de totalidad: Cádiz, Málaga, Granada (costa), Almería (costa), Ceuta y Melilla.',
                   '⏱ Duración de totalidad: hasta 4 min 23 seg',
                   '🔭 Campamentos de observación exclusivos',
                   '📡 Alertas y telemetría en tiempo real',
@@ -609,129 +561,95 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                   </li>
                 ))}
               </ul>
-              <button
-                onClick={onEnterApp}
-                id="eclipse-cta-btn"
-                className="px-7 py-3 rounded-xl font-bold text-sm transition-all duration-300 hover:scale-105 active:scale-95"
-                style={{
-                  background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                  color: '#1a0a00',
-                  boxShadow: '0 0 25px rgba(255,215,0,0.4)',
-                }}
-              >
-                Reservar mi lugar →
-              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════ PRICING ═══════════════════ */}
-      <section id="pricing" className="relative z-10 py-24 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <span
-              className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest mb-4"
-              style={{
-                background: 'rgba(255,215,0,0.1)',
-                border: '1px solid rgba(255,215,0,0.3)',
-                color: '#FFD700',
-              }}
-            >
-              💫 Precios
-            </span>
-            <h2 className="font-luxury text-4xl md:text-5xl font-bold text-white mb-4">
-              Elige tu camino
-              <span className="block text-amber-300/70">hacia las estrellas</span>
-            </h2>
-            <p className="text-white/50 max-w-lg mx-auto">
-              Empieza gratis durante 48 horas, sin tarjeta de crédito. Actualiza cuando quieras.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {plans.map((plan, i) => (
-              <div
-                key={plan.id}
-                id={`plan-${plan.id}`}
-                data-observe
-                className="relative rounded-2xl p-7 flex flex-col transition-all duration-700"
-                style={{
-                  background: `linear-gradient(145deg, ${plan.color.split(' ')[0].replace('from-', '')
-                    .replace('/60', '99').replace('/25', '40').replace('/20', '33')} 0%, ${plan.color.split(' ')[1].replace('to-', '')
-                    .replace('/60', '99').replace('/20', '33').replace('/25', '40')} 100%)`,
-                  backdropFilter: 'blur(20px)',
-                  border: plan.highlight
-                    ? '2px solid rgba(255,215,0,0.55)'
-                    : '1.5px solid rgba(255,255,255,0.1)',
-                  boxShadow: plan.highlight
-                    ? '0 0 40px rgba(255,215,0,0.25), 0 8px 40px rgba(0,0,0,0.4)'
-                    : '0 8px 30px rgba(0,0,0,0.3)',
-                  transform: plan.highlight ? 'scale(1.04)' : 'scale(1)',
-                  opacity: isVisible(`plan-${plan.id}`) ? 1 : 0,
-                  transitionDelay: `${i * 120}ms`,
-                }}
-              >
-                {plan.badge && (
-                  <div
-                    className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold"
-                    style={{
-                      background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                      color: '#1a0a00',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {plan.badge}
-                  </div>
-                )}
-                <div className="mb-6">
-                  <h3 className="font-luxury text-xl font-bold text-white mb-1">{plan.name}</h3>
-                  <div className="flex items-baseline gap-1">
-                    <span
-                      className="text-4xl font-bold"
-                      style={{ color: plan.highlight ? '#FFD700' : '#fff' }}
-                    >
-                      {plan.price}
-                    </span>
-                    <span className="text-white/50 text-sm">{plan.period}</span>
-                  </div>
+      {/* ═══════════════════ RED LIGHT NIGHT VISION SPOTLIGHT ═══════════════════ */}
+      <section id="vision-nocturna" className="relative z-10 py-20 px-4 overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(239,68,68,0.08) 0%, transparent 70%)',
+          }}
+        />
+        <div
+          id="night-vision-spotlight"
+          data-observe
+          className="max-w-5xl mx-auto rounded-3xl overflow-hidden transition-all duration-1000 p-8 sm:p-12"
+          style={{
+            background: 'linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(153,27,27,0.18) 50%, rgba(15,7,24,0.9) 100%)',
+            border: '1.5px solid rgba(239,68,68,0.35)',
+            backdropFilter: 'blur(20px)',
+            boxShadow: '0 0 50px rgba(239,68,68,0.2)',
+            opacity: isVisible('night-vision-spotlight') ? 1 : 0,
+            transform: isVisible('night-vision-spotlight') ? 'scale(1)' : 'scale(0.96)',
+          }}
+        >
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+            {/* Visual: Simulated Night Vision Button & Glow */}
+            <div className="lg:w-2/5 flex flex-col items-center justify-center text-center">
+              <div className="relative mb-4">
+                {/* Red halo glow */}
+                <div
+                  className="absolute inset-0 rounded-2xl bg-red-600/40 blur-xl animate-pulse"
+                  style={{ transform: 'scale(1.2)' }}
+                />
+                {/* Simulated button */}
+                <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-b from-[#EF4444] to-[#991B1B] border-2 border-red-300 flex flex-col items-center justify-center text-white shadow-[0_0_30px_rgba(239,68,68,0.7)]">
+                  <span className="material-symbols-outlined text-3xl">clear_day</span>
+                  <span className="text-[9px] font-black uppercase tracking-wider mt-0.5">Luz Roja</span>
                 </div>
-                <ul className="space-y-2.5 mb-8 flex-1">
-                  {plan.features.map((feat) => (
-                    <li key={feat} className="flex items-center gap-2 text-sm text-white/70">
-                      <span style={{ color: plan.highlight ? '#FFD700' : '#7dd3fc' }}>✓</span>
-                      {feat}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={onEnterApp}
-                  id={`plan-cta-${plan.id}`}
-                  className="w-full py-3 rounded-xl font-bold text-sm transition-all duration-300 hover:scale-105 active:scale-95"
-                  style={
-                    plan.highlight
-                      ? {
-                          background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                          color: '#1a0a00',
-                          boxShadow: '0 0 20px rgba(255,215,0,0.4)',
-                        }
-                      : {
-                          background: 'rgba(255,255,255,0.08)',
-                          border: '1.5px solid rgba(255,255,255,0.18)',
-                          color: '#fff',
-                        }
-                  }
-                >
-                  {plan.cta}
-                </button>
               </div>
-            ))}
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-950/80 border border-red-500/40 text-red-300 text-xs font-bold uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                Activación con 1 Clic
+              </span>
+            </div>
+
+            {/* Explanation Content */}
+            <div className="lg:w-3/5">
+              <span
+                className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-3"
+                style={{ background: 'rgba(239,68,68,0.18)', color: '#FCA5A5', border: '1px solid rgba(239,68,68,0.4)' }}
+              >
+                🔴 Óptica Astronómica
+              </span>
+              <h2 className="font-luxury text-3xl md:text-4xl font-bold text-white mb-3 leading-tight">
+                Botón de Luz Roja
+                <span className="block text-red-400">Adaptado a la Visión Nocturna</span>
+              </h2>
+              <p className="text-white/70 mb-5 leading-relaxed text-sm sm:text-base">
+                El ojo humano tarda entre <strong>20 y 30 minutos</strong> en sintetizar <em>rodopsina</em> y adaptarse por completo a la oscuridad profunda de cielos Bortle 1 a 4. Un solo destello de luz blanca destruye esa adaptación al instante.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="p-3.5 rounded-xl bg-black/40 border border-red-500/20">
+                  <div className="flex items-center gap-2 text-red-300 font-bold text-xs sm:text-sm mb-1">
+                    <span>👁️</span> Cero Deslumbramiento Retiniano
+                  </div>
+                  <p className="text-white/55 text-xs">
+                    La longitud de onda roja (~650nm) no satura los bastones oculares, permitiendo leer mapas y efemérides sin perder la visión de objetos débiles.
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-black/40 border border-red-500/20">
+                  <div className="flex items-center gap-2 text-red-300 font-bold text-xs sm:text-sm mb-1">
+                    <span>🔭</span> Protocolo Starlight
+                  </div>
+                  <p className="text-white/55 text-xs">
+                    Respeta a tus compañeros de observación y fotógrafos de cielo profundo en campamentos y quedadas astronómicas.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════ TESTIMONIALS ═══════════════════ */}
-      <section className="relative z-10 py-24 px-4">
+      <section id="testimonios" className="relative z-10 py-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="font-luxury text-3xl md:text-4xl font-bold text-white mb-2">
@@ -774,10 +692,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
         </div>
       </section>
 
-      {/* ═══════════════════ FINAL CTA ═══════════════════ */}
-      <section className="relative z-10 py-24 px-4">
+      {/* ═══════════════════ FINAL CTA (CTA BUTTON #2 - THE LAST ONE) ═══════════════════ */}
+      <section className="relative z-10 py-20 px-4">
         <div
-          className="max-w-3xl mx-auto text-center rounded-3xl p-12"
+          className="max-w-3xl mx-auto text-center rounded-3xl p-10 sm:p-12"
           style={{
             background: 'linear-gradient(135deg, rgba(124,77,255,0.15) 0%, rgba(255,140,0,0.1) 50%, rgba(56,189,248,0.12) 100%)',
             border: '1.5px solid rgba(255,255,255,0.12)',
@@ -792,19 +710,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           <p className="text-white/55 mb-8 text-lg max-w-xl mx-auto leading-relaxed">
             Únete a la comunidad de astrónomos que ya usan StellaWay para explorar el cosmos. Comienza gratis hoy — el Gran Eclipse 2027 se acerca.
           </p>
+          {/* CTA 2: Final CTA Button */}
           <button
             onClick={onEnterApp}
             id="final-cta-btn"
-            className="px-10 py-4 rounded-2xl text-base font-bold transition-all duration-300 hover:scale-105 active:scale-95"
+            className="px-12 py-4 rounded-2xl text-lg font-black transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer uppercase tracking-wider inline-flex items-center gap-3 shadow-2xl"
             style={{
               background: 'linear-gradient(135deg, #FFD700, #FFA500)',
               color: '#1a0a00',
               boxShadow: '0 0 40px rgba(255,215,0,0.45), 0 4px 20px rgba(0,0,0,0.4)',
             }}
           >
-            🚀 Empezar Gratis Ahora — 48h sin compromiso
+            <span>Lo Quiero</span>
+            <span className="text-xl">→</span>
           </button>
-          <p className="mt-4 text-white/30 text-xs">Sin tarjeta de crédito · Cancela cuando quieras</p>
+          <p className="mt-4 text-white/30 text-xs">Sin tarjeta de crédito · 48h de prueba gratuita</p>
         </div>
       </section>
 
@@ -822,10 +742,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           </span>
         </div>
         <p className="text-white/30 text-sm mb-2">
-          Astronomía · Astroturismo · Eclipse Total 2027 ·  España
+          Astronomía · Astroturismo · Eclipse Total 2027 · España
         </p>
         <p className="text-white/20 text-xs">
-          © {new Date().getFullYear()} StellaWay · Reserva Natural Starlight · Hecho con ♥ bajo el cielo mediterráneo
+          © {new Date().getFullYear()} StellaWay · Reserva Natural Starlight · Hecho con ♥ bajo el cielo nocturno
         </p>
       </footer>
 

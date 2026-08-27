@@ -38,12 +38,20 @@ export default function App() {
       return;
     }
 
-    // Enforce paywall: if user has no subscription or valid trial, redirect to welcome
+    // Check subscription / trial status
     const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
     const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
     const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
     const hasAccess = isSubscribed || isTrialValid;
 
+    // Once subscribed/trial active, user never sees welcome/paywall page again
+    if (hasAccess && newTab === 'welcome') {
+      setActiveTab('dashboard');
+      setTabHistory(['dashboard']);
+      return;
+    }
+
+    // Unsubscribed users attempting to access app areas are routed to welcome
     if (!hasAccess && newTab !== 'welcome') {
       setActiveTab('welcome');
       setTabHistory(['welcome']);
@@ -57,10 +65,28 @@ export default function App() {
   };
 
   const handleGoBack = () => {
+    // On the initial welcome/paywall page, back button redirects to landing page
+    if (activeTab === 'welcome') {
+      setActiveTab('landing');
+      setTabHistory(['landing']);
+      return;
+    }
+
     if (tabHistory.length > 1) {
       const newHist = [...tabHistory];
       newHist.pop(); // Remove current tab
       const prevTab = newHist[newHist.length - 1];
+
+      // If user has subscription and previous in history was welcome or landing, go to dashboard
+      const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
+      const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
+      const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
+      if ((isSubscribed || isTrialValid) && prevTab === 'welcome') {
+        setTabHistory(['dashboard']);
+        setActiveTab('dashboard');
+        return;
+      }
+
       setTabHistory(newHist);
       setActiveTab(prevTab);
     } else {
@@ -73,8 +99,21 @@ export default function App() {
     return (
       <LandingPage
         onEnterApp={() => {
-          setActiveTab('welcome');
-          setTabHistory(['welcome']);
+          const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
+          const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
+          const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
+          
+          if (isSubscribed || isTrialValid) {
+            setActiveTab('dashboard');
+            setTabHistory(['dashboard']);
+          } else {
+            setActiveTab('welcome');
+            setTabHistory(['welcome']);
+          }
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+          setTimeout(() => {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+          }, 20);
         }}
       />
     );
