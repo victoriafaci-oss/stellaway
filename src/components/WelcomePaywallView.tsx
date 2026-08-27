@@ -308,18 +308,6 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
 
   return (
     <div id="welcome-top" className="w-full max-w-7xl mx-auto px-3 sm:px-6 pt-4 sm:pt-6 pb-12 space-y-8 animate-fadeIn text-white">
-      {/* Return to Landing Page Action Bar */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => onNavigateTab && onNavigateTab('landing')}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold font-['Plus_Jakarta_Sans'] transition-all cursor-pointer active:scale-95 shadow-sm"
-          id="btn-back-to-landing-paywall"
-        >
-          <span className="material-symbols-outlined text-sm">arrow_back</span>
-          <span>Volver a la Página Principal</span>
-        </button>
-      </div>
-
       {/* 1. HERO BRANDING & WELCOME BANNER */}
       <div className="relative rounded-3xl overflow-hidden p-6 sm:p-10 border border-[#38BDF8]/40 shadow-2xl backdrop-blur-xl bg-gradient-to-br from-[#082F49]/80 via-[#0C4A6E]/70 to-[#082F49]/90">
         {/* Background glow orb */}
@@ -334,7 +322,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
             </div>
 
             <h1 id="welcome-heading" className="text-2xl sm:text-4xl md:text-5xl font-black font-['Plus_Jakarta_Sans'] leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)] text-white">
-              Bienvenido a <span className="bg-gradient-to-r from-[#FFF4C2] via-[#FEECA1] to-[#E5BE53] bg-clip-text text-transparent">StellaWay Astroturismo</span>
+              Bienvenido a <span className="text-[#F0DEAA] drop-shadow-[0_0_12px_rgba(240,222,170,0.45)]">StellaWay Astroturismo</span>
             </h1>
 
             <p className="text-sm sm:text-base text-[#BAE6FD] font-medium leading-relaxed max-w-2xl">
@@ -773,17 +761,69 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                       <select
                         value={countryCode}
                         onChange={(e) => setCountryCode(e.target.value)}
-                        className="bg-[#082F49] border border-[#38BDF8]/50 rounded-xl px-3 py-2.5 text-white text-xs font-bold focus:border-[#7DD3FC] outline-none"
+                        className="bg-[#082F49] border border-[#38BDF8]/50 rounded-xl px-2.5 py-2.5 text-white text-xs font-bold focus:border-[#7DD3FC] outline-none max-w-[155px] sm:max-w-[200px] cursor-pointer"
                       >
-                        <option value="+34">🇪🇸 +34 (España)</option>
-                        <option value="+351">🇵🇹 +351 (Portugal)</option>
-                        <option value="+33">🇫🇷 +33 (Francia)</option>
-                        <option value="+44">🇬🇧 +44 (UK)</option>
-                        <option value="+1">🇺🇸 +1 (USA)</option>
-                        <option value="+52">🇲🇽 +52 (México)</option>
-                        <option value="+54">🇦🇷 +54 (Argentina)</option>
-                        <option value="+56">🇨🇱 +56 (Chile)</option>
-                        <option value="+57">🇨🇴 +57 (Colombia)</option>
+                        <optgroup label="🇪🇺 Europa">
+                          <option value="+34">🇪🇸 +34 España</option>
+                          <option value="+39">🇮🇹 +39 Italia</option>
+                          <option value="+351">🇵🇹 +351 Portugal</option>
+                          <option value="+33">🇫🇷 +33 Francia</option>
+                          <option value="+49">🇩🇪 +49 Alemania</option>
+                          <option value="+44">🇬🇧 +44 Reino Unido</option>
+                          <option value="+376">🇦🇩 +376 Andorra</option>
+                          <option value="+41">🇨🇭 +41 Suiza</option>
+                          <option value="+32">🇧🇪 +32 Bélgica</option>
+                          <option value="+31">🇳🇱 +31 Países Bajos</option>
+                          <option value="+43">🇦🇹 +43 Austria</option>
+                          <option value="+353">🇮🇪 +353 Irlanda</option>
+                          <option value="+30">🇬🇷 +30 Grecia</option>
+                          <option value="+46">🇸🇪 +46 Suecia</option>
+                          <option value="+47">🇳🇴 +47 Noruega</option>
+                          <option value="+45">🇩🇰 +45 Dinamarca</option>
+                          <option value="+358">🇫🇮 +358 Finlandia</option>
+                          <option value="+48">🇵🇱 +48 Polonia</option>
+                          <option value="+420">🇨🇿 +420 Rep. Checa</option>
+                          <option value="+40">🇷🇴 +40 Rumanía</option>
+                          <option value="+36">🇭🇺 +36 Hungría</option>
+                          <option value="+385">🇭🇷 +385 Croacia</option>
+                          <option value="+359">🇧🇬 +359 Bulgaria</option>
+                          <option value="+421">🇸🇰 +421 Eslovaquia</option>
+                          <option value="+386">🇸🇮 +386 Eslovenia</option>
+                          <option value="+352">🇱🇺 +352 Luxemburgo</option>
+                          <option value="+377">🇲🇨 +377 Mónaco</option>
+                          <option value="+378">🇸🇲 +378 San Marino</option>
+                          <option value="+356">🇲🇹 +356 Malta</option>
+                          <option value="+357">🇨🇾 +357 Chipre</option>
+                          <option value="+354">🇮🇸 +354 Islandia</option>
+                          <option value="+372">🇪🇪 +372 Estonia</option>
+                          <option value="+371">🇱🇻 +371 Letonia</option>
+                          <option value="+370">🇱🇹 +370 Lituania</option>
+                        </optgroup>
+                        <optgroup label="🌎 América Latina & Caribe">
+                          <option value="+52">🇲🇽 +52 México</option>
+                          <option value="+54">🇦🇷 +54 Argentina</option>
+                          <option value="+57">🇨🇴 +57 Colombia</option>
+                          <option value="+56">🇨🇱 +56 Chile</option>
+                          <option value="+51">🇵🇪 +51 Perú</option>
+                          <option value="+58">🇻🇪 +58 Venezuela</option>
+                          <option value="+593">🇪🇨 +593 Ecuador</option>
+                          <option value="+502">🇬🇹 +502 Guatemala</option>
+                          <option value="+53">🇨🇺 +53 Cuba</option>
+                          <option value="+591">🇧🇴 +591 Bolivia</option>
+                          <option value="+1809">🇩🇴 +1 809 Rep. Dominicana</option>
+                          <option value="+504">🇭🇳 +504 Honduras</option>
+                          <option value="+595">🇵🇾 +595 Paraguay</option>
+                          <option value="+503">🇸🇻 +503 El Salvador</option>
+                          <option value="+505">🇳🇮 +505 Nicaragua</option>
+                          <option value="+506">🇨🇷 +506 Costa Rica</option>
+                          <option value="+507">🇵🇦 +507 Panamá</option>
+                          <option value="+598">🇺🇾 +598 Uruguay</option>
+                          <option value="+1787">🇵🇷 +1 787 Puerto Rico</option>
+                        </optgroup>
+                        <optgroup label="🌐 Otros">
+                          <option value="+1">🇺🇸 +1 Estados Unidos / Canadá</option>
+                          <option value="+55">🇧🇷 +55 Brasil</option>
+                        </optgroup>
                       </select>
 
                       <input

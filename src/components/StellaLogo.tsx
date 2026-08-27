@@ -17,125 +17,95 @@ export const StellaLogo: React.FC<StellaLogoProps> = ({
 }) => {
   const iconSizes = {
     sm: 'w-7 h-7',
-    md: 'w-9 h-9 sm:w-10 sm:h-10',
-    lg: 'w-12 h-12 sm:w-14 sm:h-14',
-    xl: 'w-16 h-16 sm:w-20 sm:h-20',
+    md: 'w-8 h-8 sm:w-9 sm:h-9',
+    lg: 'w-11 h-11 sm:w-13 sm:h-13',
+    xl: 'w-14 h-14 sm:w-18 sm:h-18',
   };
 
   const textSizes = {
     sm: 'text-lg sm:text-xl',
-    md: 'text-2xl sm:text-3xl',
-    lg: 'text-3xl sm:text-4xl',
-    xl: 'text-4xl sm:text-6xl',
+    md: 'text-xl sm:text-2xl',
+    lg: 'text-2xl sm:text-3xl',
+    xl: 'text-3xl sm:text-5xl',
   };
 
   return (
     <div
       onClick={onClick}
-      className={`inline-flex items-center gap-2.5 sm:gap-3.5 select-none ${
+      className={`inline-flex items-center gap-2 sm:gap-2.5 select-none ${
         onClick ? 'cursor-pointer group' : ''
       } ${className}`}
       id="stellaway-brand-logo"
     >
-      {/* SVG Icon exactly replicating stella02.PNG: Luminous 5-Point Gold Star + Open Orbital Swoosh + 4-Point Sparkle */}
+      {/* SVG Icon exactly replicating stella02.PNG: Luminous Solid Metallic Gold Star + Open Orbital Ring + 4-Point Sparkle */}
       <div className={`relative shrink-0 ${iconSizes[size]} transition-transform duration-300 group-hover:scale-105`}>
         <svg
-          viewBox="0 0 100 100"
-          className="w-full h-full overflow-visible drop-shadow-[0_0_14px_rgba(238,198,90,0.65)]"
+          viewBox="0 0 100 90"
+          className="w-full h-full overflow-visible drop-shadow-[0_0_12px_rgba(240,222,170,0.55)]"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <defs>
-            {/* Radiant Champagne & True Gold Metallic Gradient (Bright, luminous, no dirty brown/yellow) */}
-            <linearGradient id="stellaGoldGrad" x1="15%" y1="0%" x2="85%" y2="100%">
-              <stop offset="0%" stopColor="#FFFDF2" />
-              <stop offset="20%" stopColor="#FFF3B0" />
-              <stop offset="55%" stopColor="#EBC35B" />
-              <stop offset="85%" stopColor="#D4A028" />
-              <stop offset="100%" stopColor="#B88218" />
-            </linearGradient>
+          {/* Ambient Warm Golden Core Halo */}
+          <circle cx="44" cy="46" r="26" fill="#F0DEAA" fillOpacity="0.25" />
 
-            {/* Glowing Orbit Arc Gradient */}
-            <linearGradient id="stellaOrbitArc" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#C99420" stopOpacity="0.3" />
-              <stop offset="35%" stopColor="#EBC35B" stopOpacity="0.95" />
-              <stop offset="70%" stopColor="#FFF4BC" stopOpacity="1" />
-              <stop offset="100%" stopColor="#FFFFFF" stopOpacity="1" />
-            </linearGradient>
-
-            {/* Soft Ambient Core Halo */}
-            <radialGradient id="stellaBackGlow" cx="46%" cy="46%" r="50%">
-              <stop offset="0%" stopColor="#FFECA0" stopOpacity="0.6" />
-              <stop offset="50%" stopColor="#E8BE50" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#D4A028" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-
-          {/* 0. Ambient Warm Halo Behind Star */}
-          <circle cx="45" cy="48" r="32" fill="url(#stellaBackGlow)" />
-
-          {/* 1. Main 5-Point Star Body (Solid, luminous gold) */}
+          {/* 1. Main 5-Point Star Body (Solid uniform champagne metallic gold) */}
           <path
-            d="M 44 14
-               L 52.8 33.5
-               L 74.2 35.2
-               L 57.8 49.3
-               L 62.8 70.4
-               L 44 58.6
-               L 25.2 70.4
-               L 30.2 49.3
-               L 13.8 35.2
-               L 35.2 33.5 Z"
-            fill="url(#stellaGoldGrad)"
-            stroke="#FFFCE6"
-            strokeWidth="0.8"
+            d="M 44 16
+               L 52 34
+               L 72 35
+               L 56.5 48
+               L 62 69
+               L 44 57.5
+               L 26 69
+               L 31.5 48
+               L 16 35
+               L 36 34 Z"
+            fill="#F0DEAA"
+            stroke="#FFFDF2"
+            strokeWidth="0.75"
             strokeLinejoin="round"
           />
 
-          {/* 2. Open Orbital Swoosh Arc (Replicating the sweeping ring in stella02.PNG) */}
-          {/* Back segment of the swoosh */}
+          {/* 2. Sweeping Orbital Ring / Swoosh (Wraps from lower-left to top-right) */}
           <path
-            d="M 12 70 
-               C 10 58, 22 40, 44 32
-               C 62 25, 78 30, 83 40
-               C 87 50, 78 68, 54 75
-               C 34 81, 16 78, 12 70"
-            stroke="url(#stellaOrbitArc)"
+            d="M 12 66 
+               C 9 53, 21 35, 45 28
+               C 64 22, 80 27, 84 38
+               C 88 49, 79 66, 55 73
+               C 34 79, 16 75, 12 66"
+            stroke="#F0DEAA"
             strokeWidth="3.2"
             strokeLinecap="round"
             fill="none"
           />
 
-          {/* 3. Four-point diamond sparkle at the top-right apex of the swoosh */}
+          {/* 3. Four-Point Diamond Sparkle Star at Top-Right of the Orbit Ring */}
           <path
-            d="M 72 17
-               Q 72 23.5 78 23.5
-               Q 72 23.5 72 30
-               Q 72 23.5 66 23.5
-               Q 72 23.5 72 17 Z"
-            fill="#FFFFFF"
-            filter="drop-shadow(0 0 4px #FFF3B0)"
+            d="M 73 9
+               Q 73 15.5 78 15.5
+               Q 73 15.5 73 22
+               Q 73 15.5 68 15.5
+               Q 73 15.5 73 9 Z"
+            fill="#FFFDF2"
           />
-          <circle cx="72" cy="23.5" r="1.3" fill="#FFFCE6" />
+          <circle cx="73" cy="15.5" r="1.2" fill="#FFFFFF" />
         </svg>
       </div>
 
-      {/* Typography: "StellaWay" in High-End Luxury Serif typography matching image */}
+      {/* Typography: "StellaWay" in High-End Luxury Serif typography with Uniform Metallic Gold Color */}
       <div className="flex flex-col justify-center">
         <span
-          className={`font-['Playfair_Display','Cinzel',serif] ${textSizes[size]} font-bold tracking-tight leading-none`}
+          className={`font-['Playfair_Display','Cinzel',serif] ${textSizes[size]} font-bold tracking-tight leading-none text-[#F0DEAA]`}
           style={{
-            background: 'linear-gradient(135deg, #FFFDF5 0%, #FFF3B0 25%, #EBC35B 65%, #CCA028 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 2px 8px rgba(235, 195, 91, 0.4))',
+            color: '#F0DEAA',
+            textShadow: '0 0 14px rgba(240, 222, 170, 0.45), 0 1px 2px rgba(0, 0, 0, 0.6)',
             letterSpacing: '-0.015em',
           }}
         >
           StellaWay
         </span>
         {showSubtitle && (
-          <span className="text-[10px] sm:text-[11px] font-['Plus_Jakarta_Sans'] font-semibold text-[#FFF3B0]/90 tracking-wider uppercase mt-1">
+          <span className="text-[10px] sm:text-[11px] font-['Plus_Jakarta_Sans'] font-semibold text-[#F0DEAA]/85 tracking-wider uppercase mt-1">
             {subtitleText}
           </span>
         )}
@@ -143,3 +113,4 @@ export const StellaLogo: React.FC<StellaLogoProps> = ({
     </div>
   );
 };
+
