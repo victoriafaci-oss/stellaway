@@ -150,7 +150,7 @@ const testimonials = [
   {
     name: 'Laura M.',
     role: 'Guía Astroturismo · Teruel',
-    text: 'Imprescindible para organizar mis excursiones de astroturismo. El módulo del Eclipse Total es una joya.',
+    text: 'Imprescindible para organizar mis salidas. Ahora puedo elegir el mejor sitio para ver el eclipse de 2027 con la previsión del tiempo.',
     avatar: '🌙',
   },
 ];

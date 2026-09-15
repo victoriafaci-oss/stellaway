@@ -23,7 +23,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     try {
       const saved = localStorage.getItem('stellaway_language') as SupportedLanguage;
-      if (saved && (saved === 'es' || saved === 'en')) {
+      const validLangs: SupportedLanguage[] = ['es', 'en', 'fr', 'pt', 'it'];
+      if (saved && validLangs.includes(saved)) {
         setLanguageState(saved);
       }
     } catch {
@@ -32,7 +33,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, []);
 
   const setLanguage = (lang: SupportedLanguage) => {
-    if (lang === 'es' || lang === 'en') {
+    const validLangs: SupportedLanguage[] = ['es', 'en', 'fr', 'pt', 'it'];
+    if (validLangs.includes(lang)) {
       setLanguageState(lang);
       try {
         localStorage.setItem('stellaway_language', lang);

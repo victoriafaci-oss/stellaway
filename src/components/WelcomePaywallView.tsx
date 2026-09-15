@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ActiveTab } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { StellaLogo } from './StellaLogo';
+import { WORLD_DIAL_CODES } from '../data/countryDialCodes';
 
 interface WelcomePaywallViewProps {
   onEnterApp: () => void;
@@ -123,8 +124,9 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
     e.preventDefault();
     setTrialError('');
     const fullPhone = `${countryCode} ${phoneNumber}`.trim().replace(/\s+/g, '');
-    if (phoneNumber.trim().length < 9) {
-      setTrialError('Por favor introduce un número de teléfono móvil válido (mínimo 9 dígitos).');
+    const cleanDigits = phoneNumber.trim().replace(/\s+/g, '');
+    if (cleanDigits.length < 6) {
+      setTrialError('Por favor introduce un número de teléfono móvil válido.');
       return;
     }
 
@@ -761,68 +763,42 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                       <select
                         value={countryCode}
                         onChange={(e) => setCountryCode(e.target.value)}
-                        className="bg-[#082F49] border border-[#38BDF8]/50 rounded-xl px-2.5 py-2.5 text-white text-xs font-bold focus:border-[#7DD3FC] outline-none max-w-[155px] sm:max-w-[200px] cursor-pointer"
+                        className="bg-[#082F49] border border-[#38BDF8]/50 rounded-xl px-2.5 py-2.5 text-white text-xs font-bold focus:border-[#7DD3FC] outline-none max-w-[170px] sm:max-w-[220px] cursor-pointer"
                       >
+                        <optgroup label="🌟 Países Hispanohablantes (Prioritario)">
+                          {WORLD_DIAL_CODES.filter((c) => c.region === 'hispanic').map((c) => (
+                            <option key={`${c.region}-${c.code}-${c.name}`} value={c.code}>
+                              {c.flag} {c.code} {c.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="🌎 Resto de América">
+                          {WORLD_DIAL_CODES.filter((c) => c.region === 'americas').map((c) => (
+                            <option key={`${c.region}-${c.code}-${c.name}`} value={c.code}>
+                              {c.flag} {c.code} {c.name}
+                            </option>
+                          ))}
+                        </optgroup>
                         <optgroup label="🇪🇺 Europa">
-                          <option value="+34">🇪🇸 +34 España</option>
-                          <option value="+39">🇮🇹 +39 Italia</option>
-                          <option value="+351">🇵🇹 +351 Portugal</option>
-                          <option value="+33">🇫🇷 +33 Francia</option>
-                          <option value="+49">🇩🇪 +49 Alemania</option>
-                          <option value="+44">🇬🇧 +44 Reino Unido</option>
-                          <option value="+376">🇦🇩 +376 Andorra</option>
-                          <option value="+41">🇨🇭 +41 Suiza</option>
-                          <option value="+32">🇧🇪 +32 Bélgica</option>
-                          <option value="+31">🇳🇱 +31 Países Bajos</option>
-                          <option value="+43">🇦🇹 +43 Austria</option>
-                          <option value="+353">🇮🇪 +353 Irlanda</option>
-                          <option value="+30">🇬🇷 +30 Grecia</option>
-                          <option value="+46">🇸🇪 +46 Suecia</option>
-                          <option value="+47">🇳🇴 +47 Noruega</option>
-                          <option value="+45">🇩🇰 +45 Dinamarca</option>
-                          <option value="+358">🇫🇮 +358 Finlandia</option>
-                          <option value="+48">🇵🇱 +48 Polonia</option>
-                          <option value="+420">🇨🇿 +420 Rep. Checa</option>
-                          <option value="+40">🇷🇴 +40 Rumanía</option>
-                          <option value="+36">🇭🇺 +36 Hungría</option>
-                          <option value="+385">🇭🇷 +385 Croacia</option>
-                          <option value="+359">🇧🇬 +359 Bulgaria</option>
-                          <option value="+421">🇸🇰 +421 Eslovaquia</option>
-                          <option value="+386">🇸🇮 +386 Eslovenia</option>
-                          <option value="+352">🇱🇺 +352 Luxemburgo</option>
-                          <option value="+377">🇲🇨 +377 Mónaco</option>
-                          <option value="+378">🇸🇲 +378 San Marino</option>
-                          <option value="+356">🇲🇹 +356 Malta</option>
-                          <option value="+357">🇨🇾 +357 Chipre</option>
-                          <option value="+354">🇮🇸 +354 Islandia</option>
-                          <option value="+372">🇪🇪 +372 Estonia</option>
-                          <option value="+371">🇱🇻 +371 Letonia</option>
-                          <option value="+370">🇱🇹 +370 Lituania</option>
+                          {WORLD_DIAL_CODES.filter((c) => c.region === 'europe').map((c) => (
+                            <option key={`${c.region}-${c.code}-${c.name}`} value={c.code}>
+                              {c.flag} {c.code} {c.name}
+                            </option>
+                          ))}
                         </optgroup>
-                        <optgroup label="🌎 América Latina & Caribe">
-                          <option value="+52">🇲🇽 +52 México</option>
-                          <option value="+54">🇦🇷 +54 Argentina</option>
-                          <option value="+57">🇨🇴 +57 Colombia</option>
-                          <option value="+56">🇨🇱 +56 Chile</option>
-                          <option value="+51">🇵🇪 +51 Perú</option>
-                          <option value="+58">🇻🇪 +58 Venezuela</option>
-                          <option value="+593">🇪🇨 +593 Ecuador</option>
-                          <option value="+502">🇬🇹 +502 Guatemala</option>
-                          <option value="+53">🇨🇺 +53 Cuba</option>
-                          <option value="+591">🇧🇴 +591 Bolivia</option>
-                          <option value="+1809">🇩🇴 +1 809 Rep. Dominicana</option>
-                          <option value="+504">🇭🇳 +504 Honduras</option>
-                          <option value="+595">🇵🇾 +595 Paraguay</option>
-                          <option value="+503">🇸🇻 +503 El Salvador</option>
-                          <option value="+505">🇳🇮 +505 Nicaragua</option>
-                          <option value="+506">🇨🇷 +506 Costa Rica</option>
-                          <option value="+507">🇵🇦 +507 Panamá</option>
-                          <option value="+598">🇺🇾 +598 Uruguay</option>
-                          <option value="+1787">🇵🇷 +1 787 Puerto Rico</option>
+                        <optgroup label="🌏 Asia y Oceanía">
+                          {WORLD_DIAL_CODES.filter((c) => c.region === 'asia_oceania').map((c) => (
+                            <option key={`${c.region}-${c.code}-${c.name}`} value={c.code}>
+                              {c.flag} {c.code} {c.name}
+                            </option>
+                          ))}
                         </optgroup>
-                        <optgroup label="🌐 Otros">
-                          <option value="+1">🇺🇸 +1 Estados Unidos / Canadá</option>
-                          <option value="+55">🇧🇷 +55 Brasil</option>
+                        <optgroup label="🌍 África">
+                          {WORLD_DIAL_CODES.filter((c) => c.region === 'africa').map((c) => (
+                            <option key={`${c.region}-${c.code}-${c.name}`} value={c.code}>
+                              {c.flag} {c.code} {c.name}
+                            </option>
+                          ))}
                         </optgroup>
                       </select>
 

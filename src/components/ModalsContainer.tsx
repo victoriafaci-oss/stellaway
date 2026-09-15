@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ModalType, ActiveTab } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { SupportedLanguage } from '../data/translations';
+import { WORLD_DIAL_CODES } from '../data/countryDialCodes';
 
 interface ModalsContainerProps {
   modalType: ModalType;
@@ -47,6 +48,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
   const [addCardSuccess, setAddCardSuccess] = useState(false);
 
   // Phone verification state for free trial (2 Días Gratis)
+  const [modalCountryCode, setModalCountryCode] = useState('+34');
   const [phoneInput, setPhoneInput] = useState('');
   const [smsCodeInput, setSmsCodeInput] = useState('');
   const [smsSentStep, setSmsSentStep] = useState(false);
@@ -342,11 +344,12 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                             onSubmit={(e) => {
                               e.preventDefault();
                               setTrialErrorMsg('');
-                              const cleanPhone = phoneInput.trim().replace(/\s+/g, '');
-                              if (cleanPhone.length < 9) {
-                                setTrialErrorMsg('Ingresa un número de teléfono válido (mínimo 9 dígitos).');
+                              const cleanDigits = phoneInput.trim().replace(/\s+/g, '');
+                              if (cleanDigits.length < 6) {
+                                setTrialErrorMsg('Ingresa un número de teléfono móvil válido.');
                                 return;
                               }
+                              const cleanPhone = `${modalCountryCode}${cleanDigits}`;
 
                               const usedPhones = JSON.parse(localStorage.getItem('stellaway_used_trial_phones') || '[]');
                               const deviceUsed = localStorage.getItem('stellaway_device_trial_used');
@@ -365,6 +368,47 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                                 Número de Teléfono Móvil
                               </label>
                               <div className="flex gap-2">
+                                <select
+                                  value={modalCountryCode}
+                                  onChange={(e) => setModalCountryCode(e.target.value)}
+                                  className="px-2 py-2 bg-[#F0F9FF] border border-[#38BDF8] rounded-xl text-[#082F49] text-xs font-bold focus:outline-none focus:border-[#0284C7] max-w-[135px] sm:max-w-[160px] cursor-pointer"
+                                >
+                                  <optgroup label="🌟 Hispanohablantes">
+                                    {WORLD_DIAL_CODES.filter((c) => c.region === 'hispanic').map((c) => (
+                                      <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
+                                        {c.flag} {c.code} {c.name}
+                                      </option>
+                                    ))}
+                                  </optgroup>
+                                  <optgroup label="🌎 América">
+                                    {WORLD_DIAL_CODES.filter((c) => c.region === 'americas').map((c) => (
+                                      <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
+                                        {c.flag} {c.code} {c.name}
+                                      </option>
+                                    ))}
+                                  </optgroup>
+                                  <optgroup label="🇪🇺 Europa">
+                                    {WORLD_DIAL_CODES.filter((c) => c.region === 'europe').map((c) => (
+                                      <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
+                                        {c.flag} {c.code} {c.name}
+                                      </option>
+                                    ))}
+                                  </optgroup>
+                                  <optgroup label="🌏 Asia y Oceanía">
+                                    {WORLD_DIAL_CODES.filter((c) => c.region === 'asia_oceania').map((c) => (
+                                      <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
+                                        {c.flag} {c.code} {c.name}
+                                      </option>
+                                    ))}
+                                  </optgroup>
+                                  <optgroup label="🌍 África">
+                                    {WORLD_DIAL_CODES.filter((c) => c.region === 'africa').map((c) => (
+                                      <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
+                                        {c.flag} {c.code} {c.name}
+                                      </option>
+                                    ))}
+                                  </optgroup>
+                                </select>
                                 <input
                                   type="tel"
                                   required
@@ -373,7 +417,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                                     setPhoneInput(e.target.value);
                                     setTrialErrorMsg('');
                                   }}
-                                  placeholder="+34 612 345 678"
+                                  placeholder="612 345 678"
                                   className="flex-1 px-3 py-2 bg-[#F0F9FF] border border-[#38BDF8] rounded-xl text-[#082F49] text-xs placeholder-[#64748B] focus:outline-none focus:border-[#0284C7] font-bold"
                                 />
                                 <button
@@ -389,7 +433,8 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                           <form
                             onSubmit={(e) => {
                               e.preventDefault();
-                              const cleanPhone = phoneInput.trim().replace(/\s+/g, '');
+                              const cleanDigits = phoneInput.trim().replace(/\s+/g, '');
+                              const cleanPhone = `${modalCountryCode}${cleanDigits}`;
                               const usedPhones = JSON.parse(localStorage.getItem('stellaway_used_trial_phones') || '[]');
                               if (!usedPhones.includes(cleanPhone)) {
                                 usedPhones.push(cleanPhone);
@@ -408,7 +453,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                           >
                             <p className="text-xs text-emerald-800 font-bold flex items-center gap-1">
                               <span className="material-symbols-outlined text-sm">sms</span>
-                              Código de verificación SMS enviado a {phoneInput}.
+                              Código de verificación SMS enviado a {modalCountryCode} {phoneInput}.
                             </p>
                             <div>
                               <label className="text-[10px] text-[#082F49] font-bold block mb-0.5">Código SMS (Ej: 1234)</label>
@@ -796,24 +841,6 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <span className="material-symbols-outlined text-[#0284C7] text-base shrink-0">arrow_forward</span>
             </button>
 
-            {/* 1. Hostelería */}
-            <button
-              onClick={() => {
-                openModal('hosteleria');
-              }}
-              className="p-3.5 rounded-2xl bg-white/70 hover:bg-white border border-[#E6CA65] hover:border-[#24153F] shadow-sm transition-all flex items-center gap-3 text-left group cursor-pointer w-full"
-            >
-              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center shrink-0 border border-amber-300 group-hover:scale-105 transition-transform">
-                <span className="material-symbols-outlined text-xl">hotel</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-xs sm:text-sm font-extrabold text-[#120D1C] group-hover:text-[#24153F] transition-colors font-['Plus_Jakarta_Sans'] truncate">
-                  Hostelería Starlight
-                </h3>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">Alojamientos y cenas astronómicas</p>
-              </div>
-              <span className="material-symbols-outlined text-[#594A70] group-hover:text-[#24153F] text-base shrink-0">arrow_forward</span>
-            </button>
 
             {/* 3. Emergencias */}
             <button
@@ -1268,9 +1295,9 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               </div>
               <div className="truncate">
                 <h2 className="text-base sm:text-lg font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans'] truncate">
-                  Idiomas de la App
+                  {t('languagesTitle', 'Idiomas de la App')}
                 </h2>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">Selecciona tu idioma preferido</p>
+                <p className="text-[11px] text-[#594A70] font-bold truncate">{t('languagesSubtitle', 'Selecciona tu idioma preferido')}</p>
               </div>
             </div>
 

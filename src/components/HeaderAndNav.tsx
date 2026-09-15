@@ -20,7 +20,8 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
   onGoBack,
   openModal,
 }) => {
-  const { t, language } = useLanguage();
+  const { t, language, languageOptions } = useLanguage();
+  const currentLang = languageOptions.find((l) => l.code === language) || languageOptions[0];
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleNavClick = (tab: ActiveTab) => {
@@ -203,7 +204,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                     <span>{t('languages', 'Idioma')}</span>
                   </div>
                   <span className="text-[11px] font-extrabold bg-[#24153F] text-[#FFF8D6] px-2.5 py-0.5 rounded-full border border-[#E6CA65]">
-                    {language === 'es' ? '🇪🇸 Español' : '🇬🇧 English'}
+                    {currentLang.flag} {currentLang.name}
                   </span>
                 </button>
               </li>
@@ -382,7 +383,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                     <span>{t('languages', 'Idioma')}</span>
                   </div>
                   <span className="text-[11px] font-extrabold bg-[#24153F] text-[#FFF8D6] px-2.5 py-0.5 rounded-full border border-[#E6CA65]">
-                    {language === 'es' ? '🇪🇸 ES' : '🇬🇧 EN'}
+                    {currentLang.flag} {currentLang.code.toUpperCase()}
                   </span>
                 </button>
               </li>
