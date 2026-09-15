@@ -582,6 +582,67 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                   </span>
                 </div>
 
+                {/* Official Stripe Links for Active Plans */}
+                <div className="bg-[#F0F9FF] p-4 rounded-2xl border border-[#38BDF8]/50 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-[#0284C7] font-['JetBrains_Mono']">
+                      Pasarela Oficial Stripe StellaWay
+                    </span>
+                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] font-black rounded-full">
+                      ✓ Enlaces Verificados
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#082F49] font-medium">
+                    Puedes activar tu prueba o abonar tu suscripción mediante los enlaces oficiales seguros de Stripe de StellaWay:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <a
+                      href="https://buy.stripe.com/dRmcN7a3J5YTdZpcoV1ZS06"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 bg-white border border-[#38BDF8] rounded-xl flex items-center justify-between hover:border-[#0284C7] transition-all group"
+                    >
+                      <div>
+                        <span className="font-black text-xs text-[#082F49] block">Prueba 48h (0,00 €)</span>
+                        <span className="text-[10px] text-emerald-600 font-bold">Registro Gratuito</span>
+                      </div>
+                      <span className="material-symbols-outlined text-[#0284C7] group-hover:translate-x-0.5 transition-transform text-base">
+                        open_in_new
+                      </span>
+                    </a>
+
+                    <a
+                      href="https://buy.stripe.com/8x28wR0t9drldZp9cJ1ZS04"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 bg-white border border-[#38BDF8] rounded-xl flex items-center justify-between hover:border-[#0284C7] transition-all group"
+                    >
+                      <div>
+                        <span className="font-black text-xs text-[#082F49] block">Plan Mensual (3,99 €)</span>
+                        <span className="text-[10px] text-[#64748B]">Enlace Directo Stripe</span>
+                      </div>
+                      <span className="material-symbols-outlined text-[#0284C7] group-hover:translate-x-0.5 transition-transform text-base">
+                        open_in_new
+                      </span>
+                    </a>
+
+                    <a
+                      href="https://buy.stripe.com/8x24gBgs7bjd3kL0Gd1ZS05"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 bg-white border border-[#38BDF8] rounded-xl flex items-center justify-between hover:border-[#0284C7] transition-all group"
+                    >
+                      <div>
+                        <span className="font-black text-xs text-[#082F49] block">Plan Anual (19,99 €)</span>
+                        <span className="text-[10px] text-[#64748B]">Enlace Directo Stripe</span>
+                      </div>
+                      <span className="material-symbols-outlined text-[#0284C7] group-hover:translate-x-0.5 transition-transform text-base">
+                        open_in_new
+                      </span>
+                    </a>
+                  </div>
+                </div>
+
                 {/* Saved Payment Methods */}
                 <div>
                   <h4 className="text-xs font-extrabold text-[#120D1C] mb-2 font-['Plus_Jakarta_Sans']">

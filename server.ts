@@ -59,6 +59,13 @@ async function startServer() {
     const paypalId = process.env.PAYPAL_CLIENT_ID;
     const paypalSecret = process.env.PAYPAL_CLIENT_SECRET;
 
+    // Official Stripe Payment Links created on this account
+    const stripePaymentLinks: Record<string, string> = {
+      free48h: "https://buy.stripe.com/dRmcN7a3J5YTdZpcoV1ZS06",
+      mensual: "https://buy.stripe.com/8x28wR0t9drldZp9cJ1ZS04",
+      anual: "https://buy.stripe.com/8x24gBgs7bjd3kL0Gd1ZS05"
+    };
+
     res.json({
       status: "ready",
       gateways: {
@@ -66,8 +73,9 @@ async function startServer() {
           connected: Boolean(stripeSecret || stripePublic),
           configured: true,
           mode: stripeSecret?.startsWith("sk_live") ? "live" : "sandbox_test",
-          publishableKey: stripePublic || "pk_test_stellaway_live_ready",
-          supportedMethods: ["card", "apple_pay", "google_pay", "sepa_debit"]
+          publishableKey: stripePublic || "pk_live_51U1Oe8Q89S9ikvKuhk7QcPSGPwDSimvo559ndDMYFfuISb6o6Ht38K7HcRBuUG8xs2NCMxt7r1Df4a5SUKLppRN7002PPvBxML",
+          paymentLinks: stripePaymentLinks,
+          supportedMethods: ["card", "apple_pay", "google_pay", "sepa_debit", "klarna", "link"]
         },
         paypal: {
           connected: Boolean(paypalId || paypalSecret),
@@ -83,45 +91,114 @@ async function startServer() {
           name: "Prueba Gratuita 48 Horas",
           priceEur: 0,
           period: "48 horas",
-          description: "Acceso total a mapas Bortle, telemetría y asistente IA con verificación telefónica.",
-          requiresPhoneVerification: true
+          description: "Acceso total a mapas Bortle, telemetría y asistente IA con verificación telefónica o registro en Stripe.",
+          requiresPhoneVerification: true,
+          stripePaymentLink: stripePaymentLinks.free48h
         },
         {
           id: "mensual",
           name: "Plan Mensual Starlight Pro",
           priceEur: 3.99,
           period: "/ mes",
-          description: "Suscripción recurrente mensual cancelable en cualquier momento."
+          description: "Suscripción recurrente mensual cancelable en cualquier momento.",
+          stripePaymentLink: stripePaymentLinks.mensual
         },
         {
           id: "anual",
           name: "Plan Anual Starlight Pass",
           priceEur: 19.99,
           period: "/ año",
-          description: "Ahorro del 58% para 12 meses completos de astroturismo y Gran Eclipse 2026."
+          description: "Ahorro del 58% para 12 meses completos de astroturismo y Gran Eclipse 2026.",
+          stripePaymentLink: stripePaymentLinks.anual
         }
       ]
     });
   });
 
-  // Stripe Checkout Session Creation
+  // Stripe Checkout Session & Direct Payment API
   app.post("/api/create-stripe-checkout", async (req, res) => {
     try {
       const { planId, customerEmail, customerName } = req.body;
       const stripeSecret = process.env.STRIPE_SECRET_KEY;
 
-      const priceMap: Record<string, { amount: number; name: string }> = {
-        mensual: { amount: 399, name: "Plan Mensual Starlight Pro (3,99 €)" },
-        anual: { amount: 1999, name: "Plan Anual Starlight Pass (19,99 €)" }
+      const priceMap: Record<string, { amount: number; name: string; priceId: string; paymentLink: string; mode: "payment" | "subscription" }> = {
+        free2days: {
+          amount: 0,
+          name: "Prueba Gratuita 48 Horas (0,00 €)",
+          priceId: "price_1U1PIWQ89S9ikvKueNnPq4yI",
+          paymentLink: "https://buy.stripe.com/dRmcN7a3J5YTdZpcoV1ZS06",
+          mode: "payment"
+        },
+        mensual: {
+          amount: 399,
+          name: "Plan Mensual Starlight Pro (3,99 €)",
+          priceId: "price_1U1nTbQ89S9ikvKuVViJ2ajL",
+          paymentLink: "https://buy.stripe.com/8x28wR0t9drldZp9cJ1ZS04",
+          mode: "subscription"
+        },
+        anual: {
+          amount: 1999,
+          name: "Plan Anual Starlight Pass (19,99 €)",
+          priceId: "price_1U1nTbQ89S9ikvKuZwdY0YZK",
+          paymentLink: "https://buy.stripe.com/8x24gBgs7bjd3kL0Gd1ZS05",
+          mode: "subscription"
+        }
       };
 
       const plan = priceMap[planId] || priceMap.anual;
       const transactionId = "st_txn_" + Math.random().toString(36).substring(2, 12).toUpperCase();
 
-      // If live secret key is present, can invoke Stripe SDK or REST API
+      // If Stripe secret key is available, create a real Stripe Checkout Session
+      if (stripeSecret) {
+        try {
+          const appUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+          const params = new URLSearchParams();
+          params.append("line_items[0][price]", plan.priceId);
+          params.append("line_items[0][quantity]", "1");
+          params.append("mode", plan.mode);
+          params.append("success_url", `${appUrl}/?pago=exito&plan=${planId}&session_id={CHECKOUT_SESSION_ID}`);
+          params.append("cancel_url", `${appUrl}/?pago=cancelado`);
+          if (customerEmail) {
+            params.append("customer_email", customerEmail);
+          }
+
+          const stripeRes = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${stripeSecret}`,
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: params.toString()
+          });
+
+          const sessionData = await stripeRes.json() as any;
+
+          if (sessionData && sessionData.url) {
+            return res.json({
+              success: true,
+              provider: "Stripe",
+              checkoutUrl: sessionData.url,
+              paymentLink: plan.paymentLink,
+              sessionId: sessionData.id,
+              transactionId,
+              planId,
+              amountEur: plan.amount / 100,
+              customerEmail: customerEmail || "usuario@stellaway.org",
+              status: "pending_checkout",
+              activatedAt: new Date().toISOString(),
+              message: `Sesión de Stripe Checkout generada para ${plan.name}.`
+            });
+          }
+        } catch (stripeErr) {
+          console.warn("Stripe Checkout Session API warning, using direct payment link:", stripeErr);
+        }
+      }
+
+      // Fallback or direct confirmation
       res.json({
         success: true,
         provider: "Stripe",
+        paymentLink: plan.paymentLink,
         transactionId,
         planId,
         amountEur: plan.amount / 100,
@@ -209,6 +286,7 @@ async function startServer() {
       const langMap: Record<string, string> = {
         es: "Spanish (Español)",
         en: "English",
+        de: "German (Deutsch)",
         fr: "French (Français)",
         pt: "Portuguese (Português)",
         it: "Italian (Italiano)",

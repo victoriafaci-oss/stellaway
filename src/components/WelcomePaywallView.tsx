@@ -38,10 +38,18 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
 
   // Payment gateways status & payment state (Stripe & PayPal)
   const [gatewaysStatus, setGatewaysStatus] = useState<{
-    stripe: { connected: boolean; mode: string };
+    stripe: { connected: boolean; mode: string; paymentLinks?: Record<string, string> };
     paypal: { connected: boolean; mode: string };
   }>({
-    stripe: { connected: true, mode: 'live' },
+    stripe: {
+      connected: true,
+      mode: 'live',
+      paymentLinks: {
+        free48h: 'https://buy.stripe.com/dRmcN7a3J5YTdZpcoV1ZS06',
+        mensual: 'https://buy.stripe.com/8x28wR0t9drldZp9cJ1ZS04',
+        anual: 'https://buy.stripe.com/8x24gBgs7bjd3kL0Gd1ZS05',
+      },
+    },
     paypal: { connected: true, mode: 'live' },
   });
 
@@ -88,6 +96,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
             stripe: {
               connected: Boolean(data.gateways.stripe?.connected),
               mode: data.gateways.stripe?.mode || 'live',
+              paymentLinks: data.gateways.stripe?.paymentLinks,
             },
             paypal: {
               connected: Boolean(data.gateways.paypal?.connected),
@@ -226,9 +235,16 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
     }
   };
 
+  // Direct Stripe Payment Links (StellaWay Official)
+  const STRIPE_DIRECT_PAYMENT_LINKS: Record<string, string> = {
+    free2days: 'https://buy.stripe.com/dRmcN7a3J5YTdZpcoV1ZS06',
+    mensual: 'https://buy.stripe.com/8x28wR0t9drldZp9cJ1ZS04',
+    anual: 'https://buy.stripe.com/8x24gBgs7bjd3kL0Gd1ZS05',
+  };
+
   // Handle Stripe Payment
-  const handleStripePayment = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleStripePayment = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setIsProcessingPayment(true);
 
     try {
@@ -243,10 +259,17 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
       });
 
       const data = await res.json();
+
+      if (data.checkoutUrl) {
+        // Redirect to real Stripe hosted checkout session
+        window.location.href = data.checkoutUrl;
+        return;
+      }
+
       if (data.success) {
         localStorage.setItem('stellaway_subscription_active', 'true');
         localStorage.setItem('stellaway_active_plan', selectedPlan);
-        localStorage.setItem('stellaway_payment_provider', 'Stripe');
+        localStorage.setItem('stellaway_payment_provider', 'Stripe Payments');
         localStorage.setItem('stellaway_transaction_id', data.transactionId);
 
         setPaymentSuccessData({
@@ -258,6 +281,9 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
       }
     } catch (err) {
       console.error('Error in Stripe payment flow:', err);
+      // Fallback: open direct Stripe payment link
+      const directLink = STRIPE_DIRECT_PAYMENT_LINKS[selectedPlan] || STRIPE_DIRECT_PAYMENT_LINKS.anual;
+      window.location.href = directLink;
     } finally {
       setIsProcessingPayment(false);
     }
@@ -908,6 +934,23 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                   </div>
                 </form>
               )}
+
+              {/* Direct Stripe Registration for 48h Free Trial */}
+              <div className="pt-3 border-t border-[#38BDF8]/20 flex flex-col items-center gap-2 text-center">
+                <span className="text-[11px] text-[#7DD3FC] font-semibold">
+                  ¿Prefieres activar las 48h directamente a través de Stripe (0,00 €)?
+                </span>
+                <a
+                  href={STRIPE_DIRECT_PAYMENT_LINKS.free2days}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#635BFF] hover:bg-[#5349DF] text-white text-xs font-black uppercase tracking-wider shadow-md transition-all hover:scale-[1.02]"
+                >
+                  <span className="material-symbols-outlined text-base">verified</span>
+                  <span>Activar 48h Gratis en Stripe (0,00 €)</span>
+                  <span className="material-symbols-outlined text-sm">open_in_new</span>
+                </a>
+              </div>
             </div>
           )}
 
@@ -1092,6 +1135,22 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                           </>
                         )}
                       </button>
+
+                      {/* Direct Stripe Checkout Link (Official StellaWay Link) */}
+                      <div className="pt-2 border-t border-[#38BDF8]/20 flex flex-col items-center gap-2 text-center">
+                        <span className="text-[10px] text-[#7DD3FC] font-semibold">
+                          ¿Prefieres la pasarela oficial de Stripe en pestaña nueva?
+                        </span>
+                        <a
+                          href={STRIPE_DIRECT_PAYMENT_LINKS[selectedPlan] || STRIPE_DIRECT_PAYMENT_LINKS.anual}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#635BFF] hover:bg-[#5349DF] text-white text-xs font-black uppercase tracking-wider shadow-md transition-all hover:scale-[1.02]"
+                        >
+                          <span>Abrir Enlace Oficial de Stripe ({selectedPlan === 'mensual' ? '3,99 €' : '19,99 €'})</span>
+                          <span className="material-symbols-outlined text-sm">open_in_new</span>
+                        </a>
+                      </div>
                     </form>
                   )}
 

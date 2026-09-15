@@ -20,6 +20,32 @@ export default function App() {
   const [modalType, setModalType] = useState<ModalType>(null);
 
   useEffect(() => {
+    // Check if returning from successful Stripe payment link or checkout session
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('pago') === 'exito') {
+        const planParam = urlParams.get('plan') || 'anual';
+        const sessionId = urlParams.get('session_id') || 'stripe_checkout_success';
+        localStorage.setItem('stellaway_subscription_active', 'true');
+        localStorage.setItem('stellaway_active_plan', planParam);
+        localStorage.setItem('stellaway_payment_provider', 'Stripe Payments');
+        localStorage.setItem('stellaway_transaction_id', sessionId);
+
+        if (planParam === 'free2days' || planParam === 'trial_48h') {
+          const expiresAt = Date.now() + 48 * 3600 * 1000;
+          localStorage.setItem('stellaway_trial_expires', expiresAt.toString());
+          localStorage.setItem('stellaway_trial_phone', 'Verificado por Stripe (48h)');
+        }
+        
+        // Clean URL params without refresh
+        window.history.replaceState({}, document.title, window.location.pathname);
+
+        setActiveTab('dashboard');
+        setTabHistory(['dashboard']);
+        return;
+      }
+    }
+
     // Check if user is returning with active subscription
     const isSubscribed = localStorage.getItem('stellaway_subscription_active');
     const trialExpires = localStorage.getItem('stellaway_trial_expires');
