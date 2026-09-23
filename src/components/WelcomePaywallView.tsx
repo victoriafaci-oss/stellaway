@@ -17,7 +17,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
   nightVision,
   selectedPlanDefault = 'anual',
 }) => {
-  const { t } = useLanguage();
+  const { t, language, setLanguage, languageOptions } = useLanguage();
   const [selectedPlan, setSelectedPlan] = useState<'free2days' | 'mensual' | 'anual'>(selectedPlanDefault);
 
   useEffect(() => {
@@ -344,45 +344,57 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
 
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-4 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0284C7]/50 border border-[#38BDF8]/70 text-white text-[11px] font-black tracking-wider uppercase shadow-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span>Plataforma Oficial de Astroturismo & Observación Estelar</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0284C7]/50 border border-[#38BDF8]/70 text-white text-[11px] font-black tracking-wider uppercase shadow-md">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span>{t('welcomePlatformBadge', 'Plataforma Oficial de Astroturismo & Observación Estelar')}</span>
+              </div>
+
+              {/* Language Switcher with German DE included */}
+              <div className="inline-flex items-center gap-1 bg-[#082F49]/90 border border-[#38BDF8]/50 rounded-full p-0.5 shadow-md">
+                <span className="text-[10px] text-[#BAE6FD] font-bold px-2 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[13px] text-[#FEE685]">language</span>
+                </span>
+                {languageOptions.map((opt) => (
+                  <button
+                    key={opt.code}
+                    onClick={() => setLanguage(opt.code)}
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold transition-all cursor-pointer ${
+                      language === opt.code
+                        ? 'bg-[#FEE685] text-[#120D1C] shadow-sm'
+                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                    }`}
+                    title={opt.name}
+                  >
+                    {opt.flag} {opt.code.toUpperCase()}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <h1 id="welcome-heading" className="text-2xl sm:text-4xl md:text-5xl font-black font-['Plus_Jakarta_Sans'] leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)] text-white">
-              Bienvenido a <span className="text-[#F0DEAA] drop-shadow-[0_0_12px_rgba(240,222,170,0.45)]">StellaWay Astroturismo</span>
+              {t('welcomeTitle', 'Bienvenido a')}{' '}
+              <span className="text-[#F0DEAA] drop-shadow-[0_0_12px_rgba(240,222,170,0.45)]">
+                {t('welcomeSubtitle', 'StellaWay Astroturismo')}
+              </span>
             </h1>
 
             <p className="text-sm sm:text-base text-[#BAE6FD] font-medium leading-relaxed max-w-2xl">
-              Descubre los mejores cielos oscuros de España, telemetría atmosférica en tiempo real, mapas satelitales de contaminación lumínica (Bortle 1 a 9) y la cobertura más avanzada para el <strong>Gran Eclipse Total Solar 2027</strong>.
+              {t('welcomeDesc', 'Descubre los mejores cielos oscuros de España, telemetría atmosférica en tiempo real, mapas satelitales de contaminación lumínica (Bortle 1 a 9) y la cobertura más avanzada para el Gran Eclipse Total Solar 2027.')}
             </p>
 
             {/* SECTIONS & FEATURE PILLS / PESTAÑAS DE ACCESO - BLOQUEADAS HASTA REGISTRO/PAGO */}
             <div className="pt-2">
               <div className="flex items-center justify-between gap-2 mb-2">
                 <span className="text-[11px] font-black uppercase tracking-wider text-[#7DD3FC] block font-mono">
-                  Módulos y Funciones Incluidas (Acceso Premium):
+                  {t('welcomeModulesTitle', 'Módulos y Funciones Incluidas (Acceso Premium):')}
                 </span>
                 <span className="text-[10px] text-amber-300 font-bold bg-amber-400/20 px-2.5 py-0.5 rounded-full border border-amber-400/30 flex items-center gap-1">
                   <span className="material-symbols-outlined text-xs">lock</span>
-                  <span>Requiere Registro o Pase Activo</span>
+                  <span>{t('welcomeModulesLock', 'Requiere Registro o Pase Activo')}</span>
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => handleNavigate('spots')}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
-                    hasAccess
-                      ? 'bg-white/10 hover:bg-[#0284C7] border border-white/20 hover:border-[#38BDF8] text-white cursor-pointer active:scale-95'
-                      : 'bg-white/5 border border-white/10 text-white/70 hover:border-amber-400/50 hover:bg-white/10 cursor-pointer'
-                  }`}
-                  title={hasAccess ? 'Abrir Zonas Starlight' : 'Selecciona una modalidad de pago o 48h gratis para desbloquear'}
-                >
-                  <span className="material-symbols-outlined text-sm text-[#38BDF8]">near_me</span>
-                  <span>Encuentra Zonas Starlight</span>
-                  {!hasAccess && <span className="material-symbols-outlined text-[13px] text-amber-300 ml-1">lock</span>}
-                </button>
-
                 <button
                   onClick={() => handleNavigate('events')}
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
@@ -390,10 +402,10 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                       ? 'bg-white/10 hover:bg-[#0284C7] border border-white/20 hover:border-[#38BDF8] text-white cursor-pointer active:scale-95'
                       : 'bg-white/5 border border-white/10 text-white/70 hover:border-amber-400/50 hover:bg-white/10 cursor-pointer'
                   }`}
-                  title={hasAccess ? 'Abrir Eventos Estelares' : 'Selecciona una modalidad de pago o 48h gratis para desbloquear'}
+                  title={hasAccess ? t('events', 'Eventos Estelares') : t('welcomeModulesLock', 'Requiere Registro o Pase Activo')}
                 >
                   <span className="material-symbols-outlined text-sm text-amber-300">flare</span>
-                  <span>Eventos Estelares</span>
+                  <span>{t('events', 'Eventos Estelares')}</span>
                   {!hasAccess && <span className="material-symbols-outlined text-[13px] text-amber-300 ml-1">lock</span>}
                 </button>
 
@@ -404,10 +416,10 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                       ? 'bg-white/10 hover:bg-[#0284C7] border border-white/20 hover:border-[#38BDF8] text-white cursor-pointer active:scale-95'
                       : 'bg-white/5 border border-white/10 text-white/70 hover:border-amber-400/50 hover:bg-white/10 cursor-pointer'
                   }`}
-                  title={hasAccess ? 'Abrir Asistente IA' : 'Selecciona una modalidad de pago o 48h gratis para desbloquear'}
+                  title={hasAccess ? t('assistant', 'Asistente IA Starlight') : t('welcomeModulesLock', 'Requiere Registro o Pase Activo')}
                 >
                   <span className="material-symbols-outlined text-sm text-emerald-300">smart_toy</span>
-                  <span>Asistente IA Starlight</span>
+                  <span>{t('assistant', 'Asistente IA Starlight')}</span>
                   {!hasAccess && <span className="material-symbols-outlined text-[13px] text-amber-300 ml-1">lock</span>}
                 </button>
 
@@ -418,10 +430,10 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                       ? 'bg-white/10 hover:bg-[#0284C7] border border-white/20 hover:border-[#38BDF8] text-white cursor-pointer active:scale-95'
                       : 'bg-white/5 border border-white/10 text-white/70 hover:border-amber-400/50 hover:bg-white/10 cursor-pointer'
                   }`}
-                  title={hasAccess ? 'Abrir Previsión del tiempo' : 'Selecciona una modalidad de pago o 48h gratis para desbloquear'}
+                  title={hasAccess ? t('weather', 'Previsión del tiempo') : t('welcomeModulesLock', 'Requiere Registro o Pase Activo')}
                 >
                   <span className="material-symbols-outlined text-sm text-sky-300">cloud_sync</span>
-                  <span>Previsión del tiempo</span>
+                  <span>{t('weather', 'Previsión del tiempo')}</span>
                   {!hasAccess && <span className="material-symbols-outlined text-[13px] text-amber-300 ml-1">lock</span>}
                 </button>
 
@@ -432,10 +444,10 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                       ? 'bg-white/10 hover:bg-[#0284C7] border border-white/20 hover:border-[#38BDF8] text-white cursor-pointer active:scale-95'
                       : 'bg-white/5 border border-white/10 text-white/70 hover:border-amber-400/50 hover:bg-white/10 cursor-pointer'
                   }`}
-                  title={hasAccess ? 'Abrir Dashboard Eclipse 2027' : 'Selecciona una modalidad de pago o 48h gratis para desbloquear'}
+                  title={hasAccess ? t('dashboard', 'Dashboard Eclipse 2027') : t('welcomeModulesLock', 'Requiere Registro o Pase Activo')}
                 >
                   <span className="material-symbols-outlined text-sm text-amber-400">eclipse</span>
-                  <span>Dashboard Eclipse 2027</span>
+                  <span>{t('dashboard', 'Dashboard Eclipse 2027')}</span>
                   {!hasAccess && <span className="material-symbols-outlined text-[13px] text-amber-300 ml-1">lock</span>}
                 </button>
               </div>
@@ -449,7 +461,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                 onClick={onEnterApp}
                 className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-black font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-950/40 border border-emerald-300 cursor-pointer active:scale-95 transition-all"
               >
-                <span>Acceder a la Aplicación</span>
+                <span>{t('welcomeBtnEnterApp', 'Acceder a la Aplicación')}</span>
                 <span className="material-symbols-outlined text-lg">arrow_forward</span>
               </button>
             ) : (
@@ -458,11 +470,11 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                 className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-black font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-xl shadow-amber-950/40 border border-amber-200 cursor-pointer active:scale-95 transition-all text-center"
               >
                 <span className="material-symbols-outlined text-lg">lock</span>
-                <span>Desbloquear Acceso Completo</span>
+                <span>{t('welcomeBtnUnlock', 'Desbloquear Acceso Completo')}</span>
               </a>
             )}
             <span className="text-[11px] text-[#7DD3FC] font-bold">
-              {hasAccess ? '✓ Acceso Activo Desbloqueado' : '🔒 Requiere activar 48h Gratis o Suscripción'}
+              {hasAccess ? t('welcomeStatusActive', '✓ Acceso Activo Desbloqueado') : t('welcomeStatusLocked', '🔒 Requiere activar 48h Gratis o Suscripción')}
             </span>
           </div>
         </div>
@@ -476,10 +488,10 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
           </div>
           <div>
             <h4 className="text-xs font-black uppercase tracking-wider text-white">
-              Pasarelas de Pago Oficiales Conectadas
+              {t('welcomeGatewaysTitle', 'Pasarelas de Pago Oficiales Conectadas')}
             </h4>
             <p className="text-[11px] text-[#BAE6FD] font-medium">
-              Transacciones seguras con encriptación SSL de 256 bits y protección contra fraude.
+              {t('welcomeGatewaysDesc', 'Transacciones seguras con encriptación SSL de 256 bits y protección contra fraude.')}
             </p>
           </div>
         </div>
@@ -490,7 +502,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
             <span>Stripe</span>
             <span className="text-[10px] text-emerald-300 font-mono bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-500/40">
-              CONECTADO
+              {t('welcomeGatewaysConnected', 'CONECTADO')}
             </span>
           </div>
 
@@ -499,7 +511,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
             <span>PayPal</span>
             <span className="text-[10px] text-emerald-300 font-mono bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-500/40">
-              CONECTADO
+              {t('welcomeGatewaysConnected', 'CONECTADO')}
             </span>
           </div>
         </div>
@@ -509,10 +521,10 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
       <div id="planes-pago" className="space-y-6 pt-2 scroll-mt-6">
         <div className="text-center space-y-2 max-w-2xl mx-auto">
           <h2 className="text-xl sm:text-3xl font-black font-['Plus_Jakarta_Sans'] text-white">
-            Elige tu Plan de Acceso StellaWay
+            {t('welcomePlansTitle', 'Elige tu Plan de Acceso StellaWay')}
           </h2>
           <p className="text-xs sm:text-sm text-[#BAE6FD] font-medium">
-            Selecciona la opción que prefieras: activa tu prueba de 48 horas gratis mediante verificación telefónica o suscríbete a los planes Pro mediante Stripe o PayPal.
+            {t('welcomePlansDesc', 'Selecciona la opción que prefieras: activa tu prueba de 48 horas gratis mediante verificación telefónica o suscríbete a los planes Pro mediante Stripe o PayPal.')}
           </p>
         </div>
 
@@ -530,46 +542,46 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="px-3 py-1 rounded-full bg-sky-500/20 text-[#7DD3FC] border border-sky-400/40 text-[10px] font-black uppercase tracking-wider">
-                  Prueba Gratuita
+                  {t('welcomePlanFreeBadge', 'Prueba Gratuita')}
                 </span>
                 {selectedPlan === 'free2days' && (
                   <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 border border-emerald-400/50 text-[10px] font-bold">
-                    ✓ Elegido
+                    {t('welcomeChosen', '✓ Elegido')}
                   </span>
                 )}
               </div>
 
               <div>
                 <h3 className="text-xl font-black text-white font-['Plus_Jakarta_Sans']">
-                  48 Horas Gratis
+                  {t('welcomePlanFreeTitle', '48 Horas Gratis')}
                 </h3>
                 <p className="text-xs text-[#BAE6FD] mt-1 font-medium leading-relaxed">
-                  Acceso total e ilimitado a todas las herramientas de la app durante 2 días completos.
+                  {t('welcomePlanFreeDesc', 'Acceso total e ilimitado a todas las herramientas de la app durante 2 días completos.')}
                 </p>
               </div>
 
               <div className="pt-2">
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-black text-white font-['JetBrains_Mono']">0 €</span>
-                  <span className="text-xs text-[#7DD3FC] font-bold">/ 48 horas</span>
+                  <span className="text-xs text-[#7DD3FC] font-bold">{t('welcomePlanFreeUnit', '/ 48 horas')}</span>
                 </div>
                 <p className="text-[11px] text-amber-300 font-bold mt-1">
-                  📱 Requiere verificación por SMS (1 uso por móvil).
+                  {t('welcomePlanFreeNote', '📱 Requiere verificación por SMS (1 uso por móvil).')}
                 </p>
               </div>
 
               <ul className="space-y-2 text-xs text-[#E0F2FE] pt-2 border-t border-[#38BDF8]/30">
                 <li className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm text-emerald-400">check</span>
-                  <span>Telemetría y seeing en directo</span>
+                  <span>{t('welcomePlanFreeF1', 'Telemetría y seeing en directo')}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm text-emerald-400">check</span>
-                  <span>Mapas satelitales Bortle 1 a 9</span>
+                  <span>{t('welcomePlanFreeF2', 'Mapas satelitales Bortle 1 a 9')}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm text-emerald-400">check</span>
-                  <span>Asistente IA astronómico Starlight</span>
+                  <span>{t('welcomePlanFreeF3', 'Asistente IA astronómico Starlight')}</span>
                 </li>
               </ul>
             </div>
@@ -587,7 +599,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                     : 'bg-white/10 hover:bg-white/20 text-white border-white/20'
                 }`}
               >
-                {activeTrialPhone ? '✓ Prueba Ya Activa' : 'Seleccionar 48h Gratis'}
+                {activeTrialPhone ? t('welcomePlanFreeBtnActive', '✓ Prueba Ya Activa') : t('welcomePlanFreeBtn', 'Seleccionar 48h Gratis')}
               </button>
             </div>
           </div>
@@ -604,46 +616,46 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="px-3 py-1 rounded-full bg-blue-500/20 text-[#7DD3FC] border border-blue-400/40 text-[10px] font-black uppercase tracking-wider">
-                  Plan Mensual
+                  {t('welcomePlanMonthlyBadge', 'Plan Mensual')}
                 </span>
                 {selectedPlan === 'mensual' && (
                   <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 border border-emerald-400/50 text-[10px] font-bold">
-                    ✓ Elegido
+                    {t('welcomeChosen', '✓ Elegido')}
                   </span>
                 )}
               </div>
 
               <div>
                 <h3 className="text-xl font-black text-white font-['Plus_Jakarta_Sans']">
-                  Starlight Pro
+                  {t('welcomePlanMonthlyTitle', 'Starlight Pro')}
                 </h3>
                 <p className="text-xs text-[#BAE6FD] mt-1 font-medium leading-relaxed">
-                  Suscripción mensual flexible. Sin compromiso de permanencia, cancelable en 1 clic.
+                  {t('welcomePlanMonthlyDesc', 'Suscripción mensual flexible. Sin compromiso de permanencia, cancelable en 1 clic.')}
                 </p>
               </div>
 
               <div className="pt-2">
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-black text-white font-['JetBrains_Mono']">3,99 €</span>
-                  <span className="text-xs text-[#7DD3FC] font-bold">/ mes</span>
+                  <span className="text-xs text-[#7DD3FC] font-bold">{t('welcomePlanMonthlyUnit', '/ mes')}</span>
                 </div>
                 <p className="text-[11px] text-emerald-300 font-bold mt-1">
-                  💳 Pago seguro con Tarjeta, Stripe o PayPal.
+                  {t('welcomePlanMonthlyNote', '💳 Pago seguro con Tarjeta, Stripe o PayPal.')}
                 </p>
               </div>
 
               <ul className="space-y-2 text-xs text-[#E0F2FE] pt-2 border-t border-[#38BDF8]/30">
                 <li className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm text-emerald-400">check</span>
-                  <span>Acceso continuo sin límites</span>
+                  <span>{t('welcomePlanMonthlyF1', 'Acceso continuo sin límites')}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm text-emerald-400">check</span>
-                  <span>Alertas meteorológicas y auroras</span>
+                  <span>{t('welcomePlanMonthlyF2', 'Alertas meteorológicas y auroras')}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm text-emerald-400">check</span>
-                  <span>Exportación de diarios de campo</span>
+                  <span>{t('welcomePlanMonthlyF3', 'Exportación de diarios de campo')}</span>
                 </li>
               </ul>
             </div>
@@ -661,7 +673,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                     : 'bg-white/10 hover:bg-white/20 text-white border-white/20'
                 }`}
               >
-                Seleccionar Plan Mensual (3,99 €)
+                {t('welcomePlanMonthlyBtn', 'Seleccionar Plan Mensual (3,99 €)')}
               </button>
             </div>
           </div>
@@ -677,52 +689,52 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
           >
             {/* Best Value Ribbon */}
             <div className="absolute -top-3 right-6 bg-gradient-to-r from-amber-400 to-amber-500 text-black text-[10px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full shadow-lg border border-amber-300">
-              ⭐ Ahorra un 58%
+              {t('welcomePlanAnnualRibbon', '⭐ Ahorra un 58%')}
             </div>
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase tracking-wider">
-                  Pase Anual Completo
+                  {t('welcomePlanAnnualBadge', 'Pase Anual Completo')}
                 </span>
                 {selectedPlan === 'anual' && (
                   <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 border border-emerald-400/50 text-[10px] font-bold">
-                    ✓ Elegido
+                    {t('welcomeChosen', '✓ Elegido')}
                   </span>
                 )}
               </div>
 
               <div>
                 <h3 className="text-xl font-black text-white font-['Plus_Jakarta_Sans']">
-                  Starlight Pass Anual
+                  {t('welcomePlanAnnualTitle', 'Starlight Pass Anual')}
                 </h3>
                 <p className="text-xs text-[#BAE6FD] mt-1 font-medium leading-relaxed">
-                  12 meses de cobertura total. Especial para disfrutar del Gran Eclipse Total Solar 2027 y lluvias estelares.
+                  {t('welcomePlanAnnualDesc', '12 meses de cobertura total. Especial para disfrutar del Gran Eclipse Total Solar 2027 y lluvias estelares.')}
                 </p>
               </div>
 
               <div className="pt-2">
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-black text-white font-['JetBrains_Mono']">19,99 €</span>
-                  <span className="text-xs text-amber-300 font-bold">/ año</span>
+                  <span className="text-xs text-amber-300 font-bold">{t('welcomePlanAnnualUnit', '/ año')}</span>
                 </div>
                 <p className="text-[11px] text-[#BAE6FD] font-bold mt-1">
-                  Equivale a solo <strong>1,66 € / mes</strong>.
+                  {t('welcomePlanAnnualNote', 'Equivale a solo 1,66 € / mes.')}
                 </p>
               </div>
 
               <ul className="space-y-2 text-xs text-[#E0F2FE] pt-2 border-t border-[#38BDF8]/30">
                 <li className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm text-emerald-400">check</span>
-                  <span>Pase VIP Gran Eclipse Total Solar 2027</span>
+                  <span>{t('welcomePlanAnnualF1', 'Pase VIP Gran Eclipse Total Solar 2027')}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm text-emerald-400">check</span>
-                  <span>Sincronización ilimitada con Google Calendar</span>
+                  <span>{t('welcomePlanAnnualF2', 'Sincronización ilimitada con Google Calendar')}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm text-emerald-400">check</span>
-                  <span>Soporte prioritario y acceso a novedades</span>
+                  <span>{t('welcomePlanAnnualF3', 'Soporte prioritario y acceso a novedades')}</span>
                 </li>
               </ul>
             </div>
@@ -740,7 +752,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                     : 'bg-white/10 hover:bg-white/20 text-white border-white/20'
                 }`}
               >
-                Seleccionar Plan Anual (19,99 €)
+                {t('welcomePlanAnnualBtn', 'Seleccionar Plan Anual (19,99 €)')}
               </button>
             </div>
           </div>
@@ -756,10 +768,10 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                   <span className="material-symbols-outlined text-2xl">smartphone</span>
                 </div>
                 <h3 className="text-lg font-black text-white font-['Plus_Jakarta_Sans']">
-                  Verificación Telefónica para 48 Horas Gratis
+                  {t('welcomePhoneTitle', 'Verificación Telefónica para 48 Horas Gratis')}
                 </h3>
                 <p className="text-xs text-[#BAE6FD] font-medium leading-relaxed">
-                  Introduce tu número móvil para recibir un SMS gratuito con tu código de activación. Se permite 1 prueba gratuita por número y dispositivo.
+                  {t('welcomePhoneDesc', 'Introduce tu número móvil para recibir un SMS gratuito con tu código de activación. Se permite 1 prueba gratuita por número y dispositivo.')}
                 </p>
               </div>
 
@@ -767,23 +779,23 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                 <div className="p-5 rounded-2xl bg-emerald-950/60 border border-emerald-400/50 space-y-3 text-center">
                   <div className="flex items-center justify-center gap-2 text-emerald-400">
                     <span className="material-symbols-outlined text-2xl">verified</span>
-                    <span className="text-base font-black">¡Prueba Gratuita de 48 Horas Activa!</span>
+                    <span className="text-base font-black">{t('welcomeTrialActive', '¡Prueba Gratuita de 48 Horas Activa!')}</span>
                   </div>
                   <p className="text-xs text-emerald-200">
-                    Número verificado: <strong>{activeTrialPhone || phoneNumber}</strong>. Tienes acceso completo e ilimitado a todas las funciones de StellaWay.
+                    {t('welcomeTrialNumVerified', 'Número verificado:')} <strong>{activeTrialPhone || phoneNumber}</strong>{t('welcomeTrialAccessNotice', '. Tienes acceso completo e ilimitado a todas las funciones de StellaWay.')}
                   </p>
                   <button
                     onClick={onEnterApp}
                     className="mt-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-black font-black text-xs uppercase tracking-wider cursor-pointer transition-all shadow-lg"
                   >
-                    Entrar al Dashboard de Astroturismo
+                    {t('welcomeEnterDashboard', 'Entrar al Dashboard de Astroturismo')}
                   </button>
                 </div>
               ) : smsStep === 'phone' ? (
                 <form onSubmit={handleSendSms} className="space-y-4 bg-[#0C4A6E]/50 p-5 rounded-2xl border border-[#38BDF8]/30">
                   <div>
                     <label className="block text-xs font-black text-[#7DD3FC] mb-1.5 uppercase tracking-wider">
-                      Número de Teléfono Móvil
+                      {t('welcomePhoneLabel', 'Número de Teléfono Móvil')}
                     </label>
                     <div className="flex gap-2">
                       <select
@@ -856,12 +868,12 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                     {isVerifyingSms ? (
                       <>
                         <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Enviando código SMS...</span>
+                        <span>{t('welcomeSendingSms', 'Enviando código SMS...')}</span>
                       </>
                     ) : (
                       <>
                         <span className="material-symbols-outlined text-base">send_to_mobile</span>
-                        <span>Enviar Código SMS de Activación</span>
+                        <span>{t('welcomeSendSmsBtn', 'Enviar Código SMS de Activación')}</span>
                       </>
                     )}
                   </button>
@@ -870,31 +882,31 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                 <form onSubmit={handleVerifySmsCode} className="space-y-4 bg-[#0C4A6E]/50 p-5 rounded-2xl border border-[#38BDF8]/30 animate-fadeIn">
                   <div className="text-center space-y-1">
                     <p className="text-xs text-emerald-300 font-bold">
-                      ✓ Código SMS enviado al {countryCode} {phoneNumber}
+                      {t('welcomeSmsSentTo', '✓ Código SMS enviado al')} {countryCode} {phoneNumber}
                     </p>
                     <p className="text-[11px] text-[#BAE6FD]">
-                      Introduce el código recibido por SMS para activar tus 48 horas:
+                      {t('welcomeSmsPrompt', 'Introduce el código recibido por SMS para activar tus 48 horas:')}
                     </p>
 
                     {/* Simulated SMS Notification Banner for test demonstration */}
                     <div className="mt-2 p-2.5 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-200 text-xs flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 text-left">
                         <span className="material-symbols-outlined text-base text-amber-300">sms</span>
-                        <span>SMS recibido: Código <strong>{simulatedCode}</strong></span>
+                        <span>{t('welcomeSmsReceived', 'SMS recibido: Código')} <strong>{simulatedCode}</strong></span>
                       </div>
                       <button
                         type="button"
                         onClick={() => setSmsCode(simulatedCode)}
                         className="px-2.5 py-1 rounded-lg bg-amber-400 text-black font-black text-[10px] uppercase hover:bg-amber-300 transition-all cursor-pointer"
                       >
-                        Auto-rellenar
+                        {t('welcomeAutoFill', 'Auto-rellenar')}
                       </button>
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-xs font-black text-[#7DD3FC] mb-1.5 uppercase tracking-wider text-center">
-                      Código SMS (Ej: {simulatedCode})
+                      {t('welcomeSmsCodeLabel', 'Código SMS')} (Ej: {simulatedCode})
                     </label>
                     <input
                       type="text"
@@ -922,14 +934,14 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                       onClick={() => setSmsStep('phone')}
                       className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold"
                     >
-                      Cambiar Número
+                      {t('welcomeChangeNumber', 'Cambiar Número')}
                     </button>
                     <button
                       type="submit"
                       disabled={isVerifyingSms}
                       className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg disabled:opacity-50"
                     >
-                      {isVerifyingSms ? 'Verificando...' : 'Activar 48 Horas Gratis'}
+                      {isVerifyingSms ? t('welcomeVerifying', 'Verificando...') : t('welcomeActivateTrialBtn', 'Activar 48 Horas Gratis')}
                     </button>
                   </div>
                 </form>
@@ -938,7 +950,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
               {/* Direct Stripe Registration for 48h Free Trial */}
               <div className="pt-3 border-t border-[#38BDF8]/20 flex flex-col items-center gap-2 text-center">
                 <span className="text-[11px] text-[#7DD3FC] font-semibold">
-                  ¿Prefieres activar las 48h directamente a través de Stripe (0,00 €)?
+                  {t('welcomePreferDirectStripe', '¿Prefieres activar las 48h directamente a través de Stripe (0,00 €)?')}
                 </span>
                 <a
                   href={STRIPE_DIRECT_PAYMENT_LINKS.free2days}
@@ -947,7 +959,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#635BFF] hover:bg-[#5349DF] text-white text-xs font-black uppercase tracking-wider shadow-md transition-all hover:scale-[1.02]"
                 >
                   <span className="material-symbols-outlined text-base">verified</span>
-                  <span>Activar 48h Gratis en Stripe (0,00 €)</span>
+                  <span>{t('welcomeDirectStripeTrialBtn', 'Activar 48h Gratis en Stripe (0,00 €)')}</span>
                   <span className="material-symbols-outlined text-sm">open_in_new</span>
                 </a>
               </div>
@@ -969,7 +981,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                   }`}
                 >
                   <span className="material-symbols-outlined text-2xl">credit_card</span>
-                  <span className="text-xs font-black uppercase">Stripe / Tarjeta</span>
+                  <span className="text-xs font-black uppercase">{t('welcomeMethodStripe', 'Stripe / Tarjeta')}</span>
                 </button>
 
                 <button
@@ -982,7 +994,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                   }`}
                 >
                   <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
-                  <span className="text-xs font-black uppercase">PayPal</span>
+                  <span className="text-xs font-black uppercase">{t('welcomeMethodPaypal', 'PayPal')}</span>
                 </button>
               </div>
 
@@ -993,25 +1005,25 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                     <span className="material-symbols-outlined text-3xl font-black">check</span>
                   </div>
                   <div>
-                    <h4 className="text-lg font-black text-white">¡Suscripción Activada con Éxito!</h4>
+                    <h4 className="text-lg font-black text-white">{t('welcomeSuccessTitle', '¡Suscripción Activada con Éxito!')}</h4>
                     <p className="text-xs text-emerald-200 mt-1">
-                      Procesado por <strong>{paymentSuccessData.provider}</strong> • Ref:{' '}
+                      {t('welcomeProcessedBy', 'Procesado por')} <strong>{paymentSuccessData.provider}</strong> • Ref:{' '}
                       <span className="font-mono text-white">{paymentSuccessData.transactionId}</span>
                     </p>
                   </div>
 
                   <div className="p-3 bg-black/40 rounded-xl max-w-sm mx-auto text-left text-xs space-y-1 text-[#BAE6FD]">
                     <div className="flex justify-between">
-                      <span>Plan:</span>
+                      <span>{t('welcomePlanLabel', 'Plan:')}</span>
                       <span className="font-bold text-white">{paymentSuccessData.planName}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Importe:</span>
+                      <span>{t('welcomeAmountLabel', 'Importe:')}</span>
                       <span className="font-bold text-white">{paymentSuccessData.amount}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Estado:</span>
-                      <span className="text-emerald-400 font-bold">Activo • Acceso Total</span>
+                      <span>{t('welcomeStatusLabel', 'Estado:')}</span>
+                      <span className="text-emerald-400 font-bold">{t('welcomeStatusActiveValue', 'Activo • Acceso Total')}</span>
                     </div>
                   </div>
 
@@ -1019,7 +1031,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                     onClick={onEnterApp}
                     className="px-8 py-3.5 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-black font-black text-xs uppercase tracking-wider cursor-pointer transition-all shadow-xl"
                   >
-                    Entrar a StellaWay Astroturismo
+                    {t('welcomeEnterAppBtn', 'Entrar a StellaWay Astroturismo')}
                   </button>
                 </div>
               ) : (
@@ -1029,7 +1041,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                     <form onSubmit={handleStripePayment} className="space-y-4 bg-[#0C4A6E]/40 p-5 rounded-2xl border border-[#38BDF8]/30">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-black text-[#7DD3FC] uppercase tracking-wider">
-                          Detalles de la Tarjeta (Stripe Checkout)
+                          {t('welcomeCardDetails', 'Detalles de la Tarjeta (Stripe Checkout)')}
                         </span>
                         <div className="flex gap-1.5 text-[10px] font-bold text-[#BAE6FD]">
                           <span>Visa</span> • <span>Mastercard</span> • <span>Amex</span> • <span>Apple Pay</span>
@@ -1038,21 +1050,21 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
 
                       <div>
                         <label className="block text-[11px] font-bold text-[#BAE6FD] mb-1">
-                          Nombre del Titular
+                          {t('welcomeCardHolder', 'Nombre del Titular')}
                         </label>
                         <input
                           type="text"
                           required
                           value={cardHolder}
                           onChange={(e) => setCardHolder(e.target.value)}
-                          placeholder="Nombre y Apellidos"
+                          placeholder={t('welcomeCardHolderPlaceholder', 'Nombre y Apellidos')}
                           className="w-full bg-[#082F49] border border-[#38BDF8]/50 rounded-xl px-3.5 py-2.5 text-white text-xs font-bold focus:border-[#7DD3FC] outline-none"
                         />
                       </div>
 
                       <div>
                         <label className="block text-[11px] font-bold text-[#BAE6FD] mb-1">
-                          Número de Tarjeta
+                          {t('welcomeCardNumber', 'Número de Tarjeta')}
                         </label>
                         <div className="relative">
                           <input
@@ -1073,7 +1085,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                       <div className="grid grid-cols-3 gap-3">
                         <div>
                           <label className="block text-[11px] font-bold text-[#BAE6FD] mb-1">
-                            MM / AA
+                            {t('welcomeCardExpiry', 'MM / AA')}
                           </label>
                           <input
                             type="text"
@@ -1088,7 +1100,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
 
                         <div>
                           <label className="block text-[11px] font-bold text-[#BAE6FD] mb-1">
-                            CVC
+                            {t('welcomeCardCvc', 'CVC')}
                           </label>
                           <input
                             type="text"
@@ -1103,7 +1115,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
 
                         <div>
                           <label className="block text-[11px] font-bold text-[#BAE6FD] mb-1">
-                            Código Postal
+                            {t('welcomeCardZip', 'Código Postal')}
                           </label>
                           <input
                             type="text"
@@ -1124,13 +1136,13 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                         {isProcessingPayment ? (
                           <>
                             <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>Procesando pago con Stripe...</span>
+                            <span>{t('welcomeProcessingStripe', 'Procesando pago con Stripe...')}</span>
                           </>
                         ) : (
                           <>
                             <span className="material-symbols-outlined text-base">lock</span>
                             <span>
-                              Pagar {selectedPlan === 'mensual' ? '3,99 €' : '19,99 €'} con Stripe
+                              {t('welcomePayWithStripe', 'Pagar con Stripe')} ({selectedPlan === 'mensual' ? '3,99 €' : '19,99 €'})
                             </span>
                           </>
                         )}
@@ -1139,7 +1151,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                       {/* Direct Stripe Checkout Link (Official StellaWay Link) */}
                       <div className="pt-2 border-t border-[#38BDF8]/20 flex flex-col items-center gap-2 text-center">
                         <span className="text-[10px] text-[#7DD3FC] font-semibold">
-                          ¿Prefieres la pasarela oficial de Stripe en pestaña nueva?
+                          {t('welcomeStripeNewTabNotice', '¿Prefieres la pasarela oficial de Stripe en pestaña nueva?')}
                         </span>
                         <a
                           href={STRIPE_DIRECT_PAYMENT_LINKS[selectedPlan] || STRIPE_DIRECT_PAYMENT_LINKS.anual}
@@ -1147,7 +1159,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#635BFF] hover:bg-[#5349DF] text-white text-xs font-black uppercase tracking-wider shadow-md transition-all hover:scale-[1.02]"
                         >
-                          <span>Abrir Enlace Oficial de Stripe ({selectedPlan === 'mensual' ? '3,99 €' : '19,99 €'})</span>
+                          <span>{t('welcomeOpenOfficialStripe', 'Abrir Enlace Oficial de Stripe')} ({selectedPlan === 'mensual' ? '3,99 €' : '19,99 €'})</span>
                           <span className="material-symbols-outlined text-sm">open_in_new</span>
                         </a>
                       </div>
@@ -1162,14 +1174,13 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                           <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
                         </div>
                         <h4 className="text-base font-black text-white">
-                          Pagar de forma rápida y segura con PayPal
+                          {t('welcomePaypalTitle', 'Pagar de forma rápida y segura con PayPal')}
                         </h4>
                         <p className="text-xs text-[#BAE6FD] max-w-md mx-auto">
-                          Inicia sesión con tu cuenta de PayPal para autorizar el pago de{' '}
+                          {t('welcomePaypalDesc', 'Inicia sesión con tu cuenta de PayPal para autorizar el pago con protección completa al comprador.')}{' '}
                           <strong className="text-white">
-                            {selectedPlan === 'mensual' ? '3,99 € / mes' : '19,99 € / año'}
-                          </strong>{' '}
-                          con protección completa al comprador.
+                            ({selectedPlan === 'mensual' ? '3,99 € / mes' : '19,99 € / año'})
+                          </strong>
                         </p>
                       </div>
 
@@ -1181,12 +1192,12 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                         {isProcessingPayment ? (
                           <>
                             <span className="w-4 h-4 border-2 border-[#003087] border-t-transparent rounded-full animate-spin" />
-                            <span>Conectando con PayPal...</span>
+                            <span>{t('welcomePaypalConnecting', 'Conectando con PayPal...')}</span>
                           </>
                         ) : (
                           <>
                             <span className="font-extrabold font-serif italic text-base">P</span>
-                            <span>Pagar con PayPal Express</span>
+                            <span>{t('welcomePaypalBtn', 'Pagar con PayPal Express')}</span>
                           </>
                         )}
                       </button>

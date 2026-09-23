@@ -68,31 +68,38 @@
 .shooting-star {
   position: absolute;
   height: 2px;
-  background: linear-gradient(90deg, rgba(255,255,255,1), rgba(254,230,133,0.8), rgba(125,211,252,0.4), transparent);
+  background: linear-gradient(90deg, rgba(255,255,255,1), rgba(254,230,133,0.9), rgba(125,211,252,0.6), transparent);
   border-radius: 999px;
-  filter: drop-shadow(0 0 8px rgba(254, 230, 133, 0.9));
+  filter: drop-shadow(0 0 10px rgba(254, 230, 133, 1)) drop-shadow(0 0 16px rgba(125, 211, 252, 0.7));
   pointer-events: none;
 }
 
 .shooting-star-1 {
-  top: 12%;
+  top: 14%;
   right: 18%;
-  width: 140px;
-  animation: shootingStarAnim 7s infinite ease-in-out 1.5s;
+  width: 160px;
+  animation: shootingStarAnim 6s infinite ease-in-out 1.2s;
 }
 
 .shooting-star-2 {
-  top: 28%;
-  right: 8%;
-  width: 180px;
-  animation: shootingStarAnim 9s infinite ease-in-out 5s;
+  top: 32%;
+  right: 10%;
+  width: 210px;
+  animation: shootingStarAnim 8s infinite ease-in-out 4.2s;
 }
 
 .shooting-star-3 {
-  top: 45%;
-  right: 30%;
-  width: 110px;
-  animation: shootingStarAnim 8s infinite ease-in-out 8.5s;
+  top: 52%;
+  right: 26%;
+  width: 130px;
+  animation: shootingStarAnim 7.5s infinite ease-in-out 7s;
+}
+
+.shooting-star-4 {
+  top: 22%;
+  right: 38%;
+  width: 180px;
+  animation: shootingStarAnim 9s infinite ease-in-out 2.8s;
 }
 
 /* Celestial Sky Blue Glass Cards, Tabs & Modals (Uniform Semi-Transparent Glass across all views) */
@@ -199,7 +206,8 @@
 
 /* Red Night Vision Mode */
 .night-vision-mode {
-  filter: sepia(1) hue-rotate(-50deg) saturate(5) contrast(1.2);
+  background-color: #100202 !important;
+  color: #FFA3A3 !important;
 }
 
 /* Custom Scrollbar */

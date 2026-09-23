@@ -143,6 +143,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
           )}
 
           <button
+            onClick={() => window.dispatchEvent(new CustomEvent('open-install-modal'))}
+            className="px-5 py-3 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/50 font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+            title="Añadir icono a la pantalla de inicio"
+          >
+            <span className="material-symbols-outlined text-lg">install_mobile</span>
+            Instalar en Móvil
+          </button>
+
+          <button
             onClick={() => setNightVision(!nightVision)}
             className={`px-5 py-3 rounded-2xl border font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
               nightVision

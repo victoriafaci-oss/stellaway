@@ -110,22 +110,46 @@ export const AssistantView: React.FC = () => {
       {/* Preset Suggestion Pills */}
       <div className="flex flex-wrap gap-2 mb-4 shrink-0">
         <button
-          onClick={() => handleSend('¿Qué necesito para ver el Eclipse Solar Total 2026 en Castellón?')}
+          onClick={() =>
+            handleSend(
+              language === 'de'
+                ? 'Was brauche ich, um die totale Sonnenfinsternis 2026/2027 in Spanien zu beobachten?'
+                : language === 'en'
+                ? 'What do I need to observe the Total Solar Eclipse in Spain?'
+                : '¿Qué necesito para ver el Eclipse Solar Total en España?'
+            )
+          }
           className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FEE685] hover:text-black border border-white/10 text-white/90 transition-all font-semibold cursor-pointer"
         >
-          🌑 Consejos Eclipse 2026
+          🌑 {language === 'de' ? 'Tipps Sonnenfinsternis' : language === 'en' ? 'Eclipse Advice' : 'Consejos Eclipse'}
         </button>
         <button
-          onClick={() => handleSend('Recomiéndame un telescopio para espacio profundo en zonas Bortle 2')}
+          onClick={() =>
+            handleSend(
+              language === 'de'
+                ? 'Empfiehl mir ein Teleskop für Deep-Sky-Beobachtungen in Bortle-2-Zonen'
+                : language === 'en'
+                ? 'Recommend a telescope for deep sky in Bortle 2 zones'
+                : 'Recomiéndame un telescopio para espacio profundo en zonas Bortle 2'
+            )
+          }
           className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FEE685] hover:text-black border border-white/10 text-white/90 transition-all font-semibold cursor-pointer"
         >
-          🔭 Recomendación Telescopio
+          🔭 {language === 'de' ? 'Teleskop-Empfehlung' : language === 'en' ? 'Telescope Guide' : 'Recomendación Telescopio'}
         </button>
         <button
-          onClick={() => handleSend('¿Cómo puedo empezar en astrofotografía de la Vía Láctea?')}
+          onClick={() =>
+            handleSend(
+              language === 'de'
+                ? 'Wie starte ich am besten mit Milchstraßen-Astrofotografie?'
+                : language === 'en'
+                ? 'How can I get started with Milky Way astrophotography?'
+                : '¿Cómo puedo empezar en astrofotografía de la Vía Láctea?'
+            )
+          }
           className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FEE685] hover:text-black border border-white/10 text-white/90 transition-all font-semibold cursor-pointer"
         >
-          📷 Astrofotografía Vía Láctea
+          📷 {language === 'de' ? 'Milchstraße Astrofotografie' : language === 'en' ? 'Milky Way Photography' : 'Astrofotografía Vía Láctea'}
         </button>
       </div>
 

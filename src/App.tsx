@@ -12,29 +12,89 @@ import { ProfileView } from './components/ProfileView';
 import { WelcomePaywallView } from './components/WelcomePaywallView';
 import { StarrySkyBackground } from './components/StarrySkyBackground';
 import { LandingPage } from './components/LandingPage';
+import { InstallPromptModal } from './components/InstallPromptModal';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('landing');
-  const [tabHistory, setTabHistory] = useState<ActiveTab[]>(['landing']);
+  // Check synchronously on initial load to avoid any flash of the landing page
+  const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isSuccessPayment =
+        urlParams.get('pago') === 'exito' ||
+        urlParams.get('success') === 'true' ||
+        urlParams.get('status') === 'success' ||
+        urlParams.get('view') === 'app' ||
+        urlParams.has('session_id');
+
+      if (isSuccessPayment) {
+        return 'dashboard';
+      }
+
+      const isSubscribed = localStorage.getItem('stellaway_subscription_active') === 'true';
+      const trialExpires = localStorage.getItem('stellaway_trial_expires');
+      if (isSubscribed || (trialExpires && Number(trialExpires) > Date.now())) {
+        return 'dashboard';
+      }
+    }
+    return 'landing';
+  });
+
+  const [tabHistory, setTabHistory] = useState<ActiveTab[]>(() => [activeTab]);
   const [nightVision, setNightVision] = useState<boolean>(false);
   const [modalType, setModalType] = useState<ModalType>(null);
 
+  // Mobile installation prompt & Post-Payment welcome state
+  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<any>(null);
+  const [showInstallModal, setShowInstallModal] = useState<boolean>(false);
+  const [isAfterPayment, setIsAfterPayment] = useState<boolean>(false);
+  const [activePlanName, setActivePlanName] = useState<string>('Pro');
+
   useEffect(() => {
-    // Check if returning from successful Stripe payment link or checkout session
+    // Listen for PWA install prompt event
+    const handleBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      setDeferredInstallPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+
+    // Listen for custom open-install-modal event from anywhere in the app
+    const handleOpenInstall = () => setShowInstallModal(true);
+    window.addEventListener('open-install-modal', handleOpenInstall);
+
+    // Check if returning from Stripe payment link or checkout session
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('pago') === 'exito') {
+      const isSuccessPayment =
+        urlParams.get('pago') === 'exito' ||
+        urlParams.get('success') === 'true' ||
+        urlParams.get('status') === 'success' ||
+        urlParams.get('view') === 'app' ||
+        urlParams.has('session_id');
+
+      if (isSuccessPayment) {
         const planParam = urlParams.get('plan') || 'anual';
         const sessionId = urlParams.get('session_id') || 'stripe_checkout_success';
-        localStorage.setItem('stellaway_subscription_active', 'true');
+        
         localStorage.setItem('stellaway_active_plan', planParam);
         localStorage.setItem('stellaway_payment_provider', 'Stripe Payments');
         localStorage.setItem('stellaway_transaction_id', sessionId);
 
         if (planParam === 'free2days' || planParam === 'trial_48h') {
+          // Strict 48h access
           const expiresAt = Date.now() + 48 * 3600 * 1000;
           localStorage.setItem('stellaway_trial_expires', expiresAt.toString());
           localStorage.setItem('stellaway_trial_phone', 'Verificado por Stripe (48h)');
+          localStorage.removeItem('stellaway_subscription_active'); // Not lifetime/infinite
+          setActivePlanName('Prueba 48 Horas');
+        } else {
+          localStorage.setItem('stellaway_subscription_active', 'true');
+          if (planParam === 'mensual') {
+            setActivePlanName('Plan Mensual Pro');
+          } else if (planParam === 'promocion' || planParam === 'promo') {
+            setActivePlanName('Promoción Especial');
+          } else {
+            setActivePlanName('Plan Anual Pass');
+          }
         }
         
         // Clean URL params without refresh
@@ -42,6 +102,8 @@ export default function App() {
 
         setActiveTab('dashboard');
         setTabHistory(['dashboard']);
+        setIsAfterPayment(true);
+        setShowInstallModal(true);
         return;
       }
     }
@@ -54,6 +116,11 @@ export default function App() {
       setActiveTab('dashboard');
       setTabHistory(['dashboard']);
     }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('open-install-modal', handleOpenInstall);
+    };
   }, []);
 
   const navigateTo = (newTab: ActiveTab) => {
@@ -124,6 +191,8 @@ export default function App() {
   if (activeTab === 'landing') {
     return (
       <LandingPage
+        nightVision={nightVision}
+        setNightVision={setNightVision}
         onEnterApp={() => {
           const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
           const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
@@ -170,6 +239,15 @@ export default function App() {
         closeModal={() => setModalType(null)}
         setActiveTab={navigateTo}
         openModal={(type) => setModalType(type)}
+      />
+
+      {/* Mobile Install Prompt & Post-Payment Welcome Modal */}
+      <InstallPromptModal
+        isOpen={showInstallModal}
+        onClose={() => setShowInstallModal(false)}
+        deferredPrompt={deferredInstallPrompt}
+        isAfterPayment={isAfterPayment}
+        planName={activePlanName}
       />
 
       {/* Active Tab View Rendering */}

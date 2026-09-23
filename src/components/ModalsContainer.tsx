@@ -903,6 +903,31 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
             </button>
 
 
+            {/* Instalar App en el móvil */}
+            <button
+              onClick={() => {
+                closeModal();
+                window.dispatchEvent(new CustomEvent('open-install-modal'));
+              }}
+              className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-amber-100 hover:from-amber-100 hover:to-amber-200 border border-amber-300 shadow-sm transition-all flex items-center gap-3 text-left group cursor-pointer w-full"
+            >
+              <div className="w-10 h-10 rounded-xl bg-amber-500 text-black flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                <span className="material-symbols-outlined text-xl">install_mobile</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-black text-amber-950 font-['Plus_Jakarta_Sans'] truncate">
+                    Instalar StellaWay en el Móvil
+                  </h3>
+                  <span className="px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 text-[9px] font-black uppercase tracking-wider">
+                    PWA
+                  </span>
+                </div>
+                <p className="text-[11px] text-amber-900/80 font-bold truncate">Añadir icono a la pantalla de inicio</p>
+              </div>
+              <span className="material-symbols-outlined text-amber-800 text-base shrink-0">arrow_forward</span>
+            </button>
+
             {/* 3. Emergencias */}
             <button
               onClick={() => {

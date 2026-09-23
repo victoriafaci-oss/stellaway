@@ -75,6 +75,7 @@ export const StarrySkyBackground: React.FC<StarrySkyBackgroundProps> = ({ nightV
       <div className="shooting-star shooting-star-1" />
       <div className="shooting-star shooting-star-2" />
       <div className="shooting-star shooting-star-3" />
+      <div className="shooting-star shooting-star-4" />
     </div>
   );
 };

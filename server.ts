@@ -293,6 +293,7 @@ async function startServer() {
       };
       const responseLanguage = langMap[language] || "Spanish (Español)";
       const isEnglish = language === "en";
+      const isGerman = language === "de";
 
       const systemInstruction = `You are "Stella", the premier astronomical and astrotourism AI assistant from StellaWay (official Starlight reserve partner app).
 Your mission is to guide stargazers, astrophotographers, and travelers with accurate, passionate, and scientifically rigorous astronomical advice.
@@ -341,8 +342,20 @@ Tone: Warm, inspiring, knowledgeable, clear, structured with bullet points and e
       const q = message.toLowerCase();
       let fallbackReply = "";
 
-      if (q.includes("eclipse") || q.includes("2026") || q.includes("2027") || q.includes("sol")) {
-        fallbackReply = isEnglish
+      if (q.includes("eclipse") || q.includes("2026") || q.includes("2027") || q.includes("sol") || q.includes("finsternis")) {
+        fallbackReply = isGerman
+          ? `✨ **Leitfaden zu den großen totalen Sonnenfinsternissen in Spanien** 🌑
+1. **12. August 2026 (Nord- und Ostspanien / Castellón / Teruel):**
+   - **Totalitätszone:** Galicien, Asturien, Kastilien und León, Aragonien (Saragossa, Teruel), Castellón (Maestrat) und die Balearen.
+   - **Zeitpunkt:** Am späten Nachmittag kurz vor Sonnenuntergang (~19:30 - 20:30 Uhr MESZ).
+   - **Schutz:** Verwende während der partiellen Phasen unbedingt eine zertifizierte Sonnenfinsternisbrille nach **ISO 12312-2**.
+
+2. **2. August 2027 (Südspanien / Andalusien):**
+   - **Totalitätszone:** Cádiz, Tarifa, Málaga, Granada, Almería, Ceuta, Melilla.
+   - **Dauer:** Über 4 Minuten und 30 Sekunden absolute Dunkelheit am helllichten Tag!
+
+Möchtest du genaue Koordinaten oder Kameraeinstellungen für die Sonnenfinsternis erfahren?`
+          : isEnglish
           ? `✨ **Great Total Solar Eclipses in Spain Guide** 🌑
 1. **August 12, 2026 (Northern & Eastern Spain / Castellón / Teruel):**
    - **Totality Zone:** Galicia, Asturias, Castile and León, Aragon (Zaragoza, Teruel), Castellón (Maestrat), and Balearic Islands.
@@ -366,8 +379,17 @@ Need specific coordinates or camera filter settings for the eclipse?`
    - **Duración:** ¡Más de 4 minutos y 30 segundos de oscuridad absoluta a pleno mediodía!
 
 ¿Deseas recomendaciones de miradores específicos o ajustes para fotografiar la corona solar?`;
-      } else if (q.includes("telescop") || q.includes("comprar") || q.includes("equipo") || q.includes("ocular") || q.includes("apertura")) {
-        fallbackReply = isEnglish
+      } else if (q.includes("telescop") || q.includes("comprar") || q.includes("equipo") || q.includes("ocular") || q.includes("apertura") || q.includes("fernrohr")) {
+        fallbackReply = isGerman
+          ? `🔭 **StellaWays Teleskop- und Beobachtungsratgeber**:
+1. **Beste Wahl für Einsteiger & visuelle Beobachtung (Große Öffnung):**
+   - **Dobson-Teleskop mit 150mm oder 200mm (6" oder 8")** (z. B. *Sky-Watcher Classic 200P*). Bietet das beste Lichtsammelvermögen pro Euro für Mondkrater, die Saturnringe, Jupiter sowie Nebel und Galaxien unter Bortle 2-4 Himmeln.
+2. **Kompakt & für Planeten/Reisen:** **Maksutov-Cassegrain 90mm bis 127mm** auf azimutaler Montierung.
+3. **Für Deep-Sky-Astrofotografie:** **Apochromatischer ED-Refraktor (70-80mm f/6)** auf motorisierter parallaktischer Montierung (z. B. *Star Adventurer GTi* oder *HEQ5 Pro*).
+4. **Empfohlenes Zubehör:** 2x achromatische Barlowlinse, 32mm Plössl-Okular für Weitfeld und Rotlichtlampe zur Erhaltung der Dunkeladaptation.
+
+Welches Budget oder welche Beobachtungsziele hast du im Sinn?`
+          : isEnglish
           ? `🔭 **Stella's Telescope Buying & Stargazing Guide**:
 1. **Best for Beginners / Visual Astronomy:** **Dobsonian 150mm or 200mm (6" or 8")** (e.g., Sky-Watcher Classic 200P). Offers the largest optical aperture per euro, perfect for the Moon, Saturn's rings, Jupiter, nebulae, and galaxies under Bortle 2-4 skies.
 2. **Best for Portability:** **Maksutov-Cassegrain 90mm or 102mm** on an alt-azimuth mount. Compact, razor-sharp on planets and lunar craters.
@@ -394,8 +416,16 @@ What budget and observation style do you have in mind?`
    - Luz roja de preservación de visión nocturna.
 
 ¿Cuál es tu presupuesto estimado o qué tipo de objetos te gustaría priorizar?`;
-      } else if (q.includes("bortle") || q.includes("lugar") || q.includes("donde") || q.includes("sitio") || q.includes("castellon") || q.includes("cielo oscuro") || q.includes("starlight")) {
-        fallbackReply = isEnglish
+      } else if (q.includes("bortle") || q.includes("lugar") || q.includes("donde") || q.includes("sitio") || q.includes("castellon") || q.includes("cielo oscuro") || q.includes("starlight") || q.includes("himmel") || q.includes("dunkel")) {
+        fallbackReply = isGerman
+          ? `🌌 **Die besten Dunkelhimmel- & Starlight-Zonen (Bortle 1 bis 3)**:
+- **Castellón & Maestrat (Bortle 2-3):** Naturpark Penyagolosa, Culla (zertifiziertes Starlight-Reiseziel), Ares del Maestrat und Morella.
+- **Teruel / Gúdar-Javalambre (Bortle 2):** Astronomiezentrum Galáctica in Arcos de las Salinas.
+- **Cuenca & Alto Turia (Bortle 2-3):** Starlight-Reservat Serranía de Cuenca und Aras de los Olmos.
+- **Kanarische Inseln (Bortle 1):** Roque de los Muchachos (La Palma) und El Teide (Teneriffa).
+
+*Tipp:* Nutze die Echtzeit-Bortle-Karte von StellaWay und prüfe die Wolkenabdeckung vor der Abfahrt!`
+          : isEnglish
           ? `🌌 **Best Dark Sky & Starlight Spots (Bortle 1-3)**:
 - **Castellón & Maestrat (Bortle 2-3):** Penyagolosa Natural Park, Culla (Starlight Certified Observatory), Ares del Maestrat, and Morella.
 - **Teruel / Gúdar-Javalambre (Bortle 2):** Galáctica Center for Astronomy & Arcos de las Salinas.
@@ -415,8 +445,15 @@ What budget and observation style do you have in mind?`
   * **Aras de los Olmos (Alto Turia)** y la **Serranía de Cuenca** (Vega del Codorno).
 
 ¿Te gustaría que calculemos la mejor ruta desde tu ubicación actual?`;
-      } else if (q.includes("astrofotograf") || q.includes("camara") || q.includes("via lactea") || q.includes("milky way") || q.includes("foto")) {
-        fallbackReply = isEnglish
+      } else if (q.includes("astrofotograf") || q.includes("camara") || q.includes("via lactea") || q.includes("milky way") || q.includes("foto") || q.includes("milchstrasse")) {
+        fallbackReply = isGerman
+          ? `📸 **Astrofotografie-Kurztipps für die Milchstraße**:
+1. **Objektiv:** Lichtstarkes Weitwinkel (14mm bis 24mm) mit Offenblende (**f/1.4, f/1.8 oder f/2.8**).
+2. **Belichtungszeit (NPF-Regel):** Ca. 10 bis 15 Sekunden bei 24mm Vollformat, um Sternstriche zu vermeiden.
+3. **ISO-Empfindlichkeit:** Zwischen **ISO 3200 und 6400**.
+4. **Präziser Fokus:** Manueller Fokus (MF), 10-facher Digitalzoom im Live-View auf einen hellen Stern (z. B. Wega), bis er nadelspitz klein ist.
+5. **Stacking:** Im **RAW-Format** aufnehmen und 10-15 Bilder mit kostenloser Software wie Sequator oder Siril stacken.`
+          : isEnglish
           ? `📸 **Milky Way & Night Landscape Photography Cheat-Sheet**:
 1. **Lens:** Ultra wide-angle (14mm to 24mm) with fast aperture (**f/1.8 or f/2.8**).
 2. **Exposure Time (NPF Rule):** For 24mm on Full Frame ~ 10-15s to keep stars perfectly sharp without star trails.
@@ -438,7 +475,17 @@ What budget and observation style do you have in mind?`
 
 ¿Qué cámara y objetivo estás utilizando?`;
       } else {
-        fallbackReply = isEnglish
+        fallbackReply = isGerman
+          ? `✨ **Hallo! Ich bin Stella, deine astronomische KI-Assistentin von StellaWay.**
+Ich helfe dir bei allen Fragen rund um Astronomie und Himmelsbeobachtung:
+- 🔭 **Teleskop- und Zubehörempfehlungen** passend zu deinem Budget.
+- 🌑 **Planung der totalen Sonnenfinsternis 2026 & 2027** in Spanien (Filter, Orte & Zeiten).
+- 🌌 **Dunkelste Starlight-Himmelsregionen (Bortle-Skala)** in Spanien.
+- 📸 **Milchstraßen- und Deep-Sky-Astrofotografie** (Kameraeinstellungen & Tipps).
+- 🌠 **Aktuelle Himmelsereignisse** (Sternschnuppen, Planeten, Mondphasen).
+
+Was möchtest du heute am Nachthimmel entdecken?`
+          : isEnglish
           ? `✨ **Hello! I'm Stella, your Starlight Astronomical AI Assistant.**
 I am ready to assist you with:
 - 🔭 **Telescope & Eyepiece selection** tailored to your budget and observing goals.
