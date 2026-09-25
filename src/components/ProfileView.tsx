@@ -152,10 +152,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
           </button>
 
           <button
-            onClick={() => setNightVision(!nightVision)}
+            type="button"
+            onClick={() => setNightVision((prev) => !prev)}
             className={`px-5 py-3 rounded-2xl border font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
               nightVision
-                ? 'bg-[#FF3B30] text-white border-white shadow-lg'
+                ? 'bg-[#FF3B30] text-white border-white shadow-lg shadow-red-500/40 animate-pulse'
                 : 'bg-[#082F49]/80 hover:bg-[#082F49] text-white border-[#38BDF8]/50'
             }`}
           >

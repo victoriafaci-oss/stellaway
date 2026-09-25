@@ -9,6 +9,7 @@ interface WelcomePaywallViewProps {
   onNavigateTab?: (tab: ActiveTab) => void;
   nightVision?: boolean;
   selectedPlanDefault?: 'free2days' | 'mensual' | 'anual';
+  onTriggerInstall?: () => void;
 }
 
 export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
@@ -16,6 +17,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
   onNavigateTab,
   nightVision,
   selectedPlanDefault = 'anual',
+  onTriggerInstall,
 }) => {
   const { t, language, setLanguage, languageOptions } = useLanguage();
   const [selectedPlan, setSelectedPlan] = useState<'free2days' | 'mensual' | 'anual'>(selectedPlanDefault);
@@ -457,13 +459,45 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
           {/* Quick Action to Enter or View App */}
           <div className="shrink-0 flex flex-col items-center sm:items-end gap-3 w-full sm:w-auto">
             {hasAccess ? (
-              <button
-                onClick={onEnterApp}
-                className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-black font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-950/40 border border-emerald-300 cursor-pointer active:scale-95 transition-all"
-              >
-                <span>{t('welcomeBtnEnterApp', 'Acceder a la Aplicación')}</span>
-                <span className="material-symbols-outlined text-lg">arrow_forward</span>
-              </button>
+              <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onTriggerInstall) {
+                      onTriggerInstall();
+                    } else {
+                      window.dispatchEvent(new CustomEvent('open-install-modal'));
+                    }
+                  }}
+                  className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-gradient-to-r from-[#FEE685] via-[#F0DEAA] to-[#E5B54F] text-[#120822] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-lg shadow-amber-950/40 border border-white/60 cursor-pointer active:scale-95 transition-all hover:scale-105"
+                  title="Poner icono con estrella y círculo en la pantalla de inicio"
+                >
+                  <div className="w-5 h-5 shrink-0">
+                    <svg viewBox="0 0 100 90" className="w-full h-full" fill="none">
+                      <path
+                        d="M 44 16 L 52 34 L 72 35 L 56.5 48 L 62 69 L 44 57.5 L 26 69 L 31.5 48 L 16 35 L 36 34 Z"
+                        fill="#120822"
+                      />
+                      <path
+                        d="M 12 66 C 9 53, 21 35, 45 28 C 64 22, 80 27, 84 38 C 88 49, 79 66, 55 73 C 34 79, 16 75, 12 66"
+                        stroke="#120822"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                      />
+                      <circle cx="73" cy="15.5" r="3" fill="#120822" />
+                    </svg>
+                  </div>
+                  <span>Instalar en Móvil</span>
+                </button>
+
+                <button
+                  onClick={onEnterApp}
+                  className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl shadow-emerald-950/40 border border-emerald-300 cursor-pointer active:scale-95 transition-all"
+                >
+                  <span>{t('welcomeBtnEnterApp', 'Acceder')}</span>
+                  <span className="material-symbols-outlined text-base">arrow_forward</span>
+                </button>
+              </div>
             ) : (
               <a
                 href="#planes-pago"
@@ -776,7 +810,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
               </div>
 
               {smsStep === 'verified' || activeTrialPhone ? (
-                <div className="p-5 rounded-2xl bg-emerald-950/60 border border-emerald-400/50 space-y-3 text-center">
+                <div className="p-5 sm:p-6 rounded-2xl bg-emerald-950/60 border border-emerald-400/50 space-y-4 text-center">
                   <div className="flex items-center justify-center gap-2 text-emerald-400">
                     <span className="material-symbols-outlined text-2xl">verified</span>
                     <span className="text-base font-black">{t('welcomeTrialActive', '¡Prueba Gratuita de 48 Horas Activa!')}</span>
@@ -784,12 +818,47 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                   <p className="text-xs text-emerald-200">
                     {t('welcomeTrialNumVerified', 'Número verificado:')} <strong>{activeTrialPhone || phoneNumber}</strong>{t('welcomeTrialAccessNotice', '. Tienes acceso completo e ilimitado a todas las funciones de StellaWay.')}
                   </p>
-                  <button
-                    onClick={onEnterApp}
-                    className="mt-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-black font-black text-xs uppercase tracking-wider cursor-pointer transition-all shadow-lg"
-                  >
-                    {t('welcomeEnterDashboard', 'Entrar al Dashboard de Astroturismo')}
-                  </button>
+
+                  {/* Prominent Star-with-circle Install Button */}
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onTriggerInstall) {
+                          onTriggerInstall();
+                        } else {
+                          window.dispatchEvent(new CustomEvent('open-install-modal'));
+                        }
+                      }}
+                      className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#FEE685] via-[#F0DEAA] to-[#E5B54F] text-[#120822] font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-3 shadow-[0_0_25px_rgba(240,222,170,0.5)] hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-white/80 mx-auto"
+                    >
+                      <div className="w-6 h-6 shrink-0">
+                        <svg viewBox="0 0 100 90" className="w-full h-full" fill="none">
+                          <path
+                            d="M 44 16 L 52 34 L 72 35 L 56.5 48 L 62 69 L 44 57.5 L 26 69 L 31.5 48 L 16 35 L 36 34 Z"
+                            fill="#120822"
+                          />
+                          <path
+                            d="M 12 66 C 9 53, 21 35, 45 28 C 64 22, 80 27, 84 38 C 88 49, 79 66, 55 73 C 34 79, 16 75, 12 66"
+                            stroke="#120822"
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                          />
+                          <circle cx="73" cy="15.5" r="3" fill="#120822" />
+                        </svg>
+                      </div>
+                      <span>Instalar Icono en Pantalla de mi Teléfono</span>
+                    </button>
+                  </div>
+
+                  <div>
+                    <button
+                      onClick={onEnterApp}
+                      className="px-6 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-200 font-bold text-xs uppercase tracking-wider cursor-pointer transition-all border border-emerald-400/40"
+                    >
+                      {t('welcomeEnterDashboard', 'Entrar al Dashboard de Astroturismo')} →
+                    </button>
+                  </div>
                 </div>
               ) : smsStep === 'phone' ? (
                 <form onSubmit={handleSendSms} className="space-y-4 bg-[#0C4A6E]/50 p-5 rounded-2xl border border-[#38BDF8]/30">
@@ -1027,12 +1096,46 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                     </div>
                   </div>
 
-                  <button
-                    onClick={onEnterApp}
-                    className="px-8 py-3.5 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-black font-black text-xs uppercase tracking-wider cursor-pointer transition-all shadow-xl"
-                  >
-                    {t('welcomeEnterAppBtn', 'Entrar a StellaWay Astroturismo')}
-                  </button>
+                  {/* Prominent Star-with-circle Install Button */}
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onTriggerInstall) {
+                          onTriggerInstall();
+                        } else {
+                          window.dispatchEvent(new CustomEvent('open-install-modal'));
+                        }
+                      }}
+                      className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-[#FEE685] via-[#F0DEAA] to-[#E5B54F] text-[#120822] font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(240,222,170,0.55)] hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-white/80 mx-auto"
+                    >
+                      <div className="w-6 h-6 shrink-0">
+                        <svg viewBox="0 0 100 90" className="w-full h-full" fill="none">
+                          <path
+                            d="M 44 16 L 52 34 L 72 35 L 56.5 48 L 62 69 L 44 57.5 L 26 69 L 31.5 48 L 16 35 L 36 34 Z"
+                            fill="#120822"
+                          />
+                          <path
+                            d="M 12 66 C 9 53, 21 35, 45 28 C 64 22, 80 27, 84 38 C 88 49, 79 66, 55 73 C 34 79, 16 75, 12 66"
+                            stroke="#120822"
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                          />
+                          <circle cx="73" cy="15.5" r="3" fill="#120822" />
+                        </svg>
+                      </div>
+                      <span>Poner Icono en Pantalla de mi Teléfono</span>
+                    </button>
+                  </div>
+
+                  <div>
+                    <button
+                      onClick={onEnterApp}
+                      className="px-8 py-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-200 font-bold text-xs uppercase tracking-wider cursor-pointer transition-all border border-emerald-400/40"
+                    >
+                      {t('welcomeEnterAppBtn', 'Entrar a StellaWay Astroturismo')} →
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <>

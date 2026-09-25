@@ -15,4 +15,18 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 );
 
+// Register Service Worker for PWA home screen installation
+if ('serviceWorker' in navigator && process.env.NODE_ENV !== 'test') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((reg) => {
+        console.log('StellaWay ServiceWorker registered successfully:', reg.scope);
+      })
+      .catch((err) => {
+        console.warn('StellaWay ServiceWorker registration failed:', err);
+      });
+  });
+}
+
 

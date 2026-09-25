@@ -5,6 +5,7 @@ import { TopBar } from './components/TopBar';
 import { ModalsContainer } from './components/ModalsContainer';
 import { DashboardView } from './components/DashboardView';
 import { SpotsView } from './components/SpotsView';
+import { DarkSkyView } from './components/DarkSkyView';
 import { EventsView } from './components/EventsView';
 import { WeatherView } from './components/WeatherView';
 import { AssistantView } from './components/AssistantView';
@@ -40,8 +41,27 @@ export default function App() {
   });
 
   const [tabHistory, setTabHistory] = useState<ActiveTab[]>(() => [activeTab]);
-  const [nightVision, setNightVision] = useState<boolean>(false);
+  const [nightVision, setNightVision] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('stellaway_night_vision') === 'true';
+    }
+    return false;
+  });
   const [modalType, setModalType] = useState<ModalType>(null);
+
+  // Sync nightVision state to localStorage and document root classes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('stellaway_night_vision', nightVision.toString());
+      if (nightVision) {
+        document.documentElement.classList.add('night-vision-active');
+        document.body.classList.add('night-vision-active');
+      } else {
+        document.documentElement.classList.remove('night-vision-active');
+        document.body.classList.remove('night-vision-active');
+      }
+    }
+  }, [nightVision]);
 
   // Mobile installation prompt & Post-Payment welcome state
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<any>(null);
@@ -217,9 +237,23 @@ export default function App() {
   return (
     <div
       className={`min-h-screen flex flex-col md:pl-80 relative transition-all duration-300 ${
-        nightVision ? 'night-vision-mode' : ''
+        nightVision ? 'night-vision-mode bg-[#0b0202] text-[#FFA3A3]' : ''
       }`}
     >
+      {/* 🔴 True Astronomical Red Light Layer for the App: transforms entire UI to monochromatic deep red */}
+      {nightVision && (
+        <>
+          <div
+            id="app-night-vision-color-overlay"
+            className="astronomical-red-overlay-color"
+          />
+          <div
+            id="app-night-vision-dark-overlay"
+            className="astronomical-red-overlay-dark"
+          />
+        </>
+      )}
+
       {/* Dynamic Cosmic Background with Twinkling Stars & Meteor Streaks */}
       <StarrySkyBackground nightVision={nightVision} />
 
@@ -239,6 +273,8 @@ export default function App() {
         closeModal={() => setModalType(null)}
         setActiveTab={navigateTo}
         openModal={(type) => setModalType(type)}
+        nightVision={nightVision}
+        setNightVision={setNightVision}
       />
 
       {/* Mobile Install Prompt & Post-Payment Welcome Modal */}
@@ -268,6 +304,7 @@ export default function App() {
             onEnterApp={() => navigateTo('dashboard')}
             onNavigateTab={(tab) => navigateTo(tab)}
             nightVision={nightVision}
+            onTriggerInstall={() => setShowInstallModal(true)}
           />
         )}
 
@@ -284,6 +321,13 @@ export default function App() {
 
         {activeTab === 'spots' && (
           <SpotsView
+            onGoBack={handleGoBack}
+            onGoHome={() => navigateTo('dashboard')}
+          />
+        )}
+
+        {activeTab === 'darksky' && (
+          <DarkSkyView
             onGoBack={handleGoBack}
             onGoHome={() => navigateTo('dashboard')}
           />

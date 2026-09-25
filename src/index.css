@@ -204,10 +204,54 @@
   transition: width 0.5s ease-out;
 }
 
-/* Red Night Vision Mode */
+/* Red Night Vision Mode - Astronomical Specification for Mobile & Desktop */
+html.night-vision-active,
+body.night-vision-active {
+  background-color: #0b0202 !important;
+}
+
 .night-vision-mode {
-  background-color: #100202 !important;
-  color: #FFA3A3 !important;
+  background-color: #0b0202 !important;
+  color: #ffa3a3 !important;
+  filter: grayscale(100%) sepia(100%) hue-rotate(310deg) saturate(900%) brightness(0.85) contrast(1.15);
+  -webkit-filter: grayscale(100%) sepia(100%) hue-rotate(310deg) saturate(900%) brightness(0.85) contrast(1.15);
+  transition: filter 0.3s ease, background-color 0.3s ease;
+}
+
+/* Astronomical red light overlays: ensures 100% deep monochromatic red illumination across all phone screens */
+.astronomical-red-overlay-color {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99998;
+  background-color: #FF1A1A;
+  mix-blend-mode: color;
+}
+
+.astronomical-red-overlay-dark {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99999;
+  background-color: rgba(28, 2, 2, 0.45);
+  mix-blend-mode: multiply;
+}
+
+/* Dark-adapted card backgrounds and borders when in night vision */
+.night-vision-mode .card-pastel-gold,
+.night-vision-mode .card-celestial-gold,
+.night-vision-mode .card-celestial-blue,
+.night-vision-mode .card-celestial-blue-glass {
+  border-color: rgba(255, 70, 70, 0.45) !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 40, 40, 0.3) !important;
+}
+
+.night-vision-mode .leaflet-container {
+  filter: grayscale(100%) sepia(100%) hue-rotate(310deg) saturate(900%) brightness(0.82) contrast(1.2) !important;
 }
 
 /* Custom Scrollbar */

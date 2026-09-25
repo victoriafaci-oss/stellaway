@@ -115,18 +115,20 @@ export const TopBar: React.FC<TopBarProps> = ({
           )
         )}
 
-        {/* Sol / Cambia color (Night Vision) */}
+        {/* Sol / Luz Roja (Night Vision) */}
         <button
+          type="button"
           onClick={() => setNightVision((prev) => !prev)}
-          className={`w-8 h-8 rounded-lg border transition-all flex items-center justify-center cursor-pointer active:scale-95 shadow-sm shrink-0 ${
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border transition-all flex items-center justify-center cursor-pointer active:scale-95 shadow-sm shrink-0 ${
             nightVision
-              ? 'bg-[#FF3B30] border-white text-white shadow-[0_0_14px_rgba(255,59,48,0.8)]'
-              : 'bg-white/10 border-white/20 text-white/80 hover:bg-white/20'
+              ? 'bg-[#FF3B30] border-white text-white shadow-[0_0_16px_rgba(255,59,48,0.9)] animate-pulse'
+              : 'bg-white/10 hover:bg-white/20 border-white/20 text-white/90'
           }`}
-          title={nightVision ? 'Desactivar Luz Roja' : 'Activar Modo Luz Roja / Sol'}
+          title={nightVision ? 'Desactivar Modo Luz Roja (Visión Nocturna)' : 'Activar Modo Luz Roja (Visión Nocturna)'}
           id="btn-top-red-light"
+          aria-label={nightVision ? 'Desactivar Luz Roja' : 'Activar Luz Roja'}
         >
-          <span className="material-symbols-outlined text-sm sm:text-base">
+          <span className="material-symbols-outlined text-base sm:text-lg">
             {nightVision ? 'visibility_off' : 'clear_day'}
           </span>
         </button>

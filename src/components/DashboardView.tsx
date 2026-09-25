@@ -220,13 +220,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
       {/* FAB: Night Vision Toggle */}
       <button
+        type="button"
         onClick={() => setNightVision((prev) => !prev)}
-        className={`fixed bottom-24 right-6 w-14 h-14 rounded-full backdrop-blur-md border shadow-2xl flex items-center justify-center transition-all z-40 group ${
+        className={`fixed bottom-24 right-6 w-14 h-14 rounded-full backdrop-blur-md border shadow-2xl flex items-center justify-center transition-all z-40 group cursor-pointer active:scale-95 ${
           nightVision
-            ? 'bg-[#FF3B30] border-white text-white shadow-[0_0_25px_rgba(255,59,48,0.8)] scale-110'
+            ? 'bg-[#FF3B30] border-white text-white shadow-[0_0_25px_rgba(255,59,48,0.9)] scale-110 animate-pulse'
             : 'bg-[#FF3B30]/20 border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/30 shadow-[0_0_20px_rgba(255,59,48,0.3)]'
         }`}
         title={nightVision ? t('redLightActive', 'Desactivar Luz Roja') : t('redLight', 'Activar Modo Luz Roja (Visión Nocturna)')}
+        aria-label={nightVision ? 'Desactivar Luz Roja' : 'Activar Modo Luz Roja'}
         id="btn-fab-night-vision"
       >
         <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">

@@ -21,17 +21,24 @@ export const StarrySkyBackground: React.FC<StarrySkyBackgroundProps> = ({ nightV
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden select-none">
+    <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden select-none transition-colors duration-500">
       {/* Deep Space Radial Gradient Layers */}
       <div
-        className="absolute inset-0 bg-[#160D27]"
+        className={`absolute inset-0 transition-all duration-500 ${nightVision ? 'bg-[#0B0202]' : 'bg-[#160D27]'}`}
         style={{
-          backgroundImage: `
-            radial-gradient(ellipse 80% 50% at 50% -15%, rgba(124, 77, 255, 0.28) 0%, transparent 70%),
-            radial-gradient(ellipse 60% 40% at 85% 20%, rgba(56, 189, 248, 0.15) 0%, transparent 60%),
-            radial-gradient(ellipse 70% 60% at 15% 75%, rgba(246, 211, 101, 0.12) 0%, transparent 70%),
-            radial-gradient(circle at 50% 100%, #0D071B 0%, #160D27 100%)
-          `,
+          backgroundImage: nightVision
+            ? `
+              radial-gradient(ellipse 80% 50% at 50% -15%, rgba(255, 30, 30, 0.32) 0%, transparent 70%),
+              radial-gradient(ellipse 60% 40% at 85% 20%, rgba(200, 20, 20, 0.22) 0%, transparent 60%),
+              radial-gradient(ellipse 70% 60% at 15% 75%, rgba(180, 15, 15, 0.18) 0%, transparent 70%),
+              radial-gradient(circle at 50% 100%, #080101 0%, #0E0202 100%)
+            `
+            : `
+              radial-gradient(ellipse 80% 50% at 50% -15%, rgba(124, 77, 255, 0.28) 0%, transparent 70%),
+              radial-gradient(ellipse 60% 40% at 85% 20%, rgba(56, 189, 248, 0.15) 0%, transparent 60%),
+              radial-gradient(ellipse 70% 60% at 15% 75%, rgba(246, 211, 101, 0.12) 0%, transparent 70%),
+              radial-gradient(circle at 50% 100%, #0D071B 0%, #160D27 100%)
+            `,
         }}
       />
 
@@ -39,7 +46,9 @@ export const StarrySkyBackground: React.FC<StarrySkyBackgroundProps> = ({ nightV
       <div 
         className="absolute inset-0 opacity-20 mix-blend-screen bg-cover bg-center pointer-events-none"
         style={{
-          backgroundImage: 'radial-gradient(ellipse 90% 45% at 50% 30%, rgba(186, 230, 253, 0.25) 0%, transparent 65%)',
+          backgroundImage: nightVision
+            ? 'radial-gradient(ellipse 90% 45% at 50% 30%, rgba(255, 120, 120, 0.2) 0%, transparent 65%)'
+            : 'radial-gradient(ellipse 90% 45% at 50% 30%, rgba(186, 230, 253, 0.25) 0%, transparent 65%)',
         }}
       />
 
@@ -54,13 +63,17 @@ export const StarrySkyBackground: React.FC<StarrySkyBackgroundProps> = ({ nightV
               top: star.top,
               width: `${star.size}px`,
               height: `${star.size}px`,
-              backgroundColor: star.isGolden
+              backgroundColor: nightVision
+                ? '#FF6B6B'
+                : star.isGolden
                 ? '#FEE685'
                 : star.isCyan
                 ? '#7DD3FC'
                 : '#FFFFFF',
               boxShadow: star.size > 2 
-                ? star.isGolden 
+                ? nightVision
+                  ? '0 0 6px rgba(255, 59, 48, 0.95)'
+                  : star.isGolden 
                   ? '0 0 6px rgba(254, 230, 133, 0.9)'
                   : '0 0 6px rgba(125, 211, 252, 0.9)'
                 : 'none',

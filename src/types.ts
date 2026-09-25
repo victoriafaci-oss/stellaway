@@ -1,4 +1,4 @@
-export type ActiveTab = 'landing' | 'welcome' | 'dashboard' | 'spots' | 'events' | 'weather' | 'assistant' | 'profile';
+export type ActiveTab = 'landing' | 'welcome' | 'dashboard' | 'spots' | 'darksky' | 'events' | 'weather' | 'assistant' | 'profile';
 
 export type WeatherType = 'clear' | 'rain' | 'snow' | 'wind' | 'clouds' | 'storm';
 

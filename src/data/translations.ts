@@ -21,6 +21,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Nav & TopBar
     dashboard: 'Dashboard Eclipse 2027',
     spots: 'Encuentra Zonas Starlight',
+    darksky: 'Zonas DarkSky',
     events: 'Eventos Estelares',
     weather: 'Previsión del tiempo',
     assistant: 'Asistente IA Starlight',
@@ -364,6 +365,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Nav & TopBar
     dashboard: 'Eclipse Dashboard',
     spots: 'Find Starlight Spots',
+    darksky: 'DarkSky Zones',
     events: 'Stellar Events',
     weather: 'Weather Forecast',
     assistant: 'Starlight AI Assistant',
@@ -707,6 +709,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Nav & TopBar
     dashboard: 'Tableau de Bord Éclipse 2027',
     spots: 'Trouver des Sites Starlight',
+    darksky: 'Zones DarkSky',
     events: 'Événements Stellaires',
     weather: 'Prévisions Météo',
     assistant: 'Assistant IA Starlight',
@@ -1050,6 +1053,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Nav & TopBar
     dashboard: 'Painel do Eclipse 2027',
     spots: 'Encontrar Zonas Starlight',
+    darksky: 'Zonas DarkSky',
     events: 'Eventos Estelares',
     weather: 'Previsão do Tempo',
     assistant: 'Assistente IA Starlight',
@@ -1393,6 +1397,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Nav & TopBar
     dashboard: "Dashboard Eclisse 2027",
     spots: 'Trova Zone Starlight',
+    darksky: 'Zone DarkSky',
     events: 'Eventi Stellari',
     weather: 'Previsioni Meteo',
     assistant: 'Assistente IA Starlight',
@@ -1736,6 +1741,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Nav & TopBar
     dashboard: 'Sonnenfinsternis 2027 Dashboard',
     spots: 'Starlight-Zonen Finden',
+    darksky: 'DarkSky-Zonen',
     events: 'Sternenereignisse',
     weather: 'Wettervorhersage',
     assistant: 'Starlight KI-Assistent',

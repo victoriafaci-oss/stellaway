@@ -9,6 +9,8 @@ interface ModalsContainerProps {
   closeModal: () => void;
   setActiveTab: (tab: ActiveTab) => void;
   openModal: (type: ModalType) => void;
+  nightVision?: boolean;
+  setNightVision?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const ModalsContainer: React.FC<ModalsContainerProps> = ({
@@ -16,6 +18,8 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
   closeModal,
   setActiveTab,
   openModal,
+  nightVision,
+  setNightVision,
 }) => {
   const { language, setLanguage, languageOptions, t } = useLanguage();
   const [settingsTab, setSettingsTab] = useState<'perfil' | 'tarifas' | 'pagos' | 'idiomas'>('tarifas');
@@ -902,6 +906,49 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <span className="material-symbols-outlined text-[#0284C7] text-base shrink-0">arrow_forward</span>
             </button>
 
+
+            {/* Modo Luz Roja / Visión Nocturna toggle - Accesible desde Menú en Móvil y Desktop */}
+            <button
+              type="button"
+              onClick={() => {
+                if (setNightVision) {
+                  setNightVision((prev) => !prev);
+                }
+              }}
+              className={`p-3.5 rounded-2xl border-2 transition-all flex items-center justify-between text-left group cursor-pointer w-full ${
+                nightVision
+                  ? 'bg-red-950/70 border-red-500 shadow-[0_0_18px_rgba(255,59,48,0.5)]'
+                  : 'bg-white/10 hover:bg-white/15 border-white/20'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-md ${
+                  nightVision ? 'bg-[#FF3B30] text-white shadow-[0_0_12px_rgba(255,59,48,0.8)]' : 'bg-red-500/20 text-red-400 border border-red-500/40'
+                }`}>
+                  <span className="material-symbols-outlined text-xl">
+                    {nightVision ? 'visibility_off' : 'clear_day'}
+                  </span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xs sm:text-sm font-black text-white font-['Plus_Jakarta_Sans']">
+                      Modo Luz Roja (Visión Nocturna)
+                    </h3>
+                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
+                      nightVision ? 'bg-[#FF3B30] text-white animate-pulse' : 'bg-white/20 text-white/80'
+                    }`}>
+                      {nightVision ? 'ACTIVADO' : 'DESACTIVADO'}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-white/70 font-medium">Preserva la visión adaptada a la oscuridad total</p>
+                </div>
+              </div>
+              <div className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center shrink-0 ${
+                nightVision ? 'bg-[#FF3B30] justify-end' : 'bg-white/20 justify-start'
+              }`}>
+                <div className="w-5 h-5 rounded-full bg-white shadow-md" />
+              </div>
+            </button>
 
             {/* Instalar App en el móvil */}
             <button

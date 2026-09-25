@@ -119,7 +119,24 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'spots' ? "'FILL' 1" : "'FILL' 0" }}>
                   near_me
                 </span>
-                <span>{t('spots', 'Buscar localización')}</span>
+                <span>{t('spots', 'Encuentra Zonas Starlight')}</span>
+              </button>
+            </li>
+
+            <li>
+              <button
+                onClick={() => handleNavClick('darksky')}
+                className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'darksky'
+                    ? 'bg-gradient-to-r from-[#38BDF8] to-[#0284C7] text-white font-extrabold border border-[#7DD3FC] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+                id="nav-link-darksky-mobile"
+              >
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'darksky' ? "'FILL' 1" : "'FILL' 0" }}>
+                  public
+                </span>
+                <span>{t('darksky', 'Zonas DarkSky')}</span>
               </button>
             </li>
 
@@ -189,6 +206,38 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
 
             <div className="my-2 border-t border-white/10" />
 
+            {/* Install App on Phone Button with Star and Circle Icon */}
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  setDrawerOpen(false);
+                  window.dispatchEvent(new CustomEvent('open-install-modal'));
+                }}
+                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#FEE685]/15 to-[#F0DEAA]/25 hover:from-[#FEE685]/30 hover:to-[#F0DEAA]/40 text-[#FFF5D6] border border-[#F0DEAA]/50 transition-all font-bold text-xs shadow-md active:scale-98 cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-5 h-5 shrink-0">
+                    <svg viewBox="0 0 100 90" className="w-full h-full" fill="none">
+                      <path
+                        d="M 44 16 L 52 34 L 72 35 L 56.5 48 L 62 69 L 44 57.5 L 26 69 L 31.5 48 L 16 35 L 36 34 Z"
+                        fill="#F0DEAA"
+                      />
+                      <path
+                        d="M 12 66 C 9 53, 21 35, 45 28 C 64 22, 80 27, 84 38 C 88 49, 79 66, 55 73 C 34 79, 16 75, 12 66"
+                        stroke="#F0DEAA"
+                        strokeWidth="3.5"
+                        strokeLinecap="round"
+                      />
+                      <circle cx="73" cy="15.5" r="2.5" fill="#FFFFFF" />
+                    </svg>
+                  </div>
+                  <span>Instalar App en Móvil</span>
+                </div>
+                <span className="material-symbols-outlined text-sm text-[#F0DEAA]">install_mobile</span>
+              </button>
+            </li>
+
             {/* Language Selection in Mobile Drawer */}
             {openModal && (
               <li>
@@ -219,8 +268,10 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
               <span className="text-xs font-bold text-white">{t('redLight', 'Luz Roja / Campo')}</span>
             </div>
             <button
-              onClick={() => setNightVision(!nightVision)}
-              className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center ${
+              type="button"
+              onClick={() => setNightVision((prev) => !prev)}
+              aria-label={nightVision ? 'Desactivar Luz Roja' : 'Activar Luz Roja'}
+              className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center cursor-pointer ${
                 nightVision ? 'bg-[#FF3B30] justify-end' : 'bg-white/20 justify-start'
               }`}
             >
@@ -294,7 +345,24 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: activeTab === 'spots' ? "'FILL' 1" : "'FILL' 0" }}>
                   near_me
                 </span>
-                <span>{t('spots', 'Buscar localización')}</span>
+                <span>{t('spots', 'Encuentra Zonas Starlight')}</span>
+              </button>
+            </li>
+
+            <li>
+              <button
+                onClick={() => handleNavClick('darksky')}
+                className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
+                  activeTab === 'darksky'
+                    ? 'bg-gradient-to-r from-[#38BDF8] to-[#0284C7] text-white font-extrabold border border-[#7DD3FC] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+                id="nav-link-darksky"
+              >
+                <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: activeTab === 'darksky' ? "'FILL' 1" : "'FILL' 0" }}>
+                  public
+                </span>
+                <span>{t('darksky', 'Zonas DarkSky')}</span>
               </button>
             </li>
 
@@ -394,8 +462,9 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
         {/* Night Vision Footer Toggle */}
         <div className="px-6">
           <button
-            onClick={() => setNightVision(!nightVision)}
-            className={`w-full p-3.5 rounded-2xl border transition-all flex items-center justify-between ${
+            type="button"
+            onClick={() => setNightVision((prev) => !prev)}
+            className={`w-full p-3.5 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
               nightVision
                 ? 'bg-[#FF3B30]/20 border-[#FF3B30] text-[#FF3B30] shadow-[0_0_15px_rgba(255,59,48,0.3)]'
                 : 'bg-[#24153F] border-[#FEE685]/20 text-white/90 hover:bg-[#321C58]'

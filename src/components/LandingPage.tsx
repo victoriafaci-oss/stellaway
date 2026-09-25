@@ -454,7 +454,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   return (
     <div
       className={`relative min-h-screen overflow-x-hidden transition-colors duration-500 ${
-        isNightVision ? 'bg-[#100202] text-[#FFA3A3]' : 'text-white'
+        isNightVision ? 'night-vision-mode bg-[#0b0202] text-[#FFA3A3]' : 'text-white'
       }`}
       style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
     >
@@ -463,21 +463,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <>
           <div
             id="landing-night-vision-color-overlay"
-            className="fixed inset-0 pointer-events-none transition-opacity duration-500"
-            style={{
-              zIndex: 9998,
-              backgroundColor: '#FF1E1E',
-              mixBlendMode: 'color',
-            }}
+            className="astronomical-red-overlay-color"
           />
           <div
             id="landing-night-vision-dark-overlay"
-            className="fixed inset-0 pointer-events-none transition-opacity duration-500"
-            style={{
-              zIndex: 9999,
-              backgroundColor: 'rgba(25, 2, 2, 0.4)',
-              mixBlendMode: 'multiply',
-            }}
+            className="astronomical-red-overlay-dark"
           />
         </>
       )}
