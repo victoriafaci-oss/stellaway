@@ -6,16 +6,27 @@ import { useLanguage } from '../context/LanguageContext';
 interface SpotsViewProps {
   onGoBack?: () => void;
   onGoHome?: () => void;
+  onNavigateToDarkSky?: () => void;
 }
 
-export const SpotsView: React.FC<SpotsViewProps> = () => {
+export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavigateToDarkSky }) => {
   const { t } = useLanguage();
   const [activeSubTab, setActiveSubTab] = useState<'name' | 'coords' | 'nearby'>('name');
   const [mapMode, setMapMode] = useState<'certified' | 'free_location'>('certified');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCountry, setSelectedCountry] = useState<string>('todos');
+  const [selectedProvince, setSelectedProvince] = useState<string>('todas');
   const [selectedType, setSelectedType] = useState<string>('todos');
   const [selectedSpot, setSelectedSpot] = useState<StarlightSpot | null>(null);
+
+  // Helper to normalize accents, diacritics, and lowercase
+  const normalizeSearchText = (str: string): string => {
+    return (str || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  };
 
   // Free Location Map state (Extra Coordenadas)
   const [customCoords, setCustomCoords] = useState<{ lat: number; lng: number }>({ lat: 40.22, lng: -0.35 });
@@ -30,28 +41,91 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
   // Get list of unique countries in dataset
   const availableCountries = ['todos', ...Array.from(new Set(STARLIGHT_SPOTS.map((s) => s.country || 'España')))];
 
-  // Filter spots dynamically by name, region, country, description, facilities, and filters
+  // Spanish provinces / autonomous communities with certified Starlight destinations
+  const spanishProvinces = [
+    { value: 'todas', label: 'Todas las Provincias / Comunidades' },
+    { value: 'zaragoza', label: 'Zaragoza (3 Certificados Starlight + Moncayo)' },
+    { value: 'galicia', label: 'Galicia (7 Destinos Certificados Starlight)' },
+    { value: 'teruel', label: 'Teruel (Javalambre, Albarracín, Galáctica)' },
+    { value: 'huesca', label: 'Huesca (Ordesa y Monte Perdido)' },
+    { value: 'castellon', label: 'Castellón (Penyagolosa, Culla, Maestrat)' },
+    { value: 'valencia', label: 'Valencia (Alto Turia / Aras de los Olmos)' },
+    { value: 'canarias', label: 'Canarias (La Palma, Tenerife Teide)' },
+    { value: 'andalucia', label: 'Andalucía (Sierra Morena, Jaén, Cabo de Gata)' },
+    { value: 'cataluna', label: 'Cataluña (Parc Astronòmic Montsec)' },
+    { value: 'cuenca', label: 'Castilla-La Mancha (Serranía de Cuenca)' },
+    { value: 'castilla y leon', label: 'Castilla y León (Gredos, Soria Muriel)' },
+    { value: 'caceres', label: 'Extremadura (Monfragüe)' },
+    { value: 'asturias', label: 'Asturias / Cantabria (Picos de Europa)' },
+    { value: 'navarra', label: 'Navarra (Valle de Roncal)' }
+  ];
+
+  // Filter spots dynamically with multi-token matching, country & province support
   const filteredSpots = STARLIGHT_SPOTS.filter((spot) => {
-    // Country Filter
+    // 1. Country Filter
     if (selectedCountry !== 'todos') {
-      const spotCountry = spot.country || 'España';
-      if (spotCountry.toLowerCase() !== selectedCountry.toLowerCase()) return false;
+      const spotCountryNorm = normalizeSearchText(spot.country || 'España');
+      const targetCountryNorm = normalizeSearchText(selectedCountry);
+      if (spotCountryNorm !== targetCountryNorm) return false;
     }
 
-    // Type Filter (Certified vs Optimal Free)
+    // 2. Province / Region Filter
+    if (selectedProvince !== 'todas') {
+      const targetProvNorm = normalizeSearchText(selectedProvince);
+      const spotRegionNorm = normalizeSearchText(spot.region);
+      const spotNameNorm = normalizeSearchText(spot.name);
+      const spotDescNorm = normalizeSearchText(spot.description);
+
+      // Special case for Galicia (matches Ourense, Lugo, Pontevedra, A Coruña or Galicia)
+      if (targetProvNorm === 'galicia') {
+        const isGalicia =
+          spotRegionNorm.includes('galicia') ||
+          spotRegionNorm.includes('ourense') ||
+          spotRegionNorm.includes('lugo') ||
+          spotRegionNorm.includes('coruna') ||
+          spotRegionNorm.includes('pontevedra');
+        if (!isGalicia) return false;
+      } else if (targetProvNorm === 'zaragoza') {
+        const isZaragoza =
+          spotRegionNorm.includes('zaragoza') ||
+          spotNameNorm.includes('zaragoza') ||
+          spotDescNorm.includes('zaragoza') ||
+          spot.id.includes('zaragoza');
+        if (!isZaragoza) return false;
+      } else if (!spotRegionNorm.includes(targetProvNorm)) {
+        return false;
+      }
+    }
+
+    // 3. Type Filter (Certified vs Optimal Free)
     if (selectedType === 'certified' && !spot.certified) return false;
     if (selectedType === 'optimal_free' && spot.certified) return false;
 
-    // Search query filter
+    // 4. Search query filter: Multi-token search with accent tolerance
     if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase().trim();
-    return (
-      spot.name.toLowerCase().includes(q) ||
-      spot.region.toLowerCase().includes(q) ||
-      (spot.country && spot.country.toLowerCase().includes(q)) ||
-      spot.description.toLowerCase().includes(q) ||
-      spot.facilities.some((f) => f.toLowerCase().includes(q))
+
+    // Split search query by spaces, commas, semicolons, slashes, or hyphens into individual words
+    const tokens = searchQuery
+      .split(/[\s,;/\-]+/)
+      .map(normalizeSearchText)
+      .filter((t) => t.length > 0);
+
+    if (tokens.length === 0) return true;
+
+    // Build comprehensive searchable index for this spot
+    const searchableString = normalizeSearchText(
+      [
+        spot.name,
+        spot.region,
+        spot.country || 'España',
+        spot.description,
+        ...(spot.facilities || []),
+        ...(spot.subAreas || []),
+      ].join(' ')
     );
+
+    // Every token must match somewhere in this spot's data!
+    return tokens.every((token) => searchableString.includes(token));
   });
 
   // Compute distance in km
@@ -160,7 +234,7 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
               setSearchQuery(e.target.value);
               if (activeSubTab !== 'name') setActiveSubTab('name');
             }}
-            placeholder={t('searchPlaceholder', 'Buscar municipio, mirador, parque natural o provincia...')}
+            placeholder="Buscar por país, provincia o municipio (ej. 'Zaragoza, España', 'España, Galicia', 'Ariza', 'Cíes')..."
             className="w-full bg-black/40 text-white placeholder-white/40 pl-11 pr-10 py-3 rounded-2xl border border-white/20 focus:border-[#FFD700] focus:outline-none focus:ring-2 focus:ring-[#FFD700]/40 text-sm sm:text-base font-['Plus_Jakarta_Sans'] transition-all shadow-inner"
             id="input-search-location-name"
           />
@@ -175,8 +249,8 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
           )}
         </div>
 
-        {/* Country & Type Filters Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+        {/* Country, Province & Type Filters Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
           {/* Country Selector */}
           <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/10">
             <span className="text-xs text-[#FFD700] font-bold shrink-0 font-['JetBrains_Mono']">
@@ -184,13 +258,39 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
             </span>
             <select
               value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
+              onChange={(e) => {
+                setSelectedCountry(e.target.value);
+                if (e.target.value !== 'España' && e.target.value !== 'todos') {
+                  setSelectedProvince('todas');
+                }
+              }}
               className="bg-black/60 text-white text-xs font-bold rounded-lg px-2.5 py-1.5 border border-white/20 focus:outline-none focus:border-[#FFD700] flex-1 cursor-pointer"
             >
               <option value="todos">{t('allCountries', 'Todos los Países')}</option>
               {availableCountries.filter((c) => c !== 'todos').map((country) => (
                 <option key={country} value={country}>
                   {country}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Province / Region Selector (Spain & General) */}
+          <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/10">
+            <span className="text-xs text-[#FFD700] font-bold shrink-0 font-['JetBrains_Mono']">
+              Región:
+            </span>
+            <select
+              value={selectedProvince}
+              onChange={(e) => {
+                setSelectedProvince(e.target.value);
+                if (activeSubTab !== 'name') setActiveSubTab('name');
+              }}
+              className="bg-black/60 text-white text-xs font-bold rounded-lg px-2.5 py-1.5 border border-white/20 focus:outline-none focus:border-[#FFD700] flex-1 cursor-pointer"
+            >
+              {spanishProvinces.map((prov) => (
+                <option key={prov.value} value={prov.value}>
+                  {prov.label}
                 </option>
               ))}
             </select>
@@ -213,8 +313,56 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
           </div>
         </div>
 
-        {/* Modalidad Buttons: Certificados vs Localización Libre */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+        {/* Informative Starlight Banner for Zaragoza */}
+        {(normalizeSearchText(searchQuery).includes('zaragoza') || selectedProvince === 'zaragoza') && (
+          <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-400/40 text-amber-100 text-xs sm:text-sm flex items-start gap-3 shadow-lg animate-fadeIn">
+            <span className="material-symbols-outlined text-amber-300 text-2xl shrink-0 mt-0.5">verified</span>
+            <div className="space-y-1">
+              <div className="font-extrabold text-white flex flex-wrap items-center gap-2">
+                <span>Zaragoza (Aragón): 3 Territorios Certificados Starlight</span>
+                <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-mono text-[10px] font-bold uppercase tracking-wider border border-amber-400/30">
+                  Fundación Starlight
+                </span>
+              </div>
+              <p className="text-amber-100/90 leading-relaxed text-xs">
+                En la provincia de Zaragoza existen 3 zonas certificadas oficialmente por la Fundación Starlight: 
+                <strong className="text-amber-200"> 1. Comarca del Aranda</strong> (Destino Turístico Starlight desde 2022), 
+                <strong className="text-amber-200"> 2. Sierra de Vicort</strong> (Destino Turístico Starlight desde julio 2025) y 
+                <strong className="text-amber-200"> 3. Ariza</strong> (Municipio Starlight desde 2026), complementadas por los puntos de alta montaña de 
+                <strong className="text-amber-200"> Moncayo & Lituénigo</strong> y <strong className="text-amber-200">Campo de Daroca & Laguna de Gallocanta</strong>.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Informative Starlight Banner for Galicia */}
+        {(normalizeSearchText(searchQuery).includes('galicia') || selectedProvince === 'galicia') && (
+          <div className="p-4 rounded-2xl bg-sky-500/15 border border-sky-400/40 text-sky-100 text-xs sm:text-sm flex items-start gap-3 shadow-lg animate-fadeIn">
+            <span className="material-symbols-outlined text-sky-300 text-2xl shrink-0 mt-0.5">verified</span>
+            <div className="space-y-1">
+              <div className="font-extrabold text-white flex flex-wrap items-center gap-2">
+                <span>Galicia: 7 Espacios Certificados Starlight</span>
+                <span className="px-2 py-0.5 rounded-full bg-sky-400/20 text-sky-300 font-mono text-[10px] font-bold uppercase tracking-wider border border-sky-400/30">
+                  Fundación Starlight
+                </span>
+              </div>
+              <p className="text-sky-100/90 leading-relaxed text-xs">
+                Galicia cuenta con 7 espacios certificados oficialmente por la Fundación Starlight: 
+                <strong className="text-sky-200"> 1. Pena Trevinca - A Veiga</strong> (Ourense), 
+                <strong className="text-sky-200"> 2. Parque Nacional das Illas Atlánticas (Cíes y Ons)</strong>, 
+                <strong className="text-sky-200"> 3. Muras - Serra do Xistral</strong> (Lugo), 
+                <strong className="text-sky-200"> 4. Costa da Morte</strong> (A Coruña), 
+                <strong className="text-sky-200"> 5. Mariñas Coruñesas e Terras do Mandeo</strong>, 
+                <strong className="text-sky-200"> 6. Lalín</strong> (Municipio Starlight) y 
+                <strong className="text-sky-200"> 7. Ancares Lucenses</strong> (Lugo).
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Modalidad Buttons: Starlight vs DarkSky Internacional vs Localización Libre */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+          {/* Modalidad 1: Starlight */}
           <button
             onClick={() => {
               setSelectedType('certified');
@@ -225,6 +373,7 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
                 ? 'bg-[#FFD700]/20 border-[#FFD700] text-white shadow-lg'
                 : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/80'
             }`}
+            id="btn-modality-starlight"
           >
             <div className="w-10 h-10 rounded-xl bg-[#FFD700]/20 text-[#FFD700] flex items-center justify-center text-xl shrink-0">
               ⭐
@@ -242,6 +391,38 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
             </div>
           </button>
 
+          {/* Modalidad 2: DarkSky Internacional */}
+          <button
+            onClick={() => {
+              if (onNavigateToDarkSky) {
+                onNavigateToDarkSky();
+              }
+            }}
+            className="p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer bg-gradient-to-r from-cyan-950/60 to-blue-950/60 border-cyan-400/50 hover:border-cyan-300 text-white shadow-lg hover:shadow-cyan-500/20 group"
+            id="btn-modality-darksky"
+          >
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-300 group-hover:scale-105 transition-transform flex items-center justify-center text-xl shrink-0 border border-cyan-400/30">
+              🌌
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="block text-xs font-extrabold uppercase text-cyan-300 tracking-wider font-['JetBrains_Mono']">
+                  Mundial (IDA)
+                </span>
+                <span className="px-1.5 py-0.2 rounded bg-cyan-400/20 text-cyan-200 text-[9px] font-bold">
+                  Global
+                </span>
+              </div>
+              <span className="block text-sm font-bold font-['Plus_Jakarta_Sans'] group-hover:text-cyan-200 transition-colors">
+                Zonas & Lugares DarkSky
+              </span>
+              <span className="block text-[11px] text-cyan-100/70">
+                Santuarios y Reservas en todo el mundo →
+              </span>
+            </div>
+          </button>
+
+          {/* Modalidad 3: Localización Libre */}
           <button
             onClick={() => {
               setSelectedType('optimal_free');
@@ -252,6 +433,7 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
                 ? 'bg-emerald-500/20 border-emerald-400 text-white shadow-lg'
                 : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/80'
             }`}
+            id="btn-modality-free"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shrink-0">
               🌄
@@ -264,7 +446,7 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
                 {t('modality2Title', 'Localización Libre (Puntos Accesibles)')}
               </span>
               <span className="block text-[11px] text-white/60">
-                {t('modality2Desc', 'Ermitas, Castillos, Playas y Miradores de Montaña')}
+                {t('modality2Desc', 'Ermitas, Castillos y Miradores de Montaña')}
               </span>
             </div>
           </button>
@@ -273,12 +455,29 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
         {/* Popular Tags */}
         <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
           <span className="text-white/60 text-[11px] font-semibold">{t('quickSearch', 'Búsqueda rápida:')}</span>
-          {['Peñíscola', 'Castillo Papa Luna', 'Sierra de Irta', 'Ermita Sant Antoni', 'Playa Norte', 'Penyagolosa', 'Culla', 'Javalambre', 'La Palma', 'Atacama'].map((tag) => (
+          {[
+            'Zaragoza, España',
+            'España, Galicia',
+            'Zaragoza',
+            'Galicia',
+            'Sierra de Vicort',
+            'Comarca del Aranda',
+            'Ariza',
+            'Pena Trevinca',
+            'Islas Cíes',
+            'Muras',
+            'Costa da Morte',
+            'Teruel',
+            'Castellón',
+            'La Palma',
+            'Atacama'
+          ].map((tag) => (
             <button
               key={tag}
               onClick={() => {
                 setSearchQuery(tag);
                 setSelectedCountry('todos');
+                setSelectedProvince('todas');
                 setSelectedType('todos');
                 setActiveSubTab('name');
               }}
@@ -346,11 +545,12 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
             <span>
               Mostrando {filteredSpots.length} de {STARLIGHT_SPOTS.length} miradores astronómicos y puntos libres.
             </span>
-            {(searchQuery || selectedCountry !== 'todos' || selectedType !== 'todos') && (
+            {(searchQuery || selectedCountry !== 'todos' || selectedProvince !== 'todas' || selectedType !== 'todos') && (
               <button
                 onClick={() => {
                   setSearchQuery('');
                   setSelectedCountry('todos');
+                  setSelectedProvince('todas');
                   setSelectedType('todos');
                 }}
                 className="text-[#FFD700] hover:underline font-bold cursor-pointer"
@@ -369,6 +569,7 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
                 onClick={() => {
                   setSearchQuery('');
                   setSelectedCountry('todos');
+                  setSelectedProvince('todas');
                   setSelectedType('todos');
                 }}
                 className="px-4 py-2 bg-[#FEE685] text-black font-extrabold rounded-xl text-xs cursor-pointer"
@@ -712,10 +913,15 @@ export const SpotsView: React.FC<SpotsViewProps> = () => {
             </h3>
 
             <div className="space-y-4">
-              {filteredSpots.map((spot) => {
-                const lat = userCoords ? userCoords.lat : 39.9864;
-                const lng = userCoords ? userCoords.lng : -0.0513;
-                const distanceKm = calculateDistanceKm(lat, lng, spot.latitude, spot.longitude);
+              {[...filteredSpots]
+                .map((spot) => {
+                  const lat = userCoords ? userCoords.lat : 39.9864;
+                  const lng = userCoords ? userCoords.lng : -0.0513;
+                  const distanceKm = calculateDistanceKm(lat, lng, spot.latitude, spot.longitude);
+                  return { spot, distanceKm };
+                })
+                .sort((a, b) => a.distanceKm - b.distanceKm)
+                .map(({ spot, distanceKm }) => {
 
                 return (
                   <div

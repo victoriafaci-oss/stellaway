@@ -304,6 +304,20 @@ Key Expertise:
 - The Great Total Solar Eclipses in Spain:
   * August 12, 2026: Total solar eclipse crossing northern/eastern Spain (Castellón, Teruel, Zaragoza, Burgos, Oviedo, A Coruña, Mallorca). Max duration ~1m45s at sunset.
   * August 2, 2027: Total solar eclipse in southern Spain (Cádiz, Málaga, Tarifa, Ceuta, Melilla, Almería) with >4.5 minutes of totality.
+- Certified Starlight Destinations in Spain (Fundación Starlight):
+  * Zaragoza (Aragón) - 3 Official Certified Starlight Territories:
+    1. Comarca del Aranda (Destino Turístico Starlight acreditado en 2022) - Red de 11 miradores estelares, Illueca, Purujosa, Calcena, Jarque.
+    2. Sierra de Vicort (Destino Turístico Starlight acreditado en julio de 2025) - Sediles, El Frasno, Mara, Miedes, Villalba Perejil, Pico del Rayo (1.427m).
+    3. Ariza (Municipio Starlight acreditado en 2026) - Mirador del Castillo y cuenca del río Jalón.
+    (Complementarios de alta montaña: Parque Natural del Moncayo / Lituénigo, y Campo de Daroca / Laguna de Gallocanta).
+  * Galicia - 7 Certified Starlight Spaces:
+    1. Pena Trevinca - A Veiga (Ourense, 2015) - Primer Destino Starlight de Galicia, cumbre a 2.127m con observatorio y planetario.
+    2. Parque Nacional das Illas Atlánticas de Galicia (Pontevedra / A Coruña, 2016) - Islas Cíes, Isla de Ons, Sálvora y Cortegada.
+    3. Muras - Serra do Xistral (Lugo, 2020) - Concello Starlight en valles limpios y turberas.
+    4. Costa da Morte (A Coruña, 2023) - Fisterra, Muxía, Carnota y Camariñas con horizonte oeste oceánico.
+    5. Mariñas Coruñesas e Terras do Mandeo (A Coruña, 2023) - Reserva de la Biosfera Starlight.
+    6. Lalín (Pontevedra, 2023) - Municipio Starlight con Observatorio do Castro y Serra do Candán.
+    7. Ancares Lucenses, Cervantes y Navia (Lugo, 2023) - Reserva de la Biosfera con cielos de montaña puros.
 - Dark Sky Spots & Bortle Scale (Bortle 1-9): Montsec, Gúdar-Javalambre, Serranía de Cuenca, Alto Turia, Sierra Nevada, La Palma, Monfragüe.
 - Astrophotography: Milky Way techniques, 500/NPF rule, ISO settings, star trackers (Sky-Watcher Star Adventurer), stacking (Siril, DeepSkyStacker), light pollution filters.
 - Celestial events: Moon phases, planetary oppositions, meteor showers (Perseids, Geminids).
@@ -342,7 +356,85 @@ Tone: Warm, inspiring, knowledgeable, clear, structured with bullet points and e
       const q = message.toLowerCase();
       let fallbackReply = "";
 
-      if (q.includes("eclipse") || q.includes("2026") || q.includes("2027") || q.includes("sol") || q.includes("finsternis")) {
+      if (q.includes("zaragoza")) {
+        fallbackReply = isGerman
+          ? `🏛️ **Zertifizierte Starlight-Zonen in Saragossa (Aragonien, Spanien)** ⭐
+In der Provinz Saragossa gibt es 3 offiziell von der Fundación Starlight zertifizierte Territorien:
+1. **Comarca del Aranda (Starlight-Reiseziel seit 2022):** Netzwerk von 11 Sternbeobachtungspunkten (Illueca, Purujosa, Calcena, Jarque).
+2. **Sierra de Vicort (Starlight-Reiseziel seit Juli 2025):** Sediles, El Frasno, Mara, Miedes, Pico del Rayo (1.427 m).
+3. **Ariza (Starlight-Gemeinde seit 2026):** Burg-Aussichtspunkt und Tal des Flusses Jalón.
+*Zusätzliche Bergzonen:* Naturpark Moncayo & Lituénigo und Campo de Daroca / Lagune von Gallocanta.`
+          : isEnglish
+          ? `🏛️ **Certified Starlight Destinations in Zaragoza (Aragon, Spain)** ⭐
+In the province of Zaragoza, there are 3 official territories certified by the Starlight Foundation:
+1. **Comarca del Aranda (Starlight Tourist Destination since 2022):** Network of 11 stellar viewpoints (Illueca, Purujosa, Calcena, Jarque).
+2. **Sierra de Vicort (Starlight Tourist Destination since July 2025):** Sediles, El Frasno, Mara, Miedes, Pico del Rayo (1,427m).
+3. **Ariza (Starlight Municipality since 2026):** Historic castle viewpoint and clean skies over Jalón River valley.
+*High-sky mountain enclaves:* Moncayo Natural Park / Lituénigo Observatory and Campo de Daroca / Gallocanta Lake.`
+          : `🏛️ **Zonas Certificadas Starlight en Zaragoza (Aragón, España)** ⭐
+
+En la provincia de Zaragoza existen **3 territorios certificados oficialmente por la Fundación Starlight**:
+
+1. **Comarca del Aranda (Destino Turístico Starlight desde julio de 2022):**
+   - Red comarcal de **11 miradores estelares** protegidos en municipios como Illueca, Purujosa ("El Nido de Águilas"), Calcena, Jarque de Moncayo, Tierga, Pomer y Gotor.
+   - Cuenta con senderos astronómicos señalizados y el Castillo Palacio del Papa Luna.
+
+2. **Sierra de Vicort (Destino Turístico Starlight desde julio de 2025):**
+   - Espacio de montaña en la comarca de Calatayud que integra municipios como Sediles, El Frasno, Mara, Miedes y Villalba Perejil.
+   - Cumbres que superan los 1.400 m con el **Mirador astronómico del Pico del Rayo (1.427 m)** y el Santuario de la Virgen de Vicor, con cielos oscuros de Bortle 2.
+
+3. **Ariza (Municipio Starlight desde 2026):**
+   - Municipio acreditado oficialmente en la comarca de Calatayud con alumbrado de protección nocturna y mirador panorámico en las ruinas del Castillo de Ariza.
+
+*Enclaves complementarios de montaña en Zaragoza:*
+- **Parque Natural del Moncayo & Lituénigo:** Somontano y cumbre con el Observatorio Astronómico del Moncayo.
+- **Campo de Daroca & Laguna de Gallocanta:** Proyecto "Daroca, mina de estrellas" con horizontes despejados de 360°.`;
+      } else if (q.includes("galicia")) {
+        fallbackReply = isGerman
+          ? `🌊 **Zertifizierte Starlight-Zonen in Galicien (Spanien)** ⭐
+Galicien verfügt über 7 offiziell von der Fundación Starlight zertifizierte Gebiete:
+1. **Pena Trevinca - A Veiga (Ourense, 2015):** Erstes Starlight-Reiseziel Galiciens mit Observatorium & Planetarium auf 2.127 m.
+2. **Nationalpark Illas Atlánticas (Pontevedra / A Coruña, 2016):** Cíes-Inseln und Ons-Insel mitten im Atlantik.
+3. **Muras - Serra do Xistral (Lugo, 2020):** Starlight-Gemeinde mit kristallklarem Himmel.
+4. **Costa da Morte (A Coruña, 2023):** Fisterra, Muxía und Carnota mit Ozeanhorizont nach Westen.
+5. **Mariñas Coruñesas e Terras do Mandeo (A Coruña, 2023):** Biosphärenreservat.
+6. **Lalín (Pontevedra, 2023):** Starlight-Gemeinde mit Sternwarte do Castro.
+7. **Ancares Lucenses (Lugo, 2023):** Biosphärenreservat mit Berggipfeln.`
+          : isEnglish
+          ? `🌊 **Certified Starlight Spaces in Galicia (Spain)** ⭐
+Galicia features 7 official territories certified by the Starlight Foundation:
+1. **Pena Trevinca - A Veiga (Ourense, 2015):** The first Starlight Destination in Galicia, highest peak (2,127m) with astronomical observatory and planetarium.
+2. **Atlantic Islands National Park (Pontevedra / A Coruña, 2016):** Cíes Islands, Ons Island, Sálvora, and Cortegada with ocean-dark skies.
+3. **Muras - Serra do Xistral (Lugo, 2020):** Starlight town surrounded by peat bogs and zero light pollution.
+4. **Costa da Morte (A Coruña, 2023):** Cape Finisterre, Muxía, Carnota, and Camariñas with infinite western horizons.
+5. **Mariñas Coruñesas e Terras do Mandeo (A Coruña, 2023):** Biosphere Reserve & Starlight Destination.
+6. **Lalín (Pontevedra, 2023):** Starlight Municipality with the Lalín Astronomical Observatory.
+7. **Ancares Lucenses, Cervantes & Navia (Lugo, 2023):** Pristine glacial valleys and ancient pallozas under pure Bortle 1 skies.`
+          : `🌊 **Zonas Certificadas Starlight en Galicia (España)** ⭐
+
+Galicia es uno de los mayores referentes mundiales en astroturismo y cuenta con **7 espacios certificados oficialmente por la Fundación Starlight**:
+
+1. **Pena Trevinca - A Veiga (Ourense - Certificado en 2015):**
+   - El primer Destino Turístico Starlight de Galicia. Enclavado en el Macizo de Trevinca con el pico más alto de Galicia (2.127 m), alberga el Centro Astronómico de Trevinca con planetario y cúpula.
+
+2. **Parque Nacional Marítimo-Terrestre das Illas Atlánticas de Galicia (Pontevedra / A Coruña - Certificado en 2016):**
+   - Archipiélagos de las **Islas Cíes, Isla de Ons, Sálvora y Cortegada**. Oscuridad oceánica pura, Vía Láctea sobre el mar y rutas nocturnas guiadas con astrónomos.
+
+3. **Muras - Serra do Xistral (Lugo - Certificado en 2020):**
+   - Municipio Starlight en el norte montañoso de Lugo, con los miradores astronómicos de Campo da Feira y O Cristo.
+
+4. **Costa da Morte (A Coruña - Certificado en 2023):**
+   - Extremo occidental continental (Fisterra, Muxía, Carnota y Camariñas) con horizonte oeste de oscuridad oceánica infinita sobre el Atlántico.
+
+5. **Mariñas Coruñesas e Terras do Mandeo (A Coruña - Certificado en 2023):**
+   - Reserva de la Biosfera Starlight que protege los valles y montes de Curtis, Sobrado y Aranga.
+
+6. **Lalín - Deza (Pontevedra - Certificado en 2023):**
+   - Municipio Starlight con el Observatorio Astronómico de Lalín en el Castro Tecnológico y miradores en la Serra do Candán.
+
+7. **Ancares Lucenses, Cervantes y Navia (Lugo - Certificado en 2023):**
+   - Reserva de la Biosfera en alta montaña con valles glaciares y pallozas milenarias bajo una cúpula estelar Bortle 1.`;
+      } else if (q.includes("eclipse") || q.includes("2026") || q.includes("2027") || q.includes("sol") || q.includes("finsternis")) {
         fallbackReply = isGerman
           ? `✨ **Leitfaden zu den großen totalen Sonnenfinsternissen in Spanien** 🌑
 1. **12. August 2026 (Nord- und Ostspanien / Castellón / Teruel):**

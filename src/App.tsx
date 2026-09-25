@@ -313,6 +313,7 @@ export default function App() {
             nightVision={nightVision}
             setNightVision={setNightVision}
             onExploreSpots={() => navigateTo('spots')}
+            onExploreDarkSky={() => navigateTo('darksky')}
             onExploreEvents={() => navigateTo('events')}
             onExploreWeather={() => navigateTo('weather')}
             openModal={(type) => setModalType(type)}
@@ -323,6 +324,7 @@ export default function App() {
           <SpotsView
             onGoBack={handleGoBack}
             onGoHome={() => navigateTo('dashboard')}
+            onNavigateToDarkSky={() => navigateTo('darksky')}
           />
         )}
 

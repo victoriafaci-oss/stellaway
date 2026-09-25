@@ -950,6 +950,31 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               </div>
             </button>
 
+            {/* Zonas & Lugares DarkSky Internacionales */}
+            <button
+              onClick={() => {
+                closeModal();
+                setActiveTab('darksky');
+              }}
+              className="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-950/70 via-blue-950/70 to-slate-900/80 hover:from-cyan-900/80 hover:to-blue-900/80 border-2 border-cyan-400/50 shadow-md transition-all flex items-center gap-3 text-left group cursor-pointer w-full"
+            >
+              <div className="w-10 h-10 rounded-xl bg-cyan-500 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                <span className="material-symbols-outlined text-xl">public</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-black text-cyan-200 group-hover:text-white transition-colors font-['Plus_Jakarta_Sans'] truncate">
+                    Zonas & Lugares DarkSky
+                  </h3>
+                  <span className="px-1.5 py-0.5 rounded bg-cyan-400/30 text-cyan-200 text-[9px] font-black uppercase tracking-wider">
+                    Mundial (IDA)
+                  </span>
+                </div>
+                <p className="text-[11px] text-cyan-100/70 font-medium truncate">Santuarios y reservas de cielo oscuro en todo el mundo</p>
+              </div>
+              <span className="material-symbols-outlined text-cyan-300 text-base shrink-0">arrow_forward</span>
+            </button>
+
             {/* Instalar App en el móvil */}
             <button
               onClick={() => {

@@ -7,6 +7,7 @@ interface DashboardViewProps {
   nightVision: boolean;
   setNightVision: React.Dispatch<React.SetStateAction<boolean>>;
   onExploreSpots?: () => void;
+  onExploreDarkSky?: () => void;
   onExploreEvents?: () => void;
   onExploreWeather?: () => void;
   openModal?: (type: any) => void;
@@ -16,6 +17,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   nightVision,
   setNightVision,
   onExploreSpots,
+  onExploreDarkSky,
   onExploreEvents,
   onExploreWeather,
   openModal,
@@ -79,65 +81,85 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        {/* THREE PRIMARY ACTION BUTTONS (Semi-Transparent Celestial Sky Blue Glass) */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5 max-w-4xl w-full mx-auto">
-          {/* Button 1: Buscar localización (Semi-Transparent Sky Blue) */}
+        {/* FOUR PRIMARY ACTION CARDS: Starlight, DarkSky Mundial, Eventos, Previsión del Tiempo */}
+        <div className="mt-8 flex flex-col gap-5 max-w-xl w-full mx-auto lg:max-w-6xl lg:grid lg:grid-cols-2 xl:grid-cols-4 lg:gap-5">
+          {/* Card 1: Encuentra Zonas Starlight */}
           <button
             onClick={() => onExploreSpots && onExploreSpots()}
-            className="p-6 rounded-3xl card-celestial-blue-glass transition-all flex flex-col items-center justify-center text-center group cursor-pointer shadow-xl relative overflow-hidden backdrop-blur-md"
+            className="p-7 sm:p-8 rounded-[32px] card-celestial-blue-glass transition-all flex flex-col items-center justify-center text-center group cursor-pointer shadow-xl relative overflow-hidden backdrop-blur-md border border-[#7DD3FC]/40 hover:border-[#7DD3FC]"
             id="btn-main-spots"
           >
-            <div className="w-14 h-14 rounded-2xl bg-[#082F49]/80 backdrop-blur-sm flex items-center justify-center text-[#7DD3FC] mb-3.5 group-hover:scale-110 transition-transform shadow-lg border border-[#38BDF8]/60">
-              <span className="material-symbols-outlined text-2xl font-bold">near_me</span>
+            <div className="w-16 h-16 rounded-2xl bg-[#082F49]/80 backdrop-blur-sm flex items-center justify-center text-[#7DD3FC] mb-4 group-hover:scale-105 transition-transform shadow-lg border border-[#38BDF8]/60">
+              <span className="material-symbols-outlined text-3xl font-bold">near_me</span>
             </div>
-            <span className="font-['Plus_Jakarta_Sans'] text-lg font-extrabold text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
-              {t('spots', 'Buscar localización')}
+            <span className="font-['Plus_Jakarta_Sans'] text-xl sm:text-2xl font-black text-white leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+              Encuentra Zonas Starlight
             </span>
-            <span className="text-xs text-[#BAE6FD] mt-1.5 font-bold">
-              {t('mapGps', 'Mapa terráqueo & GPS')}
+            <span className="text-sm text-[#BAE6FD] mt-1.5 font-bold">
+              Mapa terráqueo & GPS
             </span>
-            <span className="mt-3 text-[11px] font-extrabold uppercase tracking-wider text-[#F0F9FF] bg-[#0284C7]/80 group-hover:bg-[#0284C7] px-3.5 py-1 rounded-full border border-[#7DD3FC]/60 shadow-sm backdrop-blur-sm">
-              {t('exploreSpotsBadge', 'Explorar Miradores →')}
+            <span className="mt-5 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#F0F9FF] bg-[#0284C7]/90 group-hover:bg-[#0284C7] px-6 py-2.5 rounded-full border border-[#7DD3FC]/80 shadow-md backdrop-blur-sm">
+              EXPLORAR MIRADORES →
             </span>
           </button>
 
-          {/* Button 2: Evento estelar (Semi-Transparent Sky Blue) */}
+          {/* Card 2: Encuentra Zonas DarkSky (Colocado exactamente entre Zonas Starlight y Eventos Estelares) */}
+          <button
+            onClick={() => onExploreDarkSky && onExploreDarkSky()}
+            className="p-7 sm:p-8 rounded-[32px] card-celestial-blue-glass transition-all flex flex-col items-center justify-center text-center group cursor-pointer shadow-xl relative overflow-hidden backdrop-blur-md border border-[#7DD3FC]/40 hover:border-[#7DD3FC]"
+            id="btn-main-darksky"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-[#082F49]/80 backdrop-blur-sm flex items-center justify-center text-[#7DD3FC] mb-4 group-hover:scale-105 transition-transform shadow-lg border border-[#38BDF8]/60">
+              <span className="material-symbols-outlined text-3xl font-bold">public</span>
+            </div>
+            <span className="font-['Plus_Jakarta_Sans'] text-xl sm:text-2xl font-black text-white leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+              Encuentra Zonas DarkSky
+            </span>
+            <span className="text-sm text-[#BAE6FD] mt-1.5 font-bold">
+              Santuarios mundiales & IDA
+            </span>
+            <span className="mt-5 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#F0F9FF] bg-[#0284C7]/90 group-hover:bg-[#0284C7] px-6 py-2.5 rounded-full border border-[#7DD3FC]/80 shadow-md backdrop-blur-sm">
+              EXPLORAR DARKSKY →
+            </span>
+          </button>
+
+          {/* Card 3: Eventos Estelares */}
           <button
             onClick={() => onExploreEvents && onExploreEvents()}
-            className="p-6 rounded-3xl card-celestial-blue-glass transition-all flex flex-col items-center justify-center text-center group cursor-pointer shadow-xl relative overflow-hidden backdrop-blur-md"
+            className="p-7 sm:p-8 rounded-[32px] card-celestial-blue-glass transition-all flex flex-col items-center justify-center text-center group cursor-pointer shadow-xl relative overflow-hidden backdrop-blur-md border border-[#7DD3FC]/40 hover:border-[#7DD3FC]"
             id="btn-main-events"
           >
-            <div className="w-14 h-14 rounded-2xl bg-[#082F49]/80 backdrop-blur-sm flex items-center justify-center text-[#7DD3FC] mb-3.5 group-hover:scale-110 transition-transform shadow-lg border border-[#38BDF8]/60">
-              <span className="material-symbols-outlined text-2xl font-bold">flare</span>
+            <div className="w-16 h-16 rounded-2xl bg-[#082F49]/80 backdrop-blur-sm flex items-center justify-center text-[#7DD3FC] mb-4 group-hover:scale-105 transition-transform shadow-lg border border-[#38BDF8]/60">
+              <span className="material-symbols-outlined text-3xl font-bold">flare</span>
             </div>
-            <span className="font-['Plus_Jakarta_Sans'] text-lg font-extrabold text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
-              {t('events', 'Evento estelar')}
+            <span className="font-['Plus_Jakarta_Sans'] text-xl sm:text-2xl font-black text-white leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+              Eventos Estelares
             </span>
-            <span className="text-xs text-[#BAE6FD] mt-1.5 font-bold">
-              {t('planetaryEnergy', 'Energía planetaria & Eclipses')}
+            <span className="text-sm text-[#BAE6FD] mt-1.5 font-bold">
+              Energía planetaria & Eclipses
             </span>
-            <span className="mt-3 text-[11px] font-extrabold uppercase tracking-wider text-[#F0F9FF] bg-[#0284C7]/80 group-hover:bg-[#0284C7] px-3.5 py-1 rounded-full border border-[#7DD3FC]/60 shadow-sm backdrop-blur-sm">
-              {t('viewCalendarBadge', 'Ver Calendario →')}
+            <span className="mt-5 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#F0F9FF] bg-[#0284C7]/90 group-hover:bg-[#0284C7] px-6 py-2.5 rounded-full border border-[#7DD3FC]/80 shadow-md backdrop-blur-sm">
+              VER CALENDARIO →
             </span>
           </button>
 
-          {/* Button 3: Previsión del tiempo (Semi-Transparent Sky Blue) */}
+          {/* Card 4: Previsión del tiempo */}
           <button
             onClick={() => onExploreWeather && onExploreWeather()}
-            className="p-6 rounded-3xl card-celestial-blue-glass transition-all flex flex-col items-center justify-center text-center group cursor-pointer shadow-xl relative overflow-hidden backdrop-blur-md"
+            className="p-7 sm:p-8 rounded-[32px] card-celestial-blue-glass transition-all flex flex-col items-center justify-center text-center group cursor-pointer shadow-xl relative overflow-hidden backdrop-blur-md border border-[#7DD3FC]/40 hover:border-[#7DD3FC]"
             id="btn-main-weather"
           >
-            <div className="w-14 h-14 rounded-2xl bg-[#082F49]/80 backdrop-blur-sm flex items-center justify-center text-[#7DD3FC] mb-3.5 group-hover:scale-110 transition-transform shadow-lg border border-[#38BDF8]/60">
-              <span className="material-symbols-outlined text-2xl font-bold">cloud_sync</span>
+            <div className="w-16 h-16 rounded-2xl bg-[#082F49]/80 backdrop-blur-sm flex items-center justify-center text-[#7DD3FC] mb-4 group-hover:scale-105 transition-transform shadow-lg border border-[#38BDF8]/60">
+              <span className="material-symbols-outlined text-3xl font-bold">cloud_sync</span>
             </div>
-            <span className="font-['Plus_Jakarta_Sans'] text-lg font-extrabold text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
-              {t('weather', 'Previsión del tiempo')}
+            <span className="font-['Plus_Jakarta_Sans'] text-xl sm:text-2xl font-black text-white leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+              Previsión del tiempo
             </span>
-            <span className="text-xs text-[#BAE6FD] mt-1.5 font-bold">
-              {t('realtimeAnim', 'Tiempo real & Animación')}
+            <span className="text-sm text-[#BAE6FD] mt-1.5 font-bold">
+              Tiempo real & Animación
             </span>
-            <span className="mt-3 text-[11px] font-extrabold uppercase tracking-wider text-[#F0F9FF] bg-[#0284C7]/80 group-hover:bg-[#0284C7] px-3.5 py-1 rounded-full border border-[#7DD3FC]/60 shadow-sm backdrop-blur-sm">
-              {t('checkSkyBadge', 'Consultar Cielo →')}
+            <span className="mt-5 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#F0F9FF] bg-[#0284C7]/90 group-hover:bg-[#0284C7] px-6 py-2.5 rounded-full border border-[#7DD3FC]/80 shadow-md backdrop-blur-sm">
+              CONSULTAR CIELO →
             </span>
           </button>
         </div>
@@ -217,24 +239,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
       </section>
-
-      {/* FAB: Night Vision Toggle */}
-      <button
-        type="button"
-        onClick={() => setNightVision((prev) => !prev)}
-        className={`fixed bottom-24 right-6 w-14 h-14 rounded-full backdrop-blur-md border shadow-2xl flex items-center justify-center transition-all z-40 group cursor-pointer active:scale-95 ${
-          nightVision
-            ? 'bg-[#FF3B30] border-white text-white shadow-[0_0_25px_rgba(255,59,48,0.9)] scale-110 animate-pulse'
-            : 'bg-[#FF3B30]/20 border-[#FF3B30]/50 text-[#FF3B30] hover:bg-[#FF3B30]/30 shadow-[0_0_20px_rgba(255,59,48,0.3)]'
-        }`}
-        title={nightVision ? t('redLightActive', 'Desactivar Luz Roja') : t('redLight', 'Activar Modo Luz Roja (Visión Nocturna)')}
-        aria-label={nightVision ? 'Desactivar Luz Roja' : 'Activar Modo Luz Roja'}
-        id="btn-fab-night-vision"
-      >
-        <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">
-          {nightVision ? 'visibility_off' : 'visibility'}
-        </span>
-      </button>
     </div>
   );
 };
