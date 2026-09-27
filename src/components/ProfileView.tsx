@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ObservationLog } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useOfflineStorage } from '../lib/offlineStorage';
 
 interface ProfileViewProps {
   nightVision: boolean;
@@ -11,6 +12,7 @@ interface ProfileViewProps {
 export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightVision }) => {
   const { user, signIn, logout, userLogs, addLogToFirestore } = useAuth();
   const { t } = useLanguage();
+  const { stats, clearAllOfflineData } = useOfflineStorage();
 
   const [localLogs, setLocalLogs] = useState<ObservationLog[]>([
     {
@@ -165,6 +167,44 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
             </span>
             {nightVision ? 'Luz Roja ON' : 'Luz Roja'}
           </button>
+        </div>
+      </div>
+
+      {/* Offline Storage & Backpack Summary Card */}
+      <div className="card-pastel-gold rounded-3xl p-6 border border-amber-400/40 shadow-xl mb-8 backdrop-blur-md">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-amber-400/20 text-amber-300 border border-amber-400/30 flex items-center justify-center shrink-0 text-2xl shadow-inner">
+              🎒
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans']">
+                  Almacenamiento Selectivo Offline (Salidas Nocturnas)
+                </h3>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[11px] font-bold border border-emerald-400/30">
+                  Ligero
+                </span>
+              </div>
+              <p className="text-xs text-white/80 mt-1 leading-relaxed">
+                Solo se guardan las búsquedas y miradores que tú decides añadir. Espacio en tu móvil: <strong className="text-amber-300 font-mono">{stats.approxKB} KB</strong> ({stats.spotsCount} miradores, {stats.eventsCount} eventos).
+              </p>
+            </div>
+          </div>
+
+          {stats.totalItems > 0 && (
+            <button
+              onClick={() => {
+                if (window.confirm('¿Deseas vaciar todos los miradores y eventos guardados offline en este teléfono?')) {
+                  clearAllOfflineData();
+                }
+              }}
+              className="px-4 py-2.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-200 border border-red-500/40 text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 self-start sm:self-auto"
+            >
+              <span className="material-symbols-outlined text-sm">delete_sweep</span>
+              Liberar Espacio Offline
+            </button>
+          )}
         </div>
       </div>
 

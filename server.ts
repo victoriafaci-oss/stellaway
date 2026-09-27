@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import { GoogleGenAI } from "@google/genai";
+import { generateAstronomicalAnswer } from "./src/lib/astronomyKnowledge";
 
 async function startServer() {
   const app = express();
@@ -335,7 +336,7 @@ Tone: Warm, inspiring, knowledgeable, clear, structured with bullet points and e
           ];
 
           const response = await ai.models.generateContent({
-            model: "gemini-3.7-flash",
+            model: "gemini-3.8-flash",
             contents,
             config: {
               systemInstruction,
@@ -348,263 +349,17 @@ Tone: Warm, inspiring, knowledgeable, clear, structured with bullet points and e
             return res.json({ reply });
           }
         } catch (apiError) {
-          console.warn("Gemini API call failed, invoking intelligent astronomical fallback:", apiError);
+          console.warn("Gemini API call failed, invoking intelligent astronomical fallback engine:", apiError);
         }
       }
 
-      // Intelligent Local Astronomy Engine fallback (guarantees instant, high-quality answers if API key is not connected or during offline testing)
-      const q = message.toLowerCase();
-      let fallbackReply = "";
-
-      if (q.includes("zaragoza")) {
-        fallbackReply = isGerman
-          ? `🏛️ **Zertifizierte Starlight-Zonen in Saragossa (Aragonien, Spanien)** ⭐
-In der Provinz Saragossa gibt es 3 offiziell von der Fundación Starlight zertifizierte Territorien:
-1. **Comarca del Aranda (Starlight-Reiseziel seit 2022):** Netzwerk von 11 Sternbeobachtungspunkten (Illueca, Purujosa, Calcena, Jarque).
-2. **Sierra de Vicort (Starlight-Reiseziel seit Juli 2025):** Sediles, El Frasno, Mara, Miedes, Pico del Rayo (1.427 m).
-3. **Ariza (Starlight-Gemeinde seit 2026):** Burg-Aussichtspunkt und Tal des Flusses Jalón.
-*Zusätzliche Bergzonen:* Naturpark Moncayo & Lituénigo und Campo de Daroca / Lagune von Gallocanta.`
-          : isEnglish
-          ? `🏛️ **Certified Starlight Destinations in Zaragoza (Aragon, Spain)** ⭐
-In the province of Zaragoza, there are 3 official territories certified by the Starlight Foundation:
-1. **Comarca del Aranda (Starlight Tourist Destination since 2022):** Network of 11 stellar viewpoints (Illueca, Purujosa, Calcena, Jarque).
-2. **Sierra de Vicort (Starlight Tourist Destination since July 2025):** Sediles, El Frasno, Mara, Miedes, Pico del Rayo (1,427m).
-3. **Ariza (Starlight Municipality since 2026):** Historic castle viewpoint and clean skies over Jalón River valley.
-*High-sky mountain enclaves:* Moncayo Natural Park / Lituénigo Observatory and Campo de Daroca / Gallocanta Lake.`
-          : `🏛️ **Zonas Certificadas Starlight en Zaragoza (Aragón, España)** ⭐
-
-En la provincia de Zaragoza existen **3 territorios certificados oficialmente por la Fundación Starlight**:
-
-1. **Comarca del Aranda (Destino Turístico Starlight desde julio de 2022):**
-   - Red comarcal de **11 miradores estelares** protegidos en municipios como Illueca, Purujosa ("El Nido de Águilas"), Calcena, Jarque de Moncayo, Tierga, Pomer y Gotor.
-   - Cuenta con senderos astronómicos señalizados y el Castillo Palacio del Papa Luna.
-
-2. **Sierra de Vicort (Destino Turístico Starlight desde julio de 2025):**
-   - Espacio de montaña en la comarca de Calatayud que integra municipios como Sediles, El Frasno, Mara, Miedes y Villalba Perejil.
-   - Cumbres que superan los 1.400 m con el **Mirador astronómico del Pico del Rayo (1.427 m)** y el Santuario de la Virgen de Vicor, con cielos oscuros de Bortle 2.
-
-3. **Ariza (Municipio Starlight desde 2026):**
-   - Municipio acreditado oficialmente en la comarca de Calatayud con alumbrado de protección nocturna y mirador panorámico en las ruinas del Castillo de Ariza.
-
-*Enclaves complementarios de montaña en Zaragoza:*
-- **Parque Natural del Moncayo & Lituénigo:** Somontano y cumbre con el Observatorio Astronómico del Moncayo.
-- **Campo de Daroca & Laguna de Gallocanta:** Proyecto "Daroca, mina de estrellas" con horizontes despejados de 360°.`;
-      } else if (q.includes("galicia")) {
-        fallbackReply = isGerman
-          ? `🌊 **Zertifizierte Starlight-Zonen in Galicien (Spanien)** ⭐
-Galicien verfügt über 7 offiziell von der Fundación Starlight zertifizierte Gebiete:
-1. **Pena Trevinca - A Veiga (Ourense, 2015):** Erstes Starlight-Reiseziel Galiciens mit Observatorium & Planetarium auf 2.127 m.
-2. **Nationalpark Illas Atlánticas (Pontevedra / A Coruña, 2016):** Cíes-Inseln und Ons-Insel mitten im Atlantik.
-3. **Muras - Serra do Xistral (Lugo, 2020):** Starlight-Gemeinde mit kristallklarem Himmel.
-4. **Costa da Morte (A Coruña, 2023):** Fisterra, Muxía und Carnota mit Ozeanhorizont nach Westen.
-5. **Mariñas Coruñesas e Terras do Mandeo (A Coruña, 2023):** Biosphärenreservat.
-6. **Lalín (Pontevedra, 2023):** Starlight-Gemeinde mit Sternwarte do Castro.
-7. **Ancares Lucenses (Lugo, 2023):** Biosphärenreservat mit Berggipfeln.`
-          : isEnglish
-          ? `🌊 **Certified Starlight Spaces in Galicia (Spain)** ⭐
-Galicia features 7 official territories certified by the Starlight Foundation:
-1. **Pena Trevinca - A Veiga (Ourense, 2015):** The first Starlight Destination in Galicia, highest peak (2,127m) with astronomical observatory and planetarium.
-2. **Atlantic Islands National Park (Pontevedra / A Coruña, 2016):** Cíes Islands, Ons Island, Sálvora, and Cortegada with ocean-dark skies.
-3. **Muras - Serra do Xistral (Lugo, 2020):** Starlight town surrounded by peat bogs and zero light pollution.
-4. **Costa da Morte (A Coruña, 2023):** Cape Finisterre, Muxía, Carnota, and Camariñas with infinite western horizons.
-5. **Mariñas Coruñesas e Terras do Mandeo (A Coruña, 2023):** Biosphere Reserve & Starlight Destination.
-6. **Lalín (Pontevedra, 2023):** Starlight Municipality with the Lalín Astronomical Observatory.
-7. **Ancares Lucenses, Cervantes & Navia (Lugo, 2023):** Pristine glacial valleys and ancient pallozas under pure Bortle 1 skies.`
-          : `🌊 **Zonas Certificadas Starlight en Galicia (España)** ⭐
-
-Galicia es uno de los mayores referentes mundiales en astroturismo y cuenta con **7 espacios certificados oficialmente por la Fundación Starlight**:
-
-1. **Pena Trevinca - A Veiga (Ourense - Certificado en 2015):**
-   - El primer Destino Turístico Starlight de Galicia. Enclavado en el Macizo de Trevinca con el pico más alto de Galicia (2.127 m), alberga el Centro Astronómico de Trevinca con planetario y cúpula.
-
-2. **Parque Nacional Marítimo-Terrestre das Illas Atlánticas de Galicia (Pontevedra / A Coruña - Certificado en 2016):**
-   - Archipiélagos de las **Islas Cíes, Isla de Ons, Sálvora y Cortegada**. Oscuridad oceánica pura, Vía Láctea sobre el mar y rutas nocturnas guiadas con astrónomos.
-
-3. **Muras - Serra do Xistral (Lugo - Certificado en 2020):**
-   - Municipio Starlight en el norte montañoso de Lugo, con los miradores astronómicos de Campo da Feira y O Cristo.
-
-4. **Costa da Morte (A Coruña - Certificado en 2023):**
-   - Extremo occidental continental (Fisterra, Muxía, Carnota y Camariñas) con horizonte oeste de oscuridad oceánica infinita sobre el Atlántico.
-
-5. **Mariñas Coruñesas e Terras do Mandeo (A Coruña - Certificado en 2023):**
-   - Reserva de la Biosfera Starlight que protege los valles y montes de Curtis, Sobrado y Aranga.
-
-6. **Lalín - Deza (Pontevedra - Certificado en 2023):**
-   - Municipio Starlight con el Observatorio Astronómico de Lalín en el Castro Tecnológico y miradores en la Serra do Candán.
-
-7. **Ancares Lucenses, Cervantes y Navia (Lugo - Certificado en 2023):**
-   - Reserva de la Biosfera en alta montaña con valles glaciares y pallozas milenarias bajo una cúpula estelar Bortle 1.`;
-      } else if (q.includes("eclipse") || q.includes("2026") || q.includes("2027") || q.includes("sol") || q.includes("finsternis")) {
-        fallbackReply = isGerman
-          ? `✨ **Leitfaden zu den großen totalen Sonnenfinsternissen in Spanien** 🌑
-1. **12. August 2026 (Nord- und Ostspanien / Castellón / Teruel):**
-   - **Totalitätszone:** Galicien, Asturien, Kastilien und León, Aragonien (Saragossa, Teruel), Castellón (Maestrat) und die Balearen.
-   - **Zeitpunkt:** Am späten Nachmittag kurz vor Sonnenuntergang (~19:30 - 20:30 Uhr MESZ).
-   - **Schutz:** Verwende während der partiellen Phasen unbedingt eine zertifizierte Sonnenfinsternisbrille nach **ISO 12312-2**.
-
-2. **2. August 2027 (Südspanien / Andalusien):**
-   - **Totalitätszone:** Cádiz, Tarifa, Málaga, Granada, Almería, Ceuta, Melilla.
-   - **Dauer:** Über 4 Minuten und 30 Sekunden absolute Dunkelheit am helllichten Tag!
-
-Möchtest du genaue Koordinaten oder Kameraeinstellungen für die Sonnenfinsternis erfahren?`
-          : isEnglish
-          ? `✨ **Great Total Solar Eclipses in Spain Guide** 🌑
-1. **August 12, 2026 (Northern & Eastern Spain / Castellón / Teruel):**
-   - **Totality Zone:** Galicia, Asturias, Castile and León, Aragon (Zaragoza, Teruel), Castellón (Maestrat), and Balearic Islands.
-   - **Timing:** Occurs late in the afternoon (around 19:30 - 20:30 CEST) near the horizon.
-   - **Protection:** You MUST use certified ISO 12312-2 solar eclipse glasses during partial phases. Remove only during totality.
-
-2. **August 2, 2027 (Southern Spain / Andalusia):**
-   - **Totality Zone:** Cádiz, Tarifa, Málaga, Granada, Almería, Ceuta, Melilla.
-   - **Duration:** Over 4 minutes and 30 seconds of daytime totality!
-
-Need specific coordinates or camera filter settings for the eclipse?`
-          : `✨ **Guía de los Grandes Eclipses Solares Totales en España** 🌑
-
-1. **Gran Eclipse Solar Total — 12 de Agosto de 2026:**
-   - **Franja de Totalidad:** Cruza Galicia, Asturias, Cantabria, Castilla y León, Aragón (Zaragoza, Teruel), interior y costa norte de Castellón (Maestrat / Penyagolosa) y Baleares.
-   - **Horario:** Ocurrirá a última hora de la tarde (~19:30 a 20:30h), con el Sol a baja elevación (unos 10°-12° sobre el horizonte oeste).
-   - **Seguridad:** Usa gafas con filtro certificado **ISO 12312-2** o lámina Baader AstroSolar durante todas las fases parciales. Solo se retiran durante los ~1m45s de totalidad.
-
-2. **Gran Eclipse del Siglo — 2 de Agosto de 2027:**
-   - **Franja de Totalidad:** Sur de Andalucía (Cádiz, Tarifa, Málaga, costa de Granada y Almería) y norte de África.
-   - **Duración:** ¡Más de 4 minutos y 30 segundos de oscuridad absoluta a pleno mediodía!
-
-¿Deseas recomendaciones de miradores específicos o ajustes para fotografiar la corona solar?`;
-      } else if (q.includes("telescop") || q.includes("comprar") || q.includes("equipo") || q.includes("ocular") || q.includes("apertura") || q.includes("fernrohr")) {
-        fallbackReply = isGerman
-          ? `🔭 **StellaWays Teleskop- und Beobachtungsratgeber**:
-1. **Beste Wahl für Einsteiger & visuelle Beobachtung (Große Öffnung):**
-   - **Dobson-Teleskop mit 150mm oder 200mm (6" oder 8")** (z. B. *Sky-Watcher Classic 200P*). Bietet das beste Lichtsammelvermögen pro Euro für Mondkrater, die Saturnringe, Jupiter sowie Nebel und Galaxien unter Bortle 2-4 Himmeln.
-2. **Kompakt & für Planeten/Reisen:** **Maksutov-Cassegrain 90mm bis 127mm** auf azimutaler Montierung.
-3. **Für Deep-Sky-Astrofotografie:** **Apochromatischer ED-Refraktor (70-80mm f/6)** auf motorisierter parallaktischer Montierung (z. B. *Star Adventurer GTi* oder *HEQ5 Pro*).
-4. **Empfohlenes Zubehör:** 2x achromatische Barlowlinse, 32mm Plössl-Okular für Weitfeld und Rotlichtlampe zur Erhaltung der Dunkeladaptation.
-
-Welches Budget oder welche Beobachtungsziele hast du im Sinn?`
-          : isEnglish
-          ? `🔭 **Stella's Telescope Buying & Stargazing Guide**:
-1. **Best for Beginners / Visual Astronomy:** **Dobsonian 150mm or 200mm (6" or 8")** (e.g., Sky-Watcher Classic 200P). Offers the largest optical aperture per euro, perfect for the Moon, Saturn's rings, Jupiter, nebulae, and galaxies under Bortle 2-4 skies.
-2. **Best for Portability:** **Maksutov-Cassegrain 90mm or 102mm** on an alt-azimuth mount. Compact, razor-sharp on planets and lunar craters.
-3. **Best for Deep Sky Astrophotography:** **ED / APO Refractor (70mm-80mm f/6)** on a motorized equatorial GoTo mount (HEQ5 / EQ6-R or Star Adventurer GTi).
-4. **Essential Accessories:** 2x Barlow lens, a 32mm Plössl eyepiece for wide fields, and a red headlamp to protect dark adaptation.
-
-What budget and observation style do you have in mind?`
-          : `🔭 **Recomendaciones de Telescopios por StellaWay**:
-
-1. **Mejor opción para iniciación y observación visual (Gran Apertura):**
-   - **Telescopio Dobson de 150mm o 200mm (6" u 8")** (ej. *Sky-Watcher Skyliner 200P* o *GSO Deluxe*).
-   - *Por qué:* Ofrece la mayor captación de luz por cada euro invertido. Permite ver detalles en Júpiter, los anillos de Saturno, cúmulos globulares (M13) y nebulosas (Orión M42) con gran nitidez.
-
-2. **Mejor para portabilidad y observación planetaria urbana:**
-   - **Maksutov-Cassegrain de 90mm a 127mm** (ej. *Sky-Watcher Skymax 102/127*).
-   - *Por qué:* Tubo óptico ultra compacto, sin aberración cromática y fácil de transportar en mochila.
-
-3. **Mejor para Astrofotografía de Cielo Profundo:**
-   - **Refractor Apocromático (ED Triplete o Doblete 70-80mm f/6)** montado sobre una base ecuatorial motorizada (ej. *Sky-Watcher HEQ5 Pro* o montura ligera *Star Adventurer GTi*).
-
-4. **Accesorios Indispensables:**
-   - Ocular gran angular (24mm o 32mm) para localizar objetos.
-   - Lente Barlow 2x acromática para duplicar aumentos.
-   - Luz roja de preservación de visión nocturna.
-
-¿Cuál es tu presupuesto estimado o qué tipo de objetos te gustaría priorizar?`;
-      } else if (q.includes("bortle") || q.includes("lugar") || q.includes("donde") || q.includes("sitio") || q.includes("castellon") || q.includes("cielo oscuro") || q.includes("starlight") || q.includes("himmel") || q.includes("dunkel")) {
-        fallbackReply = isGerman
-          ? `🌌 **Die besten Dunkelhimmel- & Starlight-Zonen (Bortle 1 bis 3)**:
-- **Castellón & Maestrat (Bortle 2-3):** Naturpark Penyagolosa, Culla (zertifiziertes Starlight-Reiseziel), Ares del Maestrat und Morella.
-- **Teruel / Gúdar-Javalambre (Bortle 2):** Astronomiezentrum Galáctica in Arcos de las Salinas.
-- **Cuenca & Alto Turia (Bortle 2-3):** Starlight-Reservat Serranía de Cuenca und Aras de los Olmos.
-- **Kanarische Inseln (Bortle 1):** Roque de los Muchachos (La Palma) und El Teide (Teneriffa).
-
-*Tipp:* Nutze die Echtzeit-Bortle-Karte von StellaWay und prüfe die Wolkenabdeckung vor der Abfahrt!`
-          : isEnglish
-          ? `🌌 **Best Dark Sky & Starlight Spots (Bortle 1-3)**:
-- **Castellón & Maestrat (Bortle 2-3):** Penyagolosa Natural Park, Culla (Starlight Certified Observatory), Ares del Maestrat, and Morella.
-- **Teruel / Gúdar-Javalambre (Bortle 2):** Galáctica Center for Astronomy & Arcos de las Salinas.
-- **Cuenca & Alto Turia (Bortle 2-3):** Serranía de Cuenca Starlight Reserve and Aras de los Olmos.
-- **Canary Islands:** Roque de los Muchachos (La Palma) & Teide (Tenerife) (Bortle 1).
-
-*Tip:* Always consult StellaWay's Real-Time Bortle Map and check cloud cover before traveling!`
-          : `🌌 **Mejores Zonas de Cielo Oscuro Starlight (Bortle 2 a 3)**:
-
-- **Castellón & Maestrat (Bortle 2-3):**
-  * **Parque Natural del Penyagolosa:** Uno de los cielos más puros de la Comunidad Valenciana.
-  * **Culla:** Destino Starlight certificado con observatorio astronómico municipal.
-  * **Ares del Maestrat y Morella:** Altitud superior a 1.000m y mínima polución lumínica.
-- **Teruel (Gúdar-Javalambre - Bortle 2):**
-  * **Arcos de las Salinas y Centro Galáctica:** Calidad de cielo de nivel profesional mundial.
-- **Valencia & Cuenca (Bortle 2-3):**
-  * **Aras de los Olmos (Alto Turia)** y la **Serranía de Cuenca** (Vega del Codorno).
-
-¿Te gustaría que calculemos la mejor ruta desde tu ubicación actual?`;
-      } else if (q.includes("astrofotograf") || q.includes("camara") || q.includes("via lactea") || q.includes("milky way") || q.includes("foto") || q.includes("milchstrasse")) {
-        fallbackReply = isGerman
-          ? `📸 **Astrofotografie-Kurztipps für die Milchstraße**:
-1. **Objektiv:** Lichtstarkes Weitwinkel (14mm bis 24mm) mit Offenblende (**f/1.4, f/1.8 oder f/2.8**).
-2. **Belichtungszeit (NPF-Regel):** Ca. 10 bis 15 Sekunden bei 24mm Vollformat, um Sternstriche zu vermeiden.
-3. **ISO-Empfindlichkeit:** Zwischen **ISO 3200 und 6400**.
-4. **Präziser Fokus:** Manueller Fokus (MF), 10-facher Digitalzoom im Live-View auf einen hellen Stern (z. B. Wega), bis er nadelspitz klein ist.
-5. **Stacking:** Im **RAW-Format** aufnehmen und 10-15 Bilder mit kostenloser Software wie Sequator oder Siril stacken.`
-          : isEnglish
-          ? `📸 **Milky Way & Night Landscape Photography Cheat-Sheet**:
-1. **Lens:** Ultra wide-angle (14mm to 24mm) with fast aperture (**f/1.8 or f/2.8**).
-2. **Exposure Time (NPF Rule):** For 24mm on Full Frame ~ 10-15s to keep stars perfectly sharp without star trails.
-3. **ISO Setting:** ISO 3200 to 6400 (depending on camera sensor noise).
-4. **Focusing:** Switch to Manual Focus (MF), zoom in x10 on Live View on a bright star, and focus until it is a pinpoint dot.
-5. **Post-Processing:** Shoot in RAW, stack 10-15 frames in Siril or Sequator to eliminate sensor noise.`
-          : `📸 **Guía Rápida para Astrofotografía de la Vía Láctea**:
-
-1. **Objetivo Recomendado:** Gran angular luminoso (14mm a 24mm) con apertura amplia (**f/1.4, f/1.8 o f/2.8**).
-2. **Tiempo de Exposición (Regla NPF / Regla de los 500):**
-   - Para un objetivo de 24mm en Full Frame: entre 10 y 15 segundos para evitar que las estrellas salgan como trazos.
-3. **Sensibilidad ISO:** Entre **ISO 3200 y 6400** (busca el punto de invariancia ISO de tu sensor).
-4. **Enfoque Preciso:**
-   - Desactiva el autoenfoque (pasa a Enfoque Manual - MF).
-   - Haz zoom digital x10 en la pantalla LCD apuntando a una estrella brillante (como Vega o Sirio) y gira el anillo hasta que sea un punto minúsculo.
-5. **Procesado y Apilado:**
-   - Dispara siempre en formato **RAW**.
-   - Haz entre 10 y 20 tomas consecutivas y apílalas con software gratuito como *Sequator* (Windows) o *Siril* (Mac/Linux) para eliminar el ruido digital.
-
-¿Qué cámara y objetivo estás utilizando?`;
-      } else {
-        fallbackReply = isGerman
-          ? `✨ **Hallo! Ich bin Stella, deine astronomische KI-Assistentin von StellaWay.**
-Ich helfe dir bei allen Fragen rund um Astronomie und Himmelsbeobachtung:
-- 🔭 **Teleskop- und Zubehörempfehlungen** passend zu deinem Budget.
-- 🌑 **Planung der totalen Sonnenfinsternis 2026 & 2027** in Spanien (Filter, Orte & Zeiten).
-- 🌌 **Dunkelste Starlight-Himmelsregionen (Bortle-Skala)** in Spanien.
-- 📸 **Milchstraßen- und Deep-Sky-Astrofotografie** (Kameraeinstellungen & Tipps).
-- 🌠 **Aktuelle Himmelsereignisse** (Sternschnuppen, Planeten, Mondphasen).
-
-Was möchtest du heute am Nachthimmel entdecken?`
-          : isEnglish
-          ? `✨ **Hello! I'm Stella, your Starlight Astronomical AI Assistant.**
-I am ready to assist you with:
-- 🔭 **Telescope & Eyepiece selection** tailored to your budget and observing goals.
-- 🌑 **Solar Eclipse 2026 & 2027 Planning** (safe filters, totality maps, timing in Spain).
-- 🌌 **Dark Sky Locations & Bortle ratings** in Castellón and across the Mediterranean Arc.
-- 📸 **Astrophotography setup** (camera settings, Milky Way capture, tracking mounts).
-- 🌠 **Live Stargazing Ephemerides** (meteor showers, planetary alignments).
-
-Feel free to ask me anything about the night sky!`
-          : `✨ **¡Hola! Soy Stella, tu Asistente Astronómica de StellaWay.**
-Estoy lista para ayudarte en todo lo relacionado con el cosmos:
-- 🔭 **Elección y uso de telescopios, oculares y filtros astronómicos.**
-- 🌑 **Preparación para el Gran Eclipse Solar Total 2026 y 2027** en España (franjas, horarios y filtros seguros).
-- 🌌 **Localización de cielos oscuros (Escala Bortle)** en Castellón, Teruel, Cuenca y el Arco Mediterráneo.
-- 📸 **Astrofotografía de la Vía Láctea y cielo profundo** (parámetros de cámara y técnicas).
-- 🌠 **Efemérides astronómicas actuales** (planetas visibles, lluvias de estrellas, fases lunares).
-
-¿Qué te gustaría consultar hoy?`;
-      }
-
-      res.json({ reply: fallbackReply });
+      // Intelligent Astronomical Knowledge Engine (guarantees instant, expert answers under any connectivity or quota status)
+      const fallbackReply = generateAstronomicalAnswer(message, language);
+      return res.json({ reply: fallbackReply });
     } catch (error) {
       console.error("Error in AI Assistant:", error);
-      res.status(500).json({
-        error: "Error procesando la consulta estelar",
-        reply: "El asistente estelar está disponible. Puedes preguntarme sobre telescopios, el Eclipse 2026 o lugares de cielo oscuro."
-      });
+      const safeReply = generateAstronomicalAnswer(req.body?.message || "", req.body?.language || "es");
+      return res.json({ reply: safeReply });
     }
   });
 

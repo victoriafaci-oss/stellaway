@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { STARLIGHT_SPOTS } from '../data/stellaData';
 import { StarlightSpot } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { useOfflineStorage } from '../lib/offlineStorage';
 
 interface SpotsViewProps {
   onGoBack?: () => void;
@@ -11,7 +12,18 @@ interface SpotsViewProps {
 
 export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavigateToDarkSky }) => {
   const { t } = useLanguage();
-  const [activeSubTab, setActiveSubTab] = useState<'name' | 'coords' | 'nearby'>('name');
+  const {
+    savedSpots,
+    isSpotSaved,
+    toggleSaveSpot,
+    saveSpot,
+    removeSpot,
+    stats,
+    clearAllOfflineData,
+    isOnline
+  } = useOfflineStorage();
+  const [activeSubTab, setActiveSubTab] = useState<'name' | 'coords' | 'nearby' | 'offline'>('name');
+  const [savedBatchMessage, setSavedBatchMessage] = useState<string | null>(null);
   const [mapMode, setMapMode] = useState<'certified' | 'free_location'>('certified');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCountry, setSelectedCountry] = useState<string>('todos');
@@ -45,19 +57,21 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
   const spanishProvinces = [
     { value: 'todas', label: 'Todas las Provincias / Comunidades' },
     { value: 'zaragoza', label: 'Zaragoza (3 Certificados Starlight + Moncayo)' },
-    { value: 'galicia', label: 'Galicia (7 Destinos Certificados Starlight)' },
     { value: 'teruel', label: 'Teruel (Javalambre, Albarracín, Galáctica)' },
     { value: 'huesca', label: 'Huesca (Ordesa y Monte Perdido)' },
-    { value: 'castellon', label: 'Castellón (Penyagolosa, Culla, Maestrat)' },
+    { value: 'castellon', label: 'Castellón (Penyagolosa, Culla, Peñíscola)' },
     { value: 'valencia', label: 'Valencia (Alto Turia / Aras de los Olmos)' },
-    { value: 'canarias', label: 'Canarias (La Palma, Tenerife Teide)' },
-    { value: 'andalucia', label: 'Andalucía (Sierra Morena, Jaén, Cabo de Gata)' },
-    { value: 'cataluna', label: 'Cataluña (Parc Astronòmic Montsec)' },
-    { value: 'cuenca', label: 'Castilla-La Mancha (Serranía de Cuenca)' },
-    { value: 'castilla y leon', label: 'Castilla y León (Gredos, Soria Muriel)' },
-    { value: 'caceres', label: 'Extremadura (Monfragüe)' },
-    { value: 'asturias', label: 'Asturias / Cantabria (Picos de Europa)' },
-    { value: 'navarra', label: 'Navarra (Valle de Roncal)' }
+    { value: 'galicia', label: 'Galicia (7 Destinos: Trevinca, Cíes, Muras, Costa da Morte...)' },
+    { value: 'andalucia', label: 'Andalucía (Sierra Morena, Pedroches, Cazorla, Torcal, Calar Alto, Nevada)' },
+    { value: 'castilla-la mancha', label: 'Castilla-La Mancha (Cuenca, Sierra del Segura/Nerpio, Alcudia, Cabañeros)' },
+    { value: 'castilla y leon', label: 'Castilla y León (Babia/León, Gredos, Soria, Sierra de Francia)' },
+    { value: 'canarias', label: 'Canarias (La Palma, Teide, Fuerteventura, Gran Canaria)' },
+    { value: 'baleares', label: 'Islas Baleares (Menorca Reserva y Destino Starlight)' },
+    { value: 'extremadura', label: 'Extremadura (Monfragüe, Gata, Hurdes, Tajo Internacional, Alqueva)' },
+    { value: 'navarra', label: 'Navarra (Valle de Roncal Pirenaico)' },
+    { value: 'la rioja', label: 'La Rioja (Valles del Leza, Jubera, Cidacos y Alhama)' },
+    { value: 'cataluna', label: 'Cataluña (Montsec Lleida, Prades y Montsant Tarragona)' },
+    { value: 'asturias', label: 'Asturias / Cantabria (Picos de Europa)' }
   ];
 
   // Filter spots dynamically with multi-token matching, country & province support
@@ -92,6 +106,65 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           spotDescNorm.includes('zaragoza') ||
           spot.id.includes('zaragoza');
         if (!isZaragoza) return false;
+      } else if (targetProvNorm === 'andalucia') {
+        const isAndalucia =
+          spotRegionNorm.includes('andalucia') ||
+          spotRegionNorm.includes('jaen') ||
+          spotRegionNorm.includes('cordoba') ||
+          spotRegionNorm.includes('malaga') ||
+          spotRegionNorm.includes('almeria') ||
+          spotRegionNorm.includes('granada') ||
+          spotRegionNorm.includes('huelva') ||
+          spotRegionNorm.includes('sevilla');
+        if (!isAndalucia) return false;
+      } else if (targetProvNorm.includes('mancha') || targetProvNorm === 'cuenca') {
+        const isMancha =
+          spotRegionNorm.includes('mancha') ||
+          spotRegionNorm.includes('cuenca') ||
+          spotRegionNorm.includes('albacete') ||
+          spotRegionNorm.includes('ciudad real') ||
+          spotRegionNorm.includes('toledo');
+        if (!isMancha) return false;
+      } else if (targetProvNorm.includes('leon')) {
+        const isCastillaLeon =
+          spotRegionNorm.includes('leon') ||
+          spotRegionNorm.includes('avila') ||
+          spotRegionNorm.includes('soria') ||
+          spotRegionNorm.includes('salamanca') ||
+          spotRegionNorm.includes('burgos') ||
+          spotRegionNorm.includes('castilla y leon');
+        if (!isCastillaLeon) return false;
+      } else if (targetProvNorm === 'canarias') {
+        const isCanarias =
+          spotRegionNorm.includes('canarias') ||
+          spotRegionNorm.includes('palma') ||
+          spotRegionNorm.includes('tenerife') ||
+          spotRegionNorm.includes('fuerteventura') ||
+          spotRegionNorm.includes('gran canaria');
+        if (!isCanarias) return false;
+      } else if (targetProvNorm === 'baleares') {
+        const isBaleares =
+          spotRegionNorm.includes('baleares') ||
+          spotRegionNorm.includes('menorca') ||
+          spotRegionNorm.includes('mallorca') ||
+          spotRegionNorm.includes('ibiza');
+        if (!isBaleares) return false;
+      } else if (targetProvNorm === 'extremadura' || targetProvNorm === 'caceres') {
+        const isExtremadura =
+          spotRegionNorm.includes('extremadura') ||
+          spotRegionNorm.includes('caceres') ||
+          spotRegionNorm.includes('badajoz');
+        if (!isExtremadura) return false;
+      } else if (targetProvNorm === 'cataluna') {
+        const isCataluna =
+          spotRegionNorm.includes('cataluna') ||
+          spotRegionNorm.includes('lleida') ||
+          spotRegionNorm.includes('tarragona') ||
+          spotRegionNorm.includes('girona') ||
+          spotRegionNorm.includes('barcelona') ||
+          spotRegionNorm.includes('montsec') ||
+          spotRegionNorm.includes('prades');
+        if (!isCataluna) return false;
       } else if (!spotRegionNorm.includes(targetProvNorm)) {
         return false;
       }
@@ -248,6 +321,36 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             </button>
           )}
         </div>
+
+        {/* Quick Batch Save for current search / selection */}
+        {searchQuery.trim().length > 1 && filteredSpots.length > 0 && (
+          <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-xs">
+            <div className="flex items-center gap-2 text-amber-200">
+              <span className="material-symbols-outlined text-sm">download_for_offline</span>
+              <span>
+                ¿Vas a visitar esta zona? Puedes guardar estos <strong>{filteredSpots.length}</strong> miradores en tu teléfono (~{(filteredSpots.length * 1.5).toFixed(1)} KB).
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                filteredSpots.forEach((s) => saveSpot(s));
+                setSavedBatchMessage(`¡Guardados ${filteredSpots.length} miradores en tu teléfono para usar sin cobertura!`);
+                setTimeout(() => setSavedBatchMessage(null), 4000);
+              }}
+              className="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-all shadow-sm shrink-0"
+            >
+              <span className="material-symbols-outlined text-sm">bookmark_add</span>
+              Guardar estos {filteredSpots.length} offline
+            </button>
+          </div>
+        )}
+
+        {savedBatchMessage && (
+          <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400 text-emerald-200 text-xs flex items-center gap-2 animate-fadeIn">
+            <span className="material-symbols-outlined text-base">check_circle</span>
+            <span className="font-bold">{savedBatchMessage}</span>
+          </div>
+        )}
 
         {/* Country, Province & Type Filters Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
@@ -536,6 +639,27 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             <div className="absolute bottom-0 inset-x-0 h-1 bg-[#FFD700] rounded-t-full shadow-[0_0_12px_#FFD700]" />
           )}
         </button>
+
+        <button
+          onClick={() => setActiveSubTab('offline')}
+          className={`pb-4 px-2 font-['Plus_Jakarta_Sans'] text-base md:text-lg font-bold transition-all relative flex items-center gap-2 cursor-pointer ${
+            activeSubTab === 'offline' ? 'text-amber-400' : 'text-white/60 hover:text-white'
+          }`}
+          id="tab-spots-offline"
+        >
+          <span className="material-symbols-outlined text-2xl">
+            {stats.spotsCount > 0 ? 'backpack' : 'cloud_off'}
+          </span>
+          <span>Mochila Offline ({stats.spotsCount})</span>
+          {stats.spotsCount > 0 && (
+            <span className="text-[10px] bg-amber-400/20 text-amber-300 font-mono px-2 py-0.5 rounded-full border border-amber-400/40">
+              {stats.approxKB} KB
+            </span>
+          )}
+          {activeSubTab === 'offline' && (
+            <div className="absolute bottom-0 inset-x-0 h-1 bg-amber-400 rounded-t-full shadow-[0_0_12px_#fbbf24]" />
+          )}
+        </button>
       </div>
 
       {/* SUB-TAB 1: BUSCAR Y VER TODOS LOS LUGARES */}
@@ -667,16 +791,39 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                     </div>
                   </div>
 
-                  <div className="px-6 pb-6 pt-2">
+                  <div className="px-6 pb-6 pt-2 flex items-center gap-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedSpot(spot);
                       }}
-                      className="w-full py-3.5 rounded-2xl bg-[#0369A1] hover:bg-[#0284C7] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
+                      className="flex-1 py-3.5 rounded-2xl bg-[#0369A1] hover:bg-[#0284C7] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
                     >
                       <span className="material-symbols-outlined text-base">map</span>
-                      {t('viewDetails', 'Ver Ficha Completa y Ruta')}
+                      {t('viewDetails', 'Ficha Completa')}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSaveSpot(spot);
+                      }}
+                      className={`px-3.5 py-3.5 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md shrink-0 ${
+                        isSpotSaved(spot.id)
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-400/40 shadow-emerald-900/30'
+                          : 'bg-[#082F49] hover:bg-[#0c3e60] text-white/90 border border-[#38BDF8]/40'
+                      }`}
+                      title={
+                        isSpotSaved(spot.id)
+                          ? 'Guardado en tu móvil para usar sin cobertura. Clic para quitar.'
+                          : 'Guardar esta ficha en tu móvil para salidas sin cobertura (~2 KB)'
+                      }
+                    >
+                      <span className="material-symbols-outlined text-base text-amber-300">
+                        {isSpotSaved(spot.id) ? 'bookmark_added' : 'bookmark_add'}
+                      </span>
+                      <span className="hidden sm:inline">
+                        {isSpotSaved(spot.id) ? 'Guardado' : 'Guardar'}
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -990,6 +1137,148 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
         </div>
       )}
 
+      {/* SUB-TAB 4: MOCHILA OFFLINE (MIRADORES GUARDADOS SELECTIVAMENTE) */}
+      {activeSubTab === 'offline' && (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Informative Header for Offline Backpack */}
+          <div className="card-pastel-gold rounded-3xl p-6 md:p-8 border border-amber-400/50 shadow-xl bg-gradient-to-r from-[#241542] via-[#1d1033] to-[#120a22]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-amber-400/20 text-amber-300 border border-amber-400/40 flex items-center justify-center shrink-0 text-2xl shadow-inner">
+                  🎒
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-xl md:text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans']">
+                      Mi Mochila Offline (Sin Cobertura)
+                    </h2>
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-mono text-xs font-bold border border-amber-400/30">
+                      {savedSpots.length} guardados
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-white/80 mt-1 leading-relaxed">
+                    Fichas y coordenadas seleccionadas por ti. Ocupan apenas <strong className="text-amber-300 font-mono">{(savedSpots.length * 1.5).toFixed(1)} KB</strong> en tu teléfono y están disponibles en plena montaña aunque tu móvil esté en modo avión.
+                  </p>
+                </div>
+              </div>
+
+              {savedSpots.length > 0 && (
+                <button
+                  onClick={() => {
+                    if (window.confirm('¿Seguro que deseas vaciar tus miradores guardados de la memoria del teléfono?')) {
+                      savedSpots.forEach((s) => removeSpot(s.id));
+                    }
+                  }}
+                  className="px-3 py-2 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-200 border border-red-500/40 text-xs font-bold transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 self-start sm:self-auto"
+                >
+                  <span className="material-symbols-outlined text-sm">delete_sweep</span>
+                  Vaciar mochila
+                </button>
+              )}
+            </div>
+          </div>
+
+          {savedSpots.length === 0 ? (
+            <div className="glass-panel rounded-3xl p-10 text-center border border-white/10 space-y-4 max-w-xl mx-auto">
+              <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-3xl text-amber-300/80">
+                cloud_off
+              </div>
+              <h3 className="text-xl font-bold text-white">Tu mochila offline está vacía</h3>
+              <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
+                Para no saturar la memoria de tu móvil, solo se guarda lo que tú elijas. Cuando busques una provincia, municipio o mirador, pulsa en <strong className="text-amber-300">«Guardar Offline»</strong> y lo tendrás disponible aquí para tus salidas nocturnas al campo.
+              </p>
+              <button
+                onClick={() => setActiveSubTab('name')}
+                className="px-5 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md inline-flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-base">search</span>
+                Buscar Miradores y Guardar
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {savedSpots.map((spot) => (
+                <div
+                  key={spot.id}
+                  onClick={() => setSelectedSpot(spot)}
+                  className="card-pastel-gold card-pastel-gold-hover rounded-3xl overflow-hidden shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between border-2 border-amber-400/60"
+                >
+                  <div>
+                    <div className="h-44 relative overflow-hidden">
+                      <img
+                        src={spot.imageUrl}
+                        alt={spot.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30" />
+
+                      <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                        <span className="bg-emerald-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow-md">
+                          ✓ Guardado Offline
+                        </span>
+                        <span className="bg-black/80 backdrop-blur-md text-[#38BDF8] font-['JetBrains_Mono'] text-xs px-2.5 py-1 rounded-full font-black border border-[#38BDF8]/40">
+                          Bortle {spot.bortleClass}
+                        </span>
+                      </div>
+
+                      <div className="absolute bottom-3 left-4 right-4">
+                        <span className="text-xs text-[#7DD3FC] font-black uppercase tracking-wider drop-shadow">
+                          {spot.region} • {spot.country || 'España'}
+                        </span>
+                        <h3 className="text-xl font-black text-white font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                          {spot.name}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="p-5 space-y-3">
+                      <p className="text-xs md:text-sm text-[#030712] font-bold leading-relaxed line-clamp-2">
+                        {spot.description}
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs font-['JetBrains_Mono'] p-2.5 rounded-xl bg-white/90 border border-amber-400/40">
+                        <div>
+                          <span className="text-[#082F49] block font-black text-[10px]">Coordenadas GPS:</span>
+                          <span className="text-[#030712] font-black text-xs">{spot.latitude}, {spot.longitude}</span>
+                        </div>
+                        <div>
+                          <span className="text-[#082F49] block font-black text-[10px]">Altitud / Calidad:</span>
+                          <span className="text-[#030712] font-black text-xs">{spot.elevationMeters}m · SQM {spot.sqm}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="px-5 pb-5 pt-1 flex items-center gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSpot(spot);
+                      }}
+                      className="flex-1 py-3 rounded-2xl bg-[#0369A1] hover:bg-[#0284C7] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md"
+                    >
+                      <span className="material-symbols-outlined text-base">visibility</span>
+                      Ver Ficha Offline
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeSpot(spot.id);
+                      }}
+                      className="px-3 py-3 rounded-2xl bg-red-950/40 hover:bg-red-900/60 text-red-200 border border-red-500/40 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1 cursor-pointer transition-all shadow-sm"
+                      title="Eliminar de mi mochila offline"
+                    >
+                      <span className="material-symbols-outlined text-base">delete</span>
+                      <span className="hidden sm:inline">Quitar</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Spot Detail Modal in Celestial Sky Blue Glass */}
       {selectedSpot && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
@@ -1075,6 +1364,38 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                     </span>
                   ))}
                 </div>
+              </div>
+
+              {/* Selective Offline Storage Action in Modal */}
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-400/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-amber-300 text-2xl">
+                    {isSpotSaved(selectedSpot.id) ? 'offline_pin' : 'download_for_offline'}
+                  </span>
+                  <div>
+                    <span className="text-xs font-bold text-white block">
+                      {isSpotSaved(selectedSpot.id)
+                        ? 'Ficha guardada en tu teléfono para usar sin cobertura'
+                        : 'Guardar esta ficha para tu salida al campo'}
+                    </span>
+                    <span className="text-[11px] text-white/70 block">
+                      Ocupa apenas ~1.5 KB. Disponible en mitad del monte aunque no tengas cobertura móvil.
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => toggleSaveSpot(selectedSpot)}
+                  className={`w-full sm:w-auto px-4 py-2.5 rounded-xl font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md shrink-0 ${
+                    isSpotSaved(selectedSpot.id)
+                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-400/40'
+                      : 'bg-amber-400 hover:bg-amber-300 text-black shadow-amber-400/20'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-base">
+                    {isSpotSaved(selectedSpot.id) ? 'bookmark_added' : 'bookmark_add'}
+                  </span>
+                  <span>{isSpotSaved(selectedSpot.id) ? '✓ Guardado Offline' : 'Guardar Offline (~1.5 KB)'}</span>
+                </button>
               </div>
 
               <div className="pt-4 border-t border-[#38BDF8]/40 flex flex-col sm:flex-row gap-3">

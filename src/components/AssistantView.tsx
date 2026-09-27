@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { generateAstronomicalAnswer } from '../lib/astronomyKnowledge';
 
 export const AssistantView: React.FC = () => {
   const { t, language } = useLanguage();
@@ -57,8 +58,15 @@ export const AssistantView: React.FC = () => {
         })
       });
 
-      const data = await response.json();
-      const replyText = data.reply || 'No pude obtener respuesta. Comprueba tu conexión.';
+      let replyText = '';
+      if (response.ok) {
+        const data = await response.json();
+        replyText = data.reply;
+      }
+
+      if (!replyText || replyText.trim().length === 0) {
+        replyText = generateAstronomicalAnswer(text, language);
+      }
 
       const botMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -69,13 +77,14 @@ export const AssistantView: React.FC = () => {
 
       setMessages((prev) => [...prev, botMsg]);
     } catch (err) {
-      console.error('Error fetching assistant response:', err);
+      console.warn('Network issue fetching assistant response, using offline knowledge engine:', err);
+      const offlineReply = generateAstronomicalAnswer(text, language);
       setMessages((prev) => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: 'Ocurrió un error al consultar con el asistente estelar. Inténtalo de nuevo.',
+          content: offlineReply,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);

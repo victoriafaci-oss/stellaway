@@ -2,6 +2,7 @@ import React from 'react';
 import { ActiveTab, ModalType } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useOfflineStorage } from '../lib/offlineStorage';
 import { StellaLogo } from './StellaLogo';
 
 interface TopBarProps {
@@ -25,6 +26,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 }) => {
   const { user, signIn } = useAuth();
   const { language, languageOptions } = useLanguage();
+  const { isOnline, stats } = useOfflineStorage();
 
   const currentLangOption = languageOptions.find((l) => l.code === language) || languageOptions[0];
 
@@ -113,6 +115,18 @@ export const TopBar: React.FC<TopBarProps> = ({
               <span className="hidden sm:inline font-bold">Google</span>
             </button>
           )
+        )}
+
+        {/* Offline indicator if disconnected */}
+        {!isOnline && (
+          <button
+            onClick={() => setActiveTab('spots')}
+            className="h-8 px-2 sm:px-2.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/40 font-['JetBrains_Mono'] text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm animate-pulse"
+            title="Sin cobertura móvil: Clic para ver tus miradores y eventos guardados en este dispositivo"
+          >
+            <span className="material-symbols-outlined text-xs">signal_wifi_off</span>
+            <span className="hidden md:inline">Sin Cobertura</span>
+          </button>
         )}
 
         {/* Sol / Luz Roja (Night Vision) */}

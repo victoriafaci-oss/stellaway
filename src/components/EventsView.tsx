@@ -5,10 +5,12 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { CalendarConfirmModal } from './CalendarConfirmModal';
 import { CalendarEventPayload } from '../lib/calendar';
+import { useOfflineStorage } from '../lib/offlineStorage';
 
 export const EventsView: React.FC = () => {
   const { user, signIn, syncEventToCalendar } = useAuth();
   const { t } = useLanguage();
+  const { savedEvents, isEventSaved, toggleSaveEvent, stats } = useOfflineStorage();
   const [activeSubTab, setActiveSubTab] = useState<'upcoming' | 'energy'>('upcoming');
   const [selectedCategory, setSelectedCategory] = useState<string>('todos');
   const [timeFilter, setTimeFilter] = useState<'active_upcoming' | 'archived_past'>('active_upcoming');
@@ -66,8 +68,10 @@ export const EventsView: React.FC = () => {
   // Current list based on timeFilter
   const baseList = timeFilter === 'active_upcoming' ? allUpcomingEvents : allPastEvents;
 
-  // Filter by category
-  const filteredEvents = selectedCategory === 'todos'
+  // Filter by category (including offline saved events)
+  const filteredEvents = selectedCategory === 'offline'
+    ? savedEvents
+    : selectedCategory === 'todos'
     ? baseList
     : baseList.filter((e) => e.category === selectedCategory);
 
@@ -325,6 +329,7 @@ export const EventsView: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2">
             {[
               { id: 'todos', label: t('categoryAll', 'Todos los Eventos') },
+              { id: 'offline', label: `🎒 Guardados Offline (${stats.eventsCount})` },
               { id: 'eclipse', label: t('categoryEclipses', 'Eclipses (Solar/Lunar)') },
               { id: 'lluvia_estrellas', label: t('categoryMeteors', 'Lluvias de Estrellas') },
               { id: 'alineacion', label: t('categoryPlanets', 'Alineación de Planetas') },
@@ -336,7 +341,9 @@ export const EventsView: React.FC = () => {
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`px-4 py-2 rounded-2xl text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer shadow-sm ${
                   selectedCategory === cat.id
-                    ? 'bg-[#0284C7] text-white border border-[#7DD3FC]'
+                    ? cat.id === 'offline'
+                      ? 'bg-amber-400 text-black border border-amber-300 font-black shadow-amber-400/20'
+                      : 'bg-[#0284C7] text-white border border-[#7DD3FC]'
                     : 'bg-[#082F49]/60 text-white/80 hover:bg-[#082F49] border border-[#38BDF8]/30'
                 }`}
               >
@@ -424,35 +431,56 @@ export const EventsView: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Google Calendar Sync Action Button */}
-                    <div className="flex items-center justify-between pt-3 border-t border-[#38BDF8]/30">
-                      {countdown.isPast ? (
-                        <span className="text-xs font-bold text-[#BAE6FD] flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-base text-gray-400">task_alt</span>
-                          Evento pasado registrado en el histórico estelar
-                        </span>
-                      ) : syncedEvents[evt.id] ? (
-                        <a
-                          href={syncedEvents[evt.id]}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-5 py-2.5 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-md"
-                        >
-                          <span className="material-symbols-outlined text-sm">check_circle</span>
-                          Añadido a Google Calendar (Ver en Google)
-                        </a>
-                      ) : (
+                    {/* Actions: Google Calendar Sync + Selective Offline Save */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#38BDF8]/30">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {countdown.isPast ? (
+                          <span className="text-xs font-bold text-[#BAE6FD] flex items-center gap-1.5">
+                            <span className="material-symbols-outlined text-base text-gray-400">task_alt</span>
+                            Evento pasado registrado en el histórico estelar
+                          </span>
+                        ) : syncedEvents[evt.id] ? (
+                          <a
+                            href={syncedEvents[evt.id]}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-md"
+                          >
+                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                            En Google Calendar
+                          </a>
+                        ) : (
+                          <button
+                            onClick={() => handleOpenCalendarSync(evt)}
+                            className="px-4 py-2 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-all shadow-md border border-[#7DD3FC]/50"
+                          >
+                            <span className="material-symbols-outlined text-base">calendar_add_on</span>
+                            Sincronizar Calendar
+                          </button>
+                        )}
+
                         <button
-                          onClick={() => handleOpenCalendarSync(evt)}
-                          className="px-5 py-2.5 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-all shadow-md border border-[#7DD3FC]/50"
+                          onClick={() => toggleSaveEvent(evt)}
+                          className={`px-3.5 py-2 rounded-2xl font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-all shadow-md ${
+                            isEventSaved(evt.id)
+                              ? 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-400/40'
+                              : 'bg-[#082F49] hover:bg-[#0c3e60] text-white/90 border border-[#38BDF8]/40'
+                          }`}
+                          title={
+                            isEventSaved(evt.id)
+                              ? 'Guardado en tu móvil para consultar sin cobertura. Clic para quitar.'
+                              : 'Guardar evento en tu móvil para salidas sin cobertura (~1.5 KB)'
+                          }
                         >
-                          <span className="material-symbols-outlined text-base">calendar_add_on</span>
-                          Añadir / Sincronizar en Google Calendar
+                          <span className="material-symbols-outlined text-base text-amber-300">
+                            {isEventSaved(evt.id) ? 'bookmark_added' : 'bookmark_add'}
+                          </span>
+                          <span>{isEventSaved(evt.id) ? 'Guardado Offline' : 'Guardar Offline'}</span>
                         </button>
-                      )}
+                      </div>
 
                       <span className="text-[11px] text-[#BAE6FD] font-['JetBrains_Mono'] font-bold hidden sm:inline">
-                        Integración oficial Google Workspace
+                        Google Workspace & Modo Offline
                       </span>
                     </div>
                   </div>

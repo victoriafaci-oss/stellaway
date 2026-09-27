@@ -14,6 +14,7 @@ import { WelcomePaywallView } from './components/WelcomePaywallView';
 import { StarrySkyBackground } from './components/StarrySkyBackground';
 import { LandingPage } from './components/LandingPage';
 import { InstallPromptModal } from './components/InstallPromptModal';
+import { OfflineBanner } from './components/OfflineBanner';
 
 export default function App() {
   // Check synchronously on initial load to avoid any flash of the landing page
@@ -297,6 +298,12 @@ export default function App() {
           nightVision={nightVision}
           setNightVision={setNightVision}
           openModal={(type) => setModalType(type)}
+        />
+
+        {/* Non-intrusive offline alert banner when disconnected in the field */}
+        <OfflineBanner
+          onNavigateTab={navigateTo}
+          nightVision={nightVision}
         />
 
         {activeTab === 'welcome' && (
