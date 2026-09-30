@@ -366,6 +366,38 @@ El sistema ibérico oriental cuenta con una de las mayores reservas de cielo osc
   - **Júpiter:** 4 lunas galileanas (Ío, Europa, Ganímedes y Calisto) visibles incluso con prismáticos 10x50.`;
   }
 
+  // 9b. DARKSKY & ESTADOS UNIDOS (EE.UU.)
+  if (q.includes('darksky') || q.includes('dark sky') || q.includes('eeuu') || q.includes('estados unidos') || q.includes('usa') || q.includes('big bend') || q.includes('arches') || q.includes('bryce') || q.includes('joshua tree') || q.includes('grand canyon') || q.includes('death valley') || q.includes('cherry springs') || q.includes('flagstaff')) {
+    return `🌌 **Zonas Certificadas DarkSky en Estados Unidos (EE.UU.)** 🇺🇸
+
+En **StellaWay** tienes disponible el catálogo con las principales zonas certificadas por **DarkSky International (la IDA)** en EE.UU., organizadas por categorías:
+
+1. **Grandes Parques Nacionales ("Mighty 5" y Cañones del Oeste):**
+   - **Utah:** *Natural Bridges* (el **primer Parque Dark Sky del mundo** en 2007), *Arches National Park*, *Bryce Canyon*, *Canyonlands*, *Zion National Park* y *Capitol Reef*.
+   - **Arizona:** *Grand Canyon National Park* (cañón colosal y Star Party anual).
+   - **California / Nevada:** *Death Valley* (el mayor parque de cielo oscuro de EE.UU. con 13.600 km², Bortle 1), *Joshua Tree* (desierto de Mojave) y *Great Basin* (Wheeler Peak y pinos milenarios).
+   - **Colorado:** *Black Canyon of the Gunnison* (abismos de granito) y *Mesa Verde* (viviendas en acantilados pueblo).
+   - **Nuevo México:** *Chaco Culture* (arqueoastronomía milenaria) y *Cosmic Campground* (primer Santuario Dark Sky de Norteamérica).
+   - **Dakota del Sur:** *Badlands National Park* (pinnáculos de arcilla).
+
+2. **Grandes Reservas y Santuarios:**
+   - **Texas:** *Greater Big Bend International Dark Sky Reserve* (la **mayor reserva Dark Sky del mundo**, con más de 38.000 km² en el desierto chihuahuense).
+   - **Idaho:** *Central Idaho Dark Sky Reserve* (montañas Sawtooth, nivel oro).
+   - **Nevada:** *Massacre Rim Sanctuary* (oscuridad natural absoluta SQM 22.00).
+   - **Minnesota:** *Boundary Waters Canoe Area Wilderness* (el mayor santuario Dark Sky del mundo, 4.400 km² de lagos vírgenes y auroras boreales) y *Voyageurs National Park*.
+
+3. **Costa Este y Montañas Rocosas:**
+   - **Pensilvania:** *Cherry Springs State Park* (el gran templo astronómico de la Costa Este, meseta de 700 m en Susquehannock).
+   - **Montana / Canadá:** *Waterton-Glacier International Peace Park* (primer parque transfronterizo del mundo).
+   - **Kentucky:** *Mammoth Cave National Park* (cielos protegidos sobre la cueva más larga del mundo).
+
+4. **Comunidades Dark Sky Pioneras:**
+   - **Flagstaff (Arizona):** La **primera Comunidad Dark Sky de la historia** (2001, sede del Observatorio Lowell).
+   - **Sedona (Arizona)** y **Borrego Springs (California)**.
+
+*Nota:* Puedes explorar todas estas zonas en la pestaña **"DarkSky Int."** del menú de navegación, con cálculo de distancias GPS, fotos diurnas de los parques y fichas técnicas completas.`;
+  }
+
   // 10. GENERAL / BIENVENIDA
   if (isGerman) {
     return `✨ **Hallo! Ich bin Stella, deine astronomische KI-Assistentin von StellaWay.**

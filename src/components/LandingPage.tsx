@@ -871,7 +871,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <h2 className="font-luxury text-4xl md:text-5xl font-bold mb-4 text-white">
               {t('landingCertifiedTitle', 'Zonas Certificadas & Cielos Oscuros')}
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-cyan-300 to-purple-300">
-                {t('landingCertifiedSubtitle', 'Guía Oficial para la Observación Nocturna')}
+                {t('landingCertifiedSubtitle', 'Buscador de Zonas Starlight y DarkSky')}
               </span>
             </h2>
             <p className="text-white/60 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">

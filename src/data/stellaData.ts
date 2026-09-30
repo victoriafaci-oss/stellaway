@@ -382,7 +382,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Uno de los cielos más limpios y oscuros de la Comunitat Valenciana, certificado como Destino Turístico Starlight.',
     facilities: ['Parking habilitado', 'Mesas de observación', 'Paneles informativos', 'Aparcamiento autocaravanas'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -400,7 +400,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Pueblo histórico de Culla, rodeado de campos con horizonte despejado en 360 grados para astrofotografía.',
     facilities: ['Hoteles rurales Starlight', 'Visitas guiadas', 'Restaurantes astronómicos'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -418,7 +418,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Epicentro nacional de divulgación y observación astronómica profesional, junto al Observatorio Astrofísico de Javalambre.',
     facilities: ['Observatorio visitante', 'Cúpulas semiautomáticas', 'Cursos de astrofotografía'],
     bestSeason: 'Verano',
-    imageUrl: 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -436,7 +436,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Referente mundial para la observación astronómica con la Ley del Cielo. Sede del Gran Telescopio Canarias (GTC).',
     facilities: ['Red de miradores astronómicos', 'Telescopios profesionales', 'Rutas guiadas Starlight'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -454,7 +454,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Destino Starlight de primera clase sobre el mar de nubes del piso alpino con visibilidad extraordinaria.',
     facilities: ['Observatorio del Teide', 'Aparcamientos de montaña', 'Rutas nocturnas'],
     bestSeason: 'Primavera - Verano',
-    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -472,7 +472,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Reserva y Destino Turístico Starlight con planetario 3D 3DOpen y telescopio de investigación de 80cm.',
     facilities: ['Planetario 3D', 'Aulas taller', 'Telescopios interactivos'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-sierra-morena',
@@ -489,7 +489,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'La reserva Starlight continental más grande del mundo, abarcando más de 400 km de sierras sin contaminación lumínica.',
     facilities: ['Red de 35 miradores', 'Alojamientos starlight', 'Senda nocturna'],
     bestSeason: 'Otoño - Invierno - Primavera',
-    imageUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-cuenca',
@@ -506,7 +506,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Cielos cristalinos protegidos entre pinares y hoces cársticas de la Serranía de Cuenca.',
     facilities: ['Mirador del Tormo', 'Paneles explicativos', 'Aparcamiento'],
     bestSeason: 'Primavera - Verano',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-gudar',
@@ -523,7 +523,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Destino astronómico de alta montaña en los montes de Teruel con aire sumamente seco e idóneo para astrofotografía.',
     facilities: ['Red de senderos nocturnos', 'Puntos de agua', 'Información en vivo'],
     bestSeason: 'Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80'
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -545,7 +545,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Red de 11 miradores estelares', 'Alojamiento Starlight El Castillo', 'Senderos astronómicos señalizados', 'Observatorio de montaña'],
     subAreas: ['Mirador de Purujosa (El Nido de Águilas)', 'Mirador astronómico de Calcena', 'Castillo Palacio del Papa Luna (Illueca)', 'Ermita de la Virgen de la Sierra', 'Valle del río Isuela'],
     bestSeason: 'Todo el año (especialmente Primavera, Verano y Otoño)',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1582650625119-3a31f8418b7d?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -564,7 +564,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Mirador del Castillo de Ariza', 'Punto de observación del Jalón', 'Aparcamiento para telescopios'],
     subAreas: ['Mirador de las Ruinas del Castillo', 'Ermita de la Virgen del Amparo', 'Vega del Río Jalón'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -583,7 +583,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Mirador astronómico Pico del Rayo (1.427m)', 'Ermita de la Virgen de Vicor', 'Puntos de observación en Sediles y El Frasno', 'Senderos estelares señalizados', 'Aparcamiento habilitado'],
     subAreas: ['Pico del Rayo (1.427 m)', 'Mirador de Sediles', 'Santuario de la Virgen de Vicor', 'Altos de El Frasno', 'Puntos limpios de Mara'],
     bestSeason: 'Todo el año (primavera, verano y otoño excelentes)',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1434725039720-aaad6dd32dfe?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -602,7 +602,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Observatorio Astronómico del Moncayo', 'Mirador de Lituénigo', 'Centro de Interpretación de Añón'],
     subAreas: ['Observatorio de Lituénigo', 'Mirador del Santuario de la Virgen del Moncayo', 'Collado de la Cueva de Ágreda'],
     bestSeason: 'Primavera, Verano y Principios de Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -621,7 +621,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Mirador de la Ermita del Buen Suceso', 'Centro de Interpretación de Gallocanta', 'Puntos de apoyo fotográfico'],
     subAreas: ['Mirador de Daroca (Murallas históricas)', 'Borde meridional de la Laguna de Gallocanta', 'Ermita de la Virgen de la Corona'],
     bestSeason: 'Otoño, Invierno y Primavera',
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-albarracin-teruel',
@@ -639,7 +639,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Red comarcal de miradores astronómicos', 'Alojamientos rurales Starlight', 'Guías de astroturismo'],
     subAreas: ['Mirador de Orihuela del Tremedal', 'Ermita de San Cristóbal', 'Pinares de Rodeno'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80'
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -661,7 +661,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Centro Astronómico de Trevinca', 'Planetario y Cúpula de Observación', 'Miradores de Taboadela y As Caborcas', 'Casas Rurales Starlight'],
     subAreas: ['Centro Astronómico A Veiga', 'Mirador Estelar de Taboadela', 'Mirador de O Rañadoiro', 'Cima de Pena Trevinca'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -699,7 +699,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Mirador astronómico de Campo da Feira', 'Mirador do Cristo de Muras', 'Paneles de constelaciones', 'Alojamientos rurales Starlight'],
     subAreas: ['Mirador da Gañidoira', 'Mirador de Muras Centro', 'Serra do Xistral'],
     bestSeason: 'Primavera, Verano y Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -718,7 +718,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Red de miradores de la Biosfera', 'Monasterio de Sobrado dos Monxes', 'Puntos habilitados para telescopio'],
     subAreas: ['Mirador de Cova da Serpe', 'Mirador do Monte Enxameado', 'Monasterio de Sobrado'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-costa-da-morte-galicia',
@@ -736,7 +736,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Faro de Fisterra (Finisterre)', 'Santuario de la Virxe da Barca en Muxía', 'Mirador de Monte Pindo', 'Ruta de faros nocturnos'],
     subAreas: ['Cabo Fisterra', 'Cabo Vilán', 'Monte Pindo (Olimpo Celta)', 'Playa de Carnota'],
     bestSeason: 'Verano y Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -755,7 +755,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Observatorio Astronómico de Lalín', 'Mirador do Monte Carrio', 'Rutas de senderismo nocturno'],
     subAreas: ['Observatorio do Castro', 'Serra do Candán', 'Mirador da Fraga de Catasós'],
     bestSeason: 'Primavera y Verano',
-    imageUrl: 'https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-ancares-lucenses-galicia',
@@ -773,7 +773,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Mirador del Puerto de Ancares', 'Palloza de Piornedo', 'Refugios de montaña'],
     subAreas: ['Mirador de Balouta', 'Piornedo', 'Pena Rubia (1.822 m)'],
     bestSeason: 'Verano y Principios de Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1434725039720-aaad6dd32dfe?auto=format&fit=crop&w=800&q=80'
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -811,7 +811,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Pueblo y comarca pinariega de Soria con certificado Starlight. Densos bosques de pino albar que aíslan de cualquier resplandor luminoso.',
     facilities: ['Mirador del Morro', 'Áreas de estacionamiento', 'Paneles del cielo nocturno'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-sierra-sur-jaen',
@@ -828,7 +828,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Reserva Starlight en la comarca de la Sierra Sur de Jaén y observatorios de Alcalá la Real y Castillo de Locubín.',
     facilities: ['Observatorio de La Pandera', 'Mirador de Castillo de Locubín'],
     bestSeason: 'Primavera - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1582650625119-3a31f8418b7d?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-aras-olmos',
@@ -845,7 +845,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Reserva Starlight y enclave astronómico de referencia en la Comunitat Valenciana. Alberga los observatorios de la Universidad de Valencia.',
     facilities: ['Observatorio de La Cambra', 'Centro Astronómico del Alto Turia (CAAT)', 'Mirador de Santa Catalina'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -863,7 +863,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Combinación perfecta entre ornitología diurna y turismo astronómico nocturno con horizonte sur despejado.',
     facilities: ['Observatorio de Torrejón el Rubio', 'Mirador del Salto del Gitano'],
     bestSeason: 'Primavera - Otoño - Invierno',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-menorca-starlight',
@@ -881,7 +881,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Monte Toro (Cima Central de la Isla - 358m)', 'Faro de Cavalleria y Acantilados Norte', 'Parque Natural de s\'Albufera des Grau', 'Cala Pregonda y Costa Tramuntana', 'Punta Nati y Faro'],
     facilities: ['Red insular de miradores astronómicos', 'Plataformas de observación en faros históricos', 'Alojamientos rurales certificados Starlight', 'Actividades nocturnas guiadas con astrónomos'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -900,7 +900,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Mirador Astronómico de Sicasumbre (Pájara)', 'Mirador de Morro Velosa (Betancuria)', 'Península de Jandía y Playas de Cofete', 'Monumento Natural Montaña Tindaya'],
     facilities: ['Mirador astronómico equipado con relojes de sol y nocturnos', 'Soportes integrados para telescopios y cámaras', 'Paneles explicativos de constelaciones', 'Aparcamiento señalizado'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -919,7 +919,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Pico de las Nieves (Cumbre - 1.949 m)', 'Degollada de las Palomas', 'Presa de los Hornos y Roque Nublo', 'Yacimiento Arqueoastronómico de Risco Caído', 'Llanos de la Pez'],
     facilities: ['Red insular de miradores astronómicos señalizados', 'Observatorio Astronómico de Temisas', 'Centro de Interpretación de Risco Caído', 'Aparcamientos habilitados en cumbres'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -938,7 +938,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['San Emiliano (Babia Alta)', 'Riolago de Babia (Palacio de los Quiñones)', 'Puerto de Ventana y Macizo de Ubiña', 'Valle de Laciana (Villablino)', 'Valle de Luna y Puerto de Pajares'],
     facilities: ['Red comarcal de miradores estelares equipados', 'Rutas nocturnas interpretadas', 'Alojamientos rurales Starlight', 'Paneles de orientación astronómica'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -957,7 +957,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Peña de Francia (Santuario y Mirador 360° - 1.727 m)', 'La Alberca (Miradores periféricos)', 'Miranda del Castañar y Castillo', 'Sierra de las Quilamas', 'Mogarraz'],
     facilities: ['Mirador panorámico de alta cumbre con carretera asfaltada', 'Aparcamiento amplio en el Santuario', 'Red de senderos nocturnos patrimoniales', 'Alojamientos rurales con actividades estelares'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-tierras-altas-soria',
@@ -975,7 +975,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['San Pedro Manrique', 'Puerto de Oncala (1.454 m snm)', 'Fuentes de Magaña (Mirador de la Huella y Estrellas)', 'Valdelavilla', 'Santa Cruz de Yanguas'],
     facilities: ['Miradores astronómicos con peanas para telescopios', 'Centros de interpretación rural', 'Puntos limpios de observación al aire libre', 'Aparcamientos con acceso directo'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-valle-roncal',
@@ -989,11 +989,11 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     elevationMeters: 1380,
     latitude: 42.8667,
     longitude: -0.9333,
-    description: 'Primer Destino Turístico Starlight de la Comunidad Foral de Navarra. Situado en el extremo oriental del Pirineo navarro, sus cumbres kársticas, bosques de abeto y valles vírgenes ofrecen cielos oscuros de alta montaña con un aire de máxima transparencia.',
+    description: 'Primer Destino Turístico Starlight de la Comunidad Foral de Navarra. Situado en el practical oriental del Pirineo navarro, sus cumbres kársticas, bosques de abeto y valles vírgenes ofrecen cielos oscuros de alta montaña con un aire de máxima transparencia.',
     subAreas: ['Macizo de Larra y Belagua', 'Mata de Haya (Rincón de Belagua)', 'Puerto de las Eras y Alto de Isaba', 'Uztárroz y Burgui (Paseo de los Oficios Nocturnos)', 'Vidángoz y Garde'],
     facilities: ['Centro de Montaña Larra-Belagua', 'Red de miradores nocturnos pirenaicos', 'Refugio de alta montaña', 'Paneles astronómicos interpretativos'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1012,7 +1012,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Dehesas de Añora y Parque San Martín', 'Pozoblanco y Mirador del Tejar', 'Cardeña y Parque Natural de Cardeña-Montoro', 'Dos Torres y Plaza de la Villa', 'Alcaracejos y El Guijo'],
     facilities: ['Red de 17 miradores astronómicos comarcales', 'Cúpulas y peanas fijas para telescopios', 'Alojamientos rurales Starlight', 'Rutas temáticas "La Dehesa Estelar"'],
     bestSeason: 'Otoño - Invierno - Primavera',
-    imageUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1031,7 +1031,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Observatorio Astronómico del Torcal (OATA)', 'Mirador de las Ventanillas (Vistas hacia el Mediterráneo)', 'Monumento Natural de los Amoladores', 'Tornillo del Torcal'],
     facilities: ['Observatorio astronómico permanente con telescopios robotizados', 'Centro de Visitantes Torcal Alto con cafetería', 'Parking asfaltado habilitado', 'Sesiones nocturnas con guías acreditados'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-cazorla-segura',
@@ -1049,7 +1049,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Campos de Hernán Perea (Altiplano Desierto Estelar - 1.650 m)', 'Yelmo de Segura (1.809 m - Mirador 360°)', 'Nacimiento del Río Guadalquivir', 'Castillo y Mirador de Segura de la Sierra', 'Poyo Manquillo'],
     facilities: ['Altiplanos de altísima oscuridad para telescopios de campo', 'Red de senderos nocturnos señalizados', 'Hospederías de montaña', 'Puntos de acampada controlada'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1068,7 +1068,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Calar Alto (Cúpulas y Mirador de la Cumbre - 2.168 m)', 'Tetica de Bacares (2.080 m)', 'Bacares y Serón (Miradores del Valle)', 'Collado del Ramal', 'Macael y Laroya'],
     facilities: ['Observatorio Astronómico de Calar Alto con visitas guiadas', 'Miradores de alta montaña con acceso asfaltado', 'Aparcamiento en cumbre', 'Baja humedad y aire desértico ultraseco'],
     bestSeason: 'Verano - Otoño - Primavera',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1087,7 +1087,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Hoya de la Mora y Albergue Universitario (2.500 m)', 'Entorno del Observatorio de Sierra Nevada (OSN)', 'Pueblos de la Alpujarra Alta (Capileira, Bubión y Trevélez)', 'Puerto de la Ragua (2.000 m)', 'Dílar y Mirador de las Víboras'],
     facilities: ['Carretera de alta montaña asfaltada hasta Hoya de la Mora', 'Refugios de montaña abiertos todo el año', 'Centro de Visitantes El Dornajo', 'Plataformas de observación para astrofotografía de cielo profundo'],
     bestSeason: 'Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-sierra-segura-albacete',
@@ -1105,7 +1105,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Nerpio (Municipio Starlight y Albergue Telescópico)', 'Ayna ("La Suiza Manchega" y Cañón del Mundo)', 'Yeste y Embalse de la Fuensanta', 'Riópar y Calar del Mundo', 'Molinicos y Elche de la Sierra'],
     facilities: ['Observatorio y telescopios de alquiler remoto en Nerpio', 'Red comarcal de miradores astronómicos con peanas', 'Alojamientos rurales Starlight', 'Aparcamientos de montaña'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1124,7 +1124,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Alcaraz (Plaza Mayor y Castillo)', 'Sector Alto de las Lagunas de Ruidera', 'Villapalacios y Bienservida', 'Castillo de Montiel', 'El Bonillo'],
     facilities: ['Puntos de observación habilitados en castillos y dehesas', 'Hoteles rurales Starlight', 'Horizontes despejados ideales para auroras y satélites'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-valle-alcudia-madrona',
@@ -1142,7 +1142,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Fuencaliente y Pinturas Rupestres de Peña Escrita', 'Pico de la Bañuela (1.332 m)', 'Brazatortas y Cabezarrubias del Puerto', 'Hinojosas de Calatrava', 'Valle de Alcudia (Zona Central)'],
     facilities: ['Miradores astronómicos acondicionados con señalética', 'Áreas de descanso con paneles interpretativos', 'Rutas arqueoastronómicas nocturnas', 'Alojamientos rurales certificados'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-cabaneros',
@@ -1160,7 +1160,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Centro de Visitantes Casa Palillos (La Raña)', 'Navas de Estena y Cañón del Boquerón', 'Horcajo de los Montes', 'Los Navalucillos y Macizo del Rocigalgo (1.448 m)', 'Retuerta del Bullaque'],
     facilities: ['Centro de visitantes con observatorio astronómico y planetario', 'Rutas nocturnas guiadas en 4x4 por la raña', 'Mesas astronómicas interpretativas', 'Aparcamientos habilitados'],
     bestSeason: 'Primavera - Otoño - Invierno',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1179,7 +1179,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Castillo de Trevejo (Ruinas Templarias y Mirador 360°)', 'Meandro del Melero (Ríomalo de Abajo)', 'Puerto de Esperabán (1.295 m snm)', 'San Martín de Trevejo y A Fala', 'Casares de las Hurdes (Mirador de las Estrellas)'],
     facilities: ['Red de Miradores Celestes de "Buenas Noches Extremadura" con piedra luminiscente', 'Aparcamientos a pie de mirador', 'Hospederías rurales Starlight', 'Cartas celestes nocturnas retroiluminadas'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1198,7 +1198,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Puente Romano de Alcántara', 'Valencia de Alcántara y Dólmenes Megalíticos', 'Cedillo (Desembocadura del río Ponsul)', 'Herrera de Alcántara (Mirador sobre el Cañón del Tajo)', 'Santiago de Alcántara (Centro del Megalitismo)'],
     facilities: ['Miradores Celestes de la red Buenas Noches Extremadura', 'Embarcaderos para cruceros fluviales nocturnos de estrellas', 'Paneles de astroturismo', 'Zonas de observación junto a monumentos históricos'],
     bestSeason: 'Otoño - Invierno - Primavera',
-    imageUrl: 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1528728329032-2972f65dfb3f?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-alqueva-extremadura',
@@ -1216,7 +1216,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Castillo de Miraflores (Alconchel)', 'Playa Fluvial de Cheles y Embarcadero', 'Olivenza y Puente de Ajuda', 'Villanueva del Fresno (Mirador del Embalse y Dehesa)', 'Táliga'],
     facilities: ['Red de Miradores Celestes con mapas estelares grabados', 'Embarcaderos con actividades náuticas nocturnas bajo las estrellas', 'Alojamientos rurales especializados', 'Guías de astroturismo acreditados'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1235,7 +1235,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Munilla y Yacimientos Paleontológicos', 'Enciso y Cañón del Río Cidacos', 'Contrebia Leucade (Yacimiento Celtíbero de Aguilar del Río Alhama)', 'San Román de Cameros', 'Soto en Cameros y Mirador del Cañón del Leza'],
     facilities: ['Red de miradores astronómicos riojanos señalizados', 'Paneles de constelaciones y mitología estelar', 'Aparcamientos acondicionados', 'Casas rurales Starlight'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1254,7 +1254,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Parc Astronòmic Muntanyes de Prades (PAMP)', 'Tossal de la Baltasana (Cumbre más alta - 1.201 m)', 'Ermita de Sant Roc de Prades', 'Serra de Montsant y Cartoixa d\'Escaladei', 'Albarca y Siurana'],
     facilities: ['Parque astronómico con cúpula 360° y telescopios de gran apertura', 'Miradores de montaña con horizonte despejado', 'Rutas nocturnas guiadas', 'Restaurantes y hoteles astronómicos'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
 
@@ -1275,7 +1275,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Castillo del Papa Luna (Plaza de Armas)', 'Baluarte y Batería de Santa María', 'Faro de Peñíscola', 'Paseo de los Acantilados del Istmo'],
     facilities: ['Acceso asfaltado y peatonal', 'Parking a 200m en el Puerto', 'Banquillos y miradores', 'Restaurantes y cafeterías cercanas'],
     bestSeason: 'Todo el año (Especialmente Primavera, Verano y Otoño)',
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1294,7 +1294,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Ermita de Sant Antoni de Pàdua', 'Mirador de la Mola', 'Torre Badum (Atalaya Costera)', 'Cala Argilaga y Playa de la Basseta'],
     facilities: ['Pista forestal apta para turismos', 'Parking amplio en la Ermita', 'Mesas de picnic', 'Paneles informativos del Parque Natural'],
     bestSeason: 'Verano - Primavera - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1434725039720-aaad6dd32dfe?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1330,7 +1330,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Mirador de fácil acceso muy cercano a la costa mediterránea, óptimo para observación nocturna espontánea y vistas sobre el mar.',
     facilities: ['Acceso asfaltado', 'Miradores fotográficos'],
     bestSeason: 'Primavera - Verano',
-    imageUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-cabo-gata',
@@ -1381,7 +1381,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Cielos de alta montaña pirenaica con atmósfera de escasa humedad relativa e ideal para capturas de cielo profundo.',
     facilities: ['Refugio de Góriz', 'Aparcamiento en Torla'],
     bestSeason: 'Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'spot-bardenas',
@@ -1398,7 +1398,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Paraje semidesértico impresionante con formaciones de arcilla y horizontes limpios de luces urbanas.',
     facilities: ['Pistas de tierra transitables', 'Puntos de información'],
     bestSeason: 'Primavera - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80'
   },
 
   // 3. PORTUGAL - CERTIFICADOS Y ÓPTIMOS
@@ -1417,7 +1417,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'El primer sitio del mundo certificado como Starlight Tourism Destination a orillas del gran lago Alqueva.',
     facilities: ['Observatorio de Cumeada', 'Paseos nocturnos en barco', 'Telescopios de alta gama'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1435,7 +1435,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Sierra montañosa atlántica protegida con amplias áreas oscuras para astrónomos aficionados.',
     facilities: ['Ecoalojamientos', 'Aparcamientos de montaña'],
     bestSeason: 'Primavera - Verano',
-    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80'
   },
 
   // 4. CHILE & INTERNACIONAL
@@ -1454,7 +1454,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'La capital mundial indiscutible de la astronomía. Cielo más seco del planeta con más de 300 noches despejadas al año.',
     facilities: ['Tours astronómicos en vivo', 'Observatorios ALMA / Paranal', 'Telescopios gigantes'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -1472,7 +1472,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Cumbre volcánica pacífica por encima del 40% de la atmósfera terrestre, sede de los telescopios Keck.',
     facilities: ['Visitor Information Station (VIS)', 'Guías de montaña'],
     bestSeason: 'Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80'
   }
 ];
 

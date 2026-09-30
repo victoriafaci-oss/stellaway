@@ -52,7 +52,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Otoño - Invierno - Primavera',
     officialUrl: 'https://darksky.org/places/aiguamolls-de-lemporda-natural-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -82,7 +82,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera - Verano - Otoño',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -112,7 +112,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -142,7 +142,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año',
     officialUrl: 'https://darksky.org/places/alqueva-dark-sky-reserve/',
-    imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -172,7 +172,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera y Verano',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'ds-pic-du-midi',
@@ -231,7 +231,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Mayo a Octubre',
     officialUrl: 'https://darksky.org/places/cevennes-national-park-dark-sky-reserve/',
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'ds-kerry',
@@ -260,7 +260,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Septiembre a Abril',
     officialUrl: 'https://darksky.org/places/kerry-dark-sky-reserve/',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'ds-exmoor',
@@ -385,6 +385,727 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     featured: true
   },
   {
+    id: 'ds-big-bend',
+    name: 'Greater Big Bend International Dark Sky Reserve',
+    category: 'International Dark Sky Reserve',
+    categoryLabel: 'Reserva Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Texas / Coahuila & Chihuahua',
+    bortleClass: 1,
+    sqm: 21.98,
+    designationYear: 2022,
+    areaKm2: 38850,
+    latitude: 29.2498,
+    longitude: -103.2502,
+    description: 'La mayor Reserva de Cielo Oscuro del planeta (más de 38.800 km²), abarcando el Parque Nacional Big Bend, el Parque Estatal Big Bend Ranch, el Observatorio McDonald y áreas protegidas de México a lo largo del Río Grande.',
+    highlights: [
+      'La Reserva Dark Sky más extensa del mundo (>38.000 km²)',
+      'Sede del histórico Observatorio McDonald de la Universidad de Texas',
+      'Cielos desérticos puros Bortle 1 sobre el cañón de Santa Elena'
+    ],
+    keyObservingSites: [
+      'Santa Elena Canyon',
+      'Chisos Basin',
+      'McDonald Observatory Visitor Center',
+      'Sotol Vista Overlook'
+    ],
+    bestSeason: 'Otoño, Invierno y Primavera',
+    officialUrl: 'https://darksky.org/places/greater-big-bend-international-dark-sky-reserve/',
+    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80',
+    featured: true
+  },
+  {
+    id: 'ds-natural-bridges',
+    name: 'Natural Bridges National Monument Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Utah',
+    bortleClass: 1,
+    sqm: 21.96,
+    designationYear: 2007,
+    areaKm2: 31,
+    latitude: 37.6014,
+    longitude: -110.0136,
+    description: 'El primer Parque Internacional de Cielo Oscuro certificado en la historia mundial por DarkSky International (2007). Sus tres majestuosos puentes naturales de arenisca (Owachomo, Sipapu y Kachina) enmarcan la Vía Láctea.',
+    highlights: [
+      'El primer Parque Dark Sky del mundo (designado en 2007)',
+      'Puente natural Owachomo encuadrando el río de estrellas de la Vía Láctea',
+      'Atmósfera de gran altitud (2.000 m) con oscuridad Bortle 1 casi perfecta'
+    ],
+    keyObservingSites: [
+      'Owachomo Bridge Viewpoint',
+      'Sipapu Bridge Overlook',
+      'Visitor Center Astronomy Patio'
+    ],
+    bestSeason: 'Primavera, Verano y Otoño',
+    officialUrl: 'https://darksky.org/places/natural-bridges-national-monument-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80',
+    featured: true
+  },
+  {
+    id: 'ds-arches',
+    name: 'Arches National Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Utah (Moab)',
+    bortleClass: 2,
+    sqm: 21.88,
+    designationYear: 2019,
+    areaKm2: 310,
+    latitude: 38.7331,
+    longitude: -109.5925,
+    description: 'Más de 2.000 arcos naturales de piedra arenisca roja esculpidos por el viento y el agua. Famoso por astrofotógrafos de todo el mundo que capturan la Vía Láctea a través del emblemático Delicate Arch y Windows Section.',
+    highlights: [
+      'El icónico Delicate Arch y Double Arch bajo el arco galáctico',
+      'Reconversión modélica de luminarias de parque al 100% de corte ámbar',
+      'Ubicación privilegiada en la meseta del Colorado con aire seco y limpio'
+    ],
+    keyObservingSites: [
+      'The Windows Section & Turret Arch',
+      'Delicate Arch Viewpoint',
+      'Garden of Eden',
+      'Panorama Point'
+    ],
+    bestSeason: 'Primavera y Otoño',
+    officialUrl: 'https://darksky.org/places/arches-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?auto=format&fit=crop&w=800&q=80',
+    featured: true
+  },
+  {
+    id: 'ds-bryce-canyon',
+    name: 'Bryce Canyon National Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Utah',
+    bortleClass: 1,
+    sqm: 21.95,
+    designationYear: 2019,
+    areaKm2: 145,
+    latitude: 37.5930,
+    longitude: -112.1871,
+    description: 'Conocido como "el hogar del cielo nocturno", Bryce Canyon es legendario por su festival anual de astronomía y sus más de 7.500 estrellas visibles a simple vista sobre el laberinto de anfiteatros de agujas rojas (hoodoos) a 2.700 m de altitud.',
+    highlights: [
+      'Altitud de entre 2.400 y 2.700 metros sobre el nivel del mar',
+      'Paisaje de hoodoos rojos esculpidos bajo una bóveda estelar sin igual',
+      'Pionero en programas públicos de astronomía desde 1969'
+    ],
+    keyObservingSites: [
+      'Inspiration Point',
+      'Sunrise Point',
+      'Rainbow Point (2.778 m)',
+      'Paria View'
+    ],
+    bestSeason: 'Mayo a Octubre',
+    officialUrl: 'https://darksky.org/places/bryce-canyon-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    featured: true
+  },
+  {
+    id: 'ds-canyonlands',
+    name: 'Canyonlands National Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Utah (Moab)',
+    bortleClass: 1,
+    sqm: 21.97,
+    designationYear: 2015,
+    areaKm2: 1366,
+    latitude: 38.3269,
+    longitude: -109.8783,
+    description: 'Laberinto salvaje de cañones esculpidos por los ríos Colorado y Green. En la meseta "Island in the Sky", el arco de piedra Mesa Arch y los miradores de The Needles ofrecen horizontes de más de 160 kilómetros de pura oscuridad.',
+    highlights: [
+      'Mesa Arch con vistas panorámicas abismales hacia la Vía Láctea',
+      'Cielos de altísima pureza Bortle 1 en los sectores The Needles y The Maze',
+      'Reconocimiento Dark Sky de nivel oro por sus horizontes vírgenes'
+    ],
+    keyObservingSites: [
+      'Mesa Arch',
+      'Grand View Point',
+      'Green River Overlook',
+      'Elephant Hill'
+    ],
+    bestSeason: 'Primavera y Otoño',
+    officialUrl: 'https://darksky.org/places/canyonlands-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-zion',
+    name: 'Zion National Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Utah',
+    bortleClass: 2,
+    sqm: 21.82,
+    designationYear: 2021,
+    areaKm2: 593,
+    latitude: 37.2982,
+    longitude: -113.0263,
+    description: 'El quinto parque de los "Mighty 5" de Utah en lograr la certificación Dark Sky. Sus colosales acantilados monolíticos de arenisca roja Navajo, como The Watchman y Towers of the Virgin, contrastan con un cielo estrellado impoluto.',
+    highlights: [
+      'Completa la red estelar de los 5 Parques Nacionales de Utah certificados',
+      'Monolito The Watchman recortado contra constelaciones y satélites',
+      'Observación estelar protegida en el cañón de Kolob Canyons'
+    ],
+    keyObservingSites: [
+      'Watchman Campground Amphitheater',
+      'Kolob Canyons Viewpoint',
+      'Lava Point Overlook (2.400 m)',
+      'Pa’rus Trail'
+    ],
+    bestSeason: 'Primavera, Verano y Otoño',
+    officialUrl: 'https://darksky.org/places/zion-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-capitol-reef',
+    name: 'Capitol Reef National Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Utah',
+    bortleClass: 1,
+    sqm: 21.94,
+    designationYear: 2015,
+    areaKm2: 979,
+    latitude: 38.3670,
+    longitude: -111.2615,
+    description: 'Custodio del Waterpocket Fold, una gigantesca deformación geológica de casi 160 kilómetros de longitud. Sus domos blancos que recuerdan al Capitolio y los monolitos de Cathedral Valley gozan de una atmósfera sin polución lumínica.',
+    highlights: [
+      'Monolitos del Templo del Sol y la Luna en Cathedral Valley',
+      'Transparencia atmosférica desértica en el corazón de Utah',
+      'Programas semanales de telescopios con guardaparques'
+    ],
+    keyObservingSites: [
+      'Panorama Point & Goosenecks Overlook',
+      'Cathedral Valley',
+      'Fruita Campground Area',
+      'Slickrock Divide'
+    ],
+    bestSeason: 'Primavera, Verano y Otoño',
+    officialUrl: 'https://darksky.org/places/capitol-reef-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-joshua-tree',
+    name: 'Joshua Tree National Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'California (Desierto de Mojave)',
+    bortleClass: 2,
+    sqm: 21.75,
+    designationYear: 2017,
+    areaKm2: 3218,
+    latitude: 33.8734,
+    longitude: -115.9010,
+    description: 'Donde confluyen los desiertos de Mojave y Colorado. Célebre por los extraños árboles de Josué (Yucca brevifolia) y las formaciones de rocas redondeadas de monzogranito que crean siluetas mágicas bajo la Vía Láctea.',
+    highlights: [
+      'Siluetas icónicas de árboles de Josué bajo lluvia de meteoros',
+      'Festival anual Night Sky Festival con cientos de telescopios',
+      'Sector este (Cottonwood) con una oscuridad sublime de Bortle 2'
+    ],
+    keyObservingSites: [
+      'Cottonwood Campground & Visitor Center',
+      'Keys View (1.581 m)',
+      'Hidden Valley',
+      'Pinto Basin'
+    ],
+    bestSeason: 'Octubre a Mayo',
+    officialUrl: 'https://darksky.org/places/joshua-tree-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
+    featured: true
+  },
+  {
+    id: 'ds-great-basin',
+    name: 'Great Basin National Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Nevada',
+    bortleClass: 1,
+    sqm: 21.98,
+    designationYear: 2016,
+    areaKm2: 312,
+    latitude: 38.9833,
+    longitude: -114.3000,
+    description: 'Uno de los parques más remotos y vírgenes del territorio continental de EE.UU. Coronador del pico Wheeler Peak (3.982 m) y hogar de los pinos longevos bristlecone de más de 4.000 años, alberga el Great Basin Star Train.',
+    highlights: [
+      'Uno de los cielos más oscuros y transparentes de EE.UU. (SQM 21.98)',
+      'Observatorio astronómico de investigación permanente en el parque',
+      'Tren histórico "Star Train" guiado por astrónomos del Servicio de Parques'
+    ],
+    keyObservingSites: [
+      'Wheeler Peak Overlook (3.000 m)',
+      'Great Basin Observatory',
+      'Mather Overlook',
+      'Baker Creek'
+    ],
+    bestSeason: 'Junio a Octubre',
+    officialUrl: 'https://darksky.org/places/great-basin-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-chaco-culture',
+    name: 'Chaco Culture National Historical Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Nuevo México',
+    bortleClass: 1,
+    sqm: 21.96,
+    designationYear: 2013,
+    areaKm2: 137,
+    latitude: 36.0600,
+    longitude: -107.9700,
+    description: 'Epicentro milenario de la arqueoastronomía ancestral de la cultura pueblo (siglos IX al XII). Sus grandes casas de piedra como Pueblo Bonito y Casa Rinconada se alinean con los solsticios, equinoccios y ciclos lunares mayores.',
+    highlights: [
+      'Alineaciones arqueoastronómicas solares y lunares milenarias',
+      'Primer Parque Histórico Nacional certificado por DarkSky en el mundo',
+      'Observatorio público propio de 25 pulgadas para visitantes'
+    ],
+    keyObservingSites: [
+      'Chaco Observatory',
+      'Pueblo Bonito Plaza',
+      'Fajada Butte',
+      'Gallo Campground'
+    ],
+    bestSeason: 'Primavera y Otoño',
+    officialUrl: 'https://darksky.org/places/chaco-culture-national-historical-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1528728329032-2972f65dfb3f?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-cosmic-campground',
+    name: 'Cosmic Campground International Dark Sky Sanctuary',
+    category: 'International Dark Sky Sanctuary',
+    categoryLabel: 'Santuario Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Nuevo México (Bosque Nacional Gila)',
+    bortleClass: 1,
+    sqm: 21.99,
+    designationYear: 2016,
+    areaKm2: 15,
+    latitude: 33.4795,
+    longitude: -108.9228,
+    description: 'El primer Santuario Internacional de Cielo Oscuro designado en América del Norte (2016). Enclavado en el Bosque Nacional de Gila, a 65 km de la fuente lumínica artificial más cercana, dispone de 4 plataformas de hormigón para telescopios.',
+    highlights: [
+      'Primer Santuario Dark Sky certificado en Norteamérica',
+      'Cero contaminación lumínica en un radio de más de 65 kilómetros',
+      'Plataformas fijas de observación para telescopios y astrofotografía'
+    ],
+    keyObservingSites: [
+      'Cosmic Observation Pads',
+      'Gila Wilderness Overlook',
+      'Saliz Pass'
+    ],
+    bestSeason: 'Todo el año',
+    officialUrl: 'https://darksky.org/places/cosmic-campground-dark-sky-sanctuary/',
+    imageUrl: 'https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-massacre-rim',
+    name: 'Massacre Rim Wilderness Study Area Sanctuary',
+    category: 'International Dark Sky Sanctuary',
+    categoryLabel: 'Santuario Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Nevada',
+    bortleClass: 1,
+    sqm: 22.00,
+    designationYear: 2019,
+    areaKm2: 412,
+    latitude: 41.7333,
+    longitude: -119.6833,
+    description: 'Uno de los territorios más aislados y vírgenes del planeta, en la esquina noroeste de Nevada. Designado Santuario Dark Sky Nivel Oro en 2019, sus mediciones alcanzan el umbral de oscuridad natural perfecta (SQM 22.00).',
+    highlights: [
+      'Mediciones de oscuridad en el límite físico natural (SQM 22.00)',
+      'Paisaje de mesetas volcánicas y cañones vírgenes sin caminos asfaltados',
+      'Vía Láctea arrojando sombras nítidas sobre el terreno'
+    ],
+    keyObservingSites: [
+      'Massacre Rim Escarpment',
+      'Long Valley Viewpoint',
+      'Massacre Lake Basin'
+    ],
+    bestSeason: 'Verano y Principios de Otoño',
+    officialUrl: 'https://darksky.org/places/massacre-rim-wsa-dark-sky-sanctuary/',
+    imageUrl: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-cherry-springs',
+    name: 'Cherry Springs State Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Pensilvania (Susquehannock)',
+    bortleClass: 2,
+    sqm: 21.80,
+    designationYear: 2008,
+    areaKm2: 0.33,
+    latitude: 41.6628,
+    longitude: -77.8239,
+    description: 'El segundo Parque Internacional de Cielo Oscuro del mundo y el gran templo astronómico de la Costa Este de EE.UU. Situado en lo alto de una meseta de 700 metros rodeada por el inmenso bosque de Susquehannock, con campo de observación de 360°.',
+    highlights: [
+      'El lugar de observación más oscuro y concurrido de la Costa Este',
+      'Astronomy Observation Field equipado con tomas eléctricas para telescopios',
+      'Reconocimiento Nivel Oro por la conservación de la noche natural'
+    ],
+    keyObservingSites: [
+      'Astronomy Observation Field',
+      'Night Sky Public Viewing Area',
+      'Susquehannock Forest Vista'
+    ],
+    bestSeason: 'Primavera, Verano y Otoño',
+    officialUrl: 'https://darksky.org/places/cherry-springs-state-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
+    featured: true
+  },
+  {
+    id: 'ds-black-canyon',
+    name: 'Black Canyon of the Gunnison National Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Colorado',
+    bortleClass: 1,
+    sqm: 21.92,
+    designationYear: 2015,
+    areaKm2: 124,
+    latitude: 38.5754,
+    longitude: -107.7416,
+    description: 'Acantilados verticales de granito precámbrico que caen hasta 800 metros en picado hacia el río Gunnison. La estrechez y verticalidad del cañón, unida a la altitud de 2.500 metros, crea una atmósfera limpia de mínima turbulencia.',
+    highlights: [
+      'Paredes de roca milenaria del "Painted Wall" bajo cielo estrellado',
+      'Gran altitud en las Rocosas con baja humedad atmosférica',
+      'Festival anual Black Canyon Astronomy Festival'
+    ],
+    keyObservingSites: [
+      'Chasm View',
+      'Dragon Point',
+      'South Rim Campground Amphitheater',
+      'North Rim Overlook'
+    ],
+    bestSeason: 'Mayo a Octubre',
+    officialUrl: 'https://darksky.org/places/black-canyon-of-the-gunnison-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-mesa-verde',
+    name: 'Mesa Verde National Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Colorado',
+    bortleClass: 1,
+    sqm: 21.93,
+    designationYear: 2021,
+    areaKm2: 212,
+    latitude: 37.2309,
+    longitude: -108.4618,
+    description: 'Patrimonio de la Humanidad por la UNESCO y centinela de las asombrosas viviendas excavadas en los acantilados por los ancestros pueblo. El parque protege más de 5.000 yacimientos arqueológicos bajo un cielo nocturno prístino.',
+    highlights: [
+      'Viviendas en acantilados de Cliff Palace bajo una Vía Láctea centenaria',
+      'Conexión cultural profunda de las 26 tribus nativas asociadas con el cosmos',
+      'Horizontes infinitos sobre el Four Corners del sudoeste americano'
+    ],
+    keyObservingSites: [
+      'Morefield Campground Amphitheater',
+      'Mancos Valley Overlook',
+      'Montezuma Valley Overlook',
+      'Park Point (2.613 m)'
+    ],
+    bestSeason: 'Mayo a Octubre',
+    officialUrl: 'https://darksky.org/places/mesa-verde-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-voyageurs',
+    name: 'Voyageurs National Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Minnesota (Frontera con Canadá)',
+    bortleClass: 1,
+    sqm: 21.94,
+    designationYear: 2020,
+    areaKm2: 882,
+    latitude: 48.5000,
+    longitude: -92.8833,
+    description: 'Parque acuático boreal fronterizo con Canadá. Famoso por sus islas de bosque de pino blanco, sus lagos glaciares accesibles solo por agua y su ubicación boreal ideal para contemplar la Aurora Boreal reflejada en las aguas.',
+    highlights: [
+      'Frecuentes avistamientos de auroras boreales en temporada fría',
+      'Reflejos estelares sobre las aguas calmas de Rainy Lake y Kabetogama',
+      'Acampada en islas remotas bajo oscuridad absoluta Bortle 1'
+    ],
+    keyObservingSites: [
+      'Rainy Lake Visitor Center',
+      'Ash River Visitor Center',
+      'Meadowood Day Use Area',
+      'Kabetogama Lake'
+    ],
+    bestSeason: 'Todo el año (Otoño e Invierno para Auroras)',
+    officialUrl: 'https://darksky.org/places/voyageurs-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-boundary-waters',
+    name: 'Boundary Waters Canoe Area Wilderness Sanctuary',
+    category: 'International Dark Sky Sanctuary',
+    categoryLabel: 'Santuario Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Minnesota',
+    bortleClass: 1,
+    sqm: 21.98,
+    designationYear: 2020,
+    areaKm2: 4400,
+    latitude: 47.9500,
+    longitude: -91.5000,
+    description: 'El Santuario de Cielo Oscuro más grande del mundo (4.400 km²). Más de 1.100 lagos glaciares conectados sin carreteras ni motores motorizados, donde se viaja solo en canoa bajo cielos nórdicos impolutos y auroras boreales.',
+    highlights: [
+      'El mayor Santuario Dark Sky certificado en el planeta',
+      'Acceso exclusivo en canoa sin ningún tipo de contaminación acústica o lumínica',
+      'Teatro boreal por excelencia para observar la aurora boreal en Norteamérica'
+    ],
+    keyObservingSites: [
+      'Gunflint Trail Outposts',
+      'Basswood Lake',
+      'Sawbill Canoe Access',
+      'Echo Trail Overlooks'
+    ],
+    bestSeason: 'Mayo a Octubre',
+    officialUrl: 'https://darksky.org/places/boundary-waters-canoe-area-wilderness-dark-sky-sanctuary/',
+    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-waterton-glacier',
+    name: 'Waterton-Glacier International Peace Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos / Canadá',
+    continent: 'América del Norte',
+    region: 'Montana & Alberta',
+    bortleClass: 1,
+    sqm: 21.95,
+    designationYear: 2021,
+    areaKm2: 4572,
+    latitude: 48.7596,
+    longitude: -113.7870,
+    description: 'El primer Parque Internacional de Cielo Oscuro transfronterizo del mundo, uniendo el Parque Nacional Glacier (Montana, EE.UU.) y el Parque Nacional Waterton Lakes (Alberta, Canadá) a lo largo de la cordillera de las Rocosas.',
+    highlights: [
+      'Primer Parque Transfronterizo Dark Sky en la historia (EE.UU. y Canadá)',
+      'Cumbres glaciares imponentes y la icónica carretera Going-to-the-Sun Road',
+      'Observación estelar sobre los lagos McDonald y Saint Mary'
+    ],
+    keyObservingSites: [
+      'Lake McDonald Lodge Foreshore',
+      'Apgar Lookout',
+      'Logan Pass (2.026 m)',
+      'Waterton Cameron Bay'
+    ],
+    bestSeason: 'Junio a Septiembre',
+    officialUrl: 'https://darksky.org/places/waterton-glacier-international-peace-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-mammoth-cave',
+    name: 'Mammoth Cave National Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Kentucky',
+    bortleClass: 3,
+    sqm: 21.65,
+    designationYear: 2021,
+    areaKm2: 214,
+    latitude: 37.1867,
+    longitude: -86.1000,
+    description: 'Hogar del sistema de cuevas más largo conocido del planeta (más de 680 km explorados). El parque culminó un ambicioso programa de protección de la oscuridad exterior para beneficiar a las poblaciones de murciélagos y la fauna nocturna.',
+    highlights: [
+      'Unión de las maravillas subterráneas con una cúpula estelar protegida',
+      'Conservación crucial para murciélagos cavernícolas amenazados',
+      'Talleres y paseos nocturnos guiados con guardaparques'
+    ],
+    keyObservingSites: [
+      'Campground Amphitheater',
+      'Cedar Sink Trailhead',
+      'Maple Springs Day Use Area'
+    ],
+    bestSeason: 'Primavera, Verano y Otoño',
+    officialUrl: 'https://darksky.org/places/mammoth-cave-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-flagstaff',
+    name: 'Flagstaff Dark Sky Community',
+    category: 'Dark Sky Community',
+    categoryLabel: 'Comunidad Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Arizona',
+    bortleClass: 3,
+    sqm: 21.55,
+    designationYear: 2001,
+    areaKm2: 168,
+    latitude: 35.1983,
+    longitude: -111.6513,
+    description: 'La PRIMERA Comunidad Internacional de Cielo Oscuro designada en la historia (2001). Cuna de la preservación celeste moderna, a más de 2.100 m de altitud, alberga el Observatorio Lowell donde se descubrió el planeta Plutón en 1930.',
+    highlights: [
+      'La primera Dark Sky Community de la historia mundial (designada en 2001)',
+      'Sede del Observatorio Lowell y el telescopio Clark de 24 pulgadas',
+      'Pionera mundial en ordenanzas de protección de alumbrado desde 1958'
+    ],
+    keyObservingSites: [
+      'Lowell Observatory (Mars Hill)',
+      'Buffalo Park',
+      'Fort Tuthill County Park',
+      'San Francisco Peaks Vista'
+    ],
+    bestSeason: 'Todo el año',
+    officialUrl: 'https://darksky.org/places/flagstaff-dark-sky-community/',
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    featured: true
+  },
+  {
+    id: 'ds-sedona',
+    name: 'Sedona Dark Sky Community',
+    category: 'Dark Sky Community',
+    categoryLabel: 'Comunidad Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Arizona',
+    bortleClass: 3,
+    sqm: 21.50,
+    designationYear: 2014,
+    areaKm2: 49,
+    latitude: 34.8697,
+    longitude: -111.7610,
+    description: 'Famosa mundialmente por sus monumentales catedrales de piedra arenisca roja. La ciudad de Sedona adoptó una estricta normativa de alumbrado exterior de corte total para proteger su mágico horizonte estelar.',
+    highlights: [
+      'Monolitos rojizos de Cathedral Rock y Bell Rock bajo la Vía Láctea',
+      'Comunidad Dark Sky certificada con alumbrado 100% atenuado',
+      'Tours de astroturismo y meditación astronómica al aire libre'
+    ],
+    keyObservingSites: [
+      'Bell Rock Vista',
+      'Cathedral Rock Trailhead',
+      'Sedona Cultural Park',
+      'Two Trees Viewing Area'
+    ],
+    bestSeason: 'Primavera, Verano y Otoño',
+    officialUrl: 'https://darksky.org/places/sedona-dark-sky-community/',
+    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-borrego-springs',
+    name: 'Borrego Springs Dark Sky Community',
+    category: 'Dark Sky Community',
+    categoryLabel: 'Comunidad Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'California',
+    bortleClass: 2,
+    sqm: 21.75,
+    designationYear: 2009,
+    areaKm2: 112,
+    latitude: 33.2559,
+    longitude: -116.3750,
+    description: 'La primera Comunidad Dark Sky de California (2009). Completamente rodeada por el inmenso Parque Estatal del Desierto de Anza-Borrego (2.400 km²), goza de una protección natural única frente a las luces de la costa californiana.',
+    highlights: [
+      'Primera Dark Sky Community de California (designada en 2009)',
+      'Esculturas gigantes de metal de Ricardo Breceda bajo el cielo nocturno',
+      'Rodeada al 100% por el Parque Estatal Anza-Borrego'
+    ],
+    keyObservingSites: [
+      'Galleta Meadows Metal Sculptures',
+      'Font’s Point Overlook',
+      'Christmas Circle Community Park',
+      'Culp Valley Primitive Camp'
+    ],
+    bestSeason: 'Noviembre a Abril',
+    officialUrl: 'https://darksky.org/places/borrego-springs-dark-sky-community/',
+    imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-badlands',
+    name: 'Badlands National Park Dark Sky Park',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Dakota del Sur',
+    bortleClass: 1,
+    sqm: 21.93,
+    designationYear: 2020,
+    areaKm2: 982,
+    latitude: 43.8554,
+    longitude: -102.3397,
+    description: 'Laberinto de agujas geológicas, cañones de arcilla estratificada y pradera de hierba mixta. Sus cielos nocturnos permiten contemplar más de 7.500 estrellas y el relieve de la Vía Láctea arrojando sombras tenues.',
+    highlights: [
+      'Pinnáculos de arcilla esculpidos bajo una Vía Láctea deslumbrante',
+      'Festival anual Badlands Astronomy Festival en Cedar Pass',
+      'Cielos casi sin interferencia lumínica en cientos de kilómetros'
+    ],
+    keyObservingSites: [
+      'Cedar Pass Amphitheater',
+      'Pinnacles Overlook',
+      'Big Foot Pass',
+      'Hay Butte Overlook'
+    ],
+    bestSeason: 'Junio a Septiembre',
+    officialUrl: 'https://darksky.org/places/badlands-national-park-dark-sky-park/',
+    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'ds-rainbow-bridge',
+    name: 'Rainbow Bridge National Monument Sanctuary',
+    category: 'International Dark Sky Sanctuary',
+    categoryLabel: 'Santuario Internacional de Cielo Oscuro',
+    country: 'Estados Unidos',
+    continent: 'América del Norte',
+    region: 'Utah (Lago Powell)',
+    bortleClass: 1,
+    sqm: 21.96,
+    designationYear: 2018,
+    areaKm2: 0.65,
+    latitude: 37.0775,
+    longitude: -110.9642,
+    description: 'Uno de los puentes naturales más grandes del mundo (88 m de altura). Sagrado para cinco naciones indígenas americanas (Navajo, Hopi, Kaibab Paiute, San Juan Southern Paiute y White Mesa Ute), certificado como Santuario Dark Sky en 2018.',
+    highlights: [
+      'Santuario de enorme significado cultural y espiritual indígena',
+      'Acceso remoto en barco a través del cañón del Lago Powell o a pie',
+      'Arco de piedra natural colosal enmarcando la Vía Láctea'
+    ],
+    keyObservingSites: [
+      'Rainbow Bridge Trailhead Viewing Platform',
+      'Forbidding Canyon Approach',
+      'Bridge Canyon Overlook'
+    ],
+    bestSeason: 'Primavera y Otoño',
+    officialUrl: 'https://darksky.org/places/rainbow-bridge-national-monument-dark-sky-sanctuary/',
+    imageUrl: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80'
+  },
+  {
     id: 'ds-central-idaho',
     name: 'Central Idaho Dark Sky Reserve',
     category: 'International Dark Sky Reserve',
@@ -411,7 +1132,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Verano y Principios de Otoño',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'ds-mont-megantic',
@@ -469,7 +1190,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera, Verano y Otoño',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
 
@@ -503,7 +1224,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año (especialmente Primavera y Verano austral)',
     officialUrl: 'https://darksky.org/places/gabriela-mistral-dark-sky-sanctuary/',
-    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -533,7 +1254,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -596,7 +1317,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Mayo a Septiembre (Invierno seco)',
     officialUrl: 'https://darksky.org/places/namibrand-nature-reserve-dark-sky-reserve/',
-    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -626,7 +1347,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Abril a Septiembre (Invierno austral)',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
 
@@ -660,7 +1381,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año',
     officialUrl: 'https://darksky.org/places/iriomote-ishigaki-national-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'ds-wadi-rum',
@@ -723,7 +1444,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año (Especialmente Otoño e Invierno austral)',
     officialUrl: 'https://darksky.org/places/aoraki-mackenzie-dark-sky-reserve/',
-    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80',
     featured: true
   },
   {
@@ -753,7 +1474,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Marzo a Noviembre',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=800&q=80',
     featured: true
   }
 ];
