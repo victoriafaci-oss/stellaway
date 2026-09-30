@@ -400,7 +400,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Pueblo histórico de Culla, rodeado de campos con horizonte despejado en 360 grados para astrofotografía.',
     facilities: ['Hoteles rurales Starlight', 'Visitas guiadas', 'Restaurantes astronómicos'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/20250419_170647_Culla_vista_general.jpg/960px-20250419_170647_Culla_vista_general.jpg',
     featured: true
   },
   {
@@ -489,7 +489,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'La reserva Starlight continental más grande del mundo, abarcando más de 400 km de sierras sin contaminación lumínica.',
     facilities: ['Red de 35 miradores', 'Alojamientos starlight', 'Senda nocturna'],
     bestSeason: 'Otoño - Invierno - Primavera',
-    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Valles_t%C3%ADpicos_de_Obejo%2C_Sierra_Morena.JPG/960px-Valles_t%C3%ADpicos_de_Obejo%2C_Sierra_Morena.JPG'
   },
   {
     id: 'spot-cuenca',
@@ -639,7 +639,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Red comarcal de miradores astronómicos', 'Alojamientos rurales Starlight', 'Guías de astroturismo'],
     subAreas: ['Mirador de Orihuela del Tremedal', 'Ermita de San Cristóbal', 'Pinares de Rodeno'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Albarrac%C3%ADn%2C_Teruel%2C_Espa%C3%B1a%2C_2014-01-10%2C_DD_022-025_PAN.JPG/960px-Albarrac%C3%ADn%2C_Teruel%2C_Espa%C3%B1a%2C_2014-01-10%2C_DD_022-025_PAN.JPG'
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -755,7 +755,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     facilities: ['Observatorio Astronómico de Lalín', 'Mirador do Monte Carrio', 'Rutas de senderismo nocturno'],
     subAreas: ['Observatorio do Castro', 'Serra do Candán', 'Mirador da Fraga de Catasós'],
     bestSeason: 'Primavera y Verano',
-    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Serra_do_Cand%C3%A1n.jpg/960px-Serra_do_Cand%C3%A1n.jpg'
   },
   {
     id: 'spot-ancares-lucenses-galicia',
@@ -863,7 +863,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Combinación perfecta entre ornitología diurna y turismo astronómico nocturno con horizonte sur despejado.',
     facilities: ['Observatorio de Torrejón el Rubio', 'Mirador del Salto del Gitano'],
     bestSeason: 'Primavera - Otoño - Invierno',
-    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Mirador_del_Salto_del_Gitano_y_Rio_Tajo.jpg/960px-Mirador_del_Salto_del_Gitano_y_Rio_Tajo.jpg'
   },
   {
     id: 'spot-menorca-starlight',
@@ -957,7 +957,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Peña de Francia (Santuario y Mirador 360° - 1.727 m)', 'La Alberca (Miradores periféricos)', 'Miranda del Castañar y Castillo', 'Sierra de las Quilamas', 'Mogarraz'],
     facilities: ['Mirador panorámico de alta cumbre con carretera asfaltada', 'Aparcamiento amplio en el Santuario', 'Red de senderos nocturnos patrimoniales', 'Alojamientos rurales con actividades estelares'],
     bestSeason: 'Primavera - Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Bosque_de_hoja_caduca_en_la_Sierra_de_Francia%2C_Salamanca.jpg/960px-Bosque_de_hoja_caduca_en_la_Sierra_de_Francia%2C_Salamanca.jpg'
   },
   {
     id: 'spot-tierras-altas-soria',
@@ -1012,7 +1012,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Dehesas de Añora y Parque San Martín', 'Pozoblanco y Mirador del Tejar', 'Cardeña y Parque Natural de Cardeña-Montoro', 'Dos Torres y Plaza de la Villa', 'Alcaracejos y El Guijo'],
     facilities: ['Red de 17 miradores astronómicos comarcales', 'Cúpulas y peanas fijas para telescopios', 'Alojamientos rurales Starlight', 'Rutas temáticas "La Dehesa Estelar"'],
     bestSeason: 'Otoño - Invierno - Primavera',
-    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/LosPedrochesLosMuros.jpg/960px-LosPedrochesLosMuros.jpg',
     featured: true
   },
   {
@@ -1031,7 +1031,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Observatorio Astronómico del Torcal (OATA)', 'Mirador de las Ventanillas (Vistas hacia el Mediterráneo)', 'Monumento Natural de los Amoladores', 'Tornillo del Torcal'],
     facilities: ['Observatorio astronómico permanente con telescopios robotizados', 'Centro de Visitantes Torcal Alto con cafetería', 'Parking asfaltado habilitado', 'Sesiones nocturnas con guías acreditados'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Karst_rocks_El_Torcal_Andalusia_Spain.jpg/960px-Karst_rocks_El_Torcal_Andalusia_Spain.jpg'
   },
   {
     id: 'spot-cazorla-segura',
@@ -1142,7 +1142,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     subAreas: ['Fuencaliente y Pinturas Rupestres de Peña Escrita', 'Pico de la Bañuela (1.332 m)', 'Brazatortas y Cabezarrubias del Puerto', 'Hinojosas de Calatrava', 'Valle de Alcudia (Zona Central)'],
     facilities: ['Miradores astronómicos acondicionados con señalética', 'Áreas de descanso con paneles interpretativos', 'Rutas arqueoastronómicas nocturnas', 'Alojamientos rurales certificados'],
     bestSeason: 'Todo el año',
-    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Savannah%5E_-_Valle_de_Alcudia_-_panoramio.jpg/960px-Savannah%5E_-_Valle_de_Alcudia_-_panoramio.jpg'
   },
   {
     id: 'spot-cabaneros',
@@ -1347,7 +1347,7 @@ export const STARLIGHT_SPOTS: StarlightSpot[] = [
     description: 'Playas vírgenes y acantilados volcánicos en Almería sin contaminación lumínica sobre el horizonte marítimo del Mediterráneo.',
     facilities: ['Aparcamiento natural', 'Accesos a pie'],
     bestSeason: 'Verano - Otoño',
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Arrecife_de_las_Sirenas.jpg/960px-Arrecife_de_las_Sirenas.jpg'
   },
   {
     id: 'spot-picos-europa',

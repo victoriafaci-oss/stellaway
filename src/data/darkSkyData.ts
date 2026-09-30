@@ -172,7 +172,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera y Verano',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Miradouro_do_Ujo.jpg/960px-Miradouro_do_Ujo.jpg'
   },
   {
     id: 'ds-pic-du-midi',
@@ -260,7 +260,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Septiembre a Abril',
     officialUrl: 'https://darksky.org/places/kerry-dark-sky-reserve/',
-    imageUrl: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/65/Derrynane_Bay.jpg/960px-Derrynane_Bay.jpg'
   },
   {
     id: 'ds-exmoor',
@@ -442,7 +442,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera, Verano y Otoño',
     officialUrl: 'https://darksky.org/places/natural-bridges-national-monument-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Owachomo_laban.jpg/960px-Owachomo_laban.jpg',
     featured: true
   },
   {
@@ -473,7 +473,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera y Otoño',
     officialUrl: 'https://darksky.org/places/arches-national-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Delicate_arch_sunset.jpg/960px-Delicate_arch_sunset.jpg',
     featured: true
   },
   {
@@ -504,7 +504,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Mayo a Octubre',
     officialUrl: 'https://darksky.org/places/bryce-canyon-national-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Inspiration_Point_Bryce_Canyon_November_2018_panorama.jpg/960px-Inspiration_Point_Bryce_Canyon_November_2018_panorama.jpg',
     featured: true
   },
   {
@@ -535,7 +535,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera y Otoño',
     officialUrl: 'https://darksky.org/places/canyonlands-national-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Green_River_Overlook_Ekker_Butte.jpg/960px-Green_River_Overlook_Ekker_Butte.jpg'
   },
   {
     id: 'ds-zion',
@@ -565,7 +565,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera, Verano y Otoño',
     officialUrl: 'https://darksky.org/places/zion-national-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Zion_angels_landing_view.jpg/960px-Zion_angels_landing_view.jpg'
   },
   {
     id: 'ds-capitol-reef',
@@ -625,7 +625,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Octubre a Mayo',
     officialUrl: 'https://darksky.org/places/joshua-tree-national-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Joshua_Tree_-_Cyclops_%2B_Potato_Head_-_Sunrise.jpg/960px-Joshua_Tree_-_Cyclops_%2B_Potato_Head_-_Sunrise.jpg',
     featured: true
   },
   {
@@ -656,7 +656,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Junio a Octubre',
     officialUrl: 'https://darksky.org/places/great-basin-national-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/WheelerPeakNevadaMarch2010.jpg/960px-WheelerPeakNevadaMarch2010.jpg'
   },
   {
     id: 'ds-chaco-culture',
@@ -686,7 +686,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera y Otoño',
     officialUrl: 'https://darksky.org/places/chaco-culture-national-historical-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1528728329032-2972f65dfb3f?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Chaco_Culture_NHP_%288023723138%29.jpg/960px-Chaco_Culture_NHP_%288023723138%29.jpg'
   },
   {
     id: 'ds-cosmic-campground',
@@ -715,7 +715,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año',
     officialUrl: 'https://darksky.org/places/cosmic-campground-dark-sky-sanctuary/',
-    imageUrl: 'https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/Gila_Wilderness_0608.jpg/960px-Gila_Wilderness_0608.jpg'
   },
   {
     id: 'ds-massacre-rim',
@@ -773,7 +773,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera, Verano y Otoño',
     officialUrl: 'https://darksky.org/places/cherry-springs-state-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Cherry_Springs_State_Park_panorama.jpg/960px-Cherry_Springs_State_Park_panorama.jpg',
     featured: true
   },
   {
@@ -804,7 +804,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Mayo a Octubre',
     officialUrl: 'https://darksky.org/places/black-canyon-of-the-gunnison-national-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Black_Canyon_and_Gunnison_River_2008.jpg/960px-Black_Canyon_and_Gunnison_River_2008.jpg'
   },
   {
     id: 'ds-mesa-verde',
@@ -834,7 +834,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Mayo a Octubre',
     officialUrl: 'https://darksky.org/places/mesa-verde-national-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Cliff_Palace-Colorado-Mesa_Verde_NP.jpg/960px-Cliff_Palace-Colorado-Mesa_Verde_NP.jpg'
   },
   {
     id: 'ds-voyageurs',
@@ -864,7 +864,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año (Otoño e Invierno para Auroras)',
     officialUrl: 'https://darksky.org/places/voyageurs-national-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Rainy_Lake_from_Tango_Channel.jpg/960px-Rainy_Lake_from_Tango_Channel.jpg'
   },
   {
     id: 'ds-boundary-waters',
@@ -894,7 +894,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Mayo a Octubre',
     officialUrl: 'https://darksky.org/places/boundary-waters-canoe-area-wilderness-dark-sky-sanctuary/',
-    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/Pose_lake_Minnesota.jpg/960px-Pose_lake_Minnesota.jpg'
   },
   {
     id: 'ds-waterton-glacier',
@@ -924,7 +924,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Junio a Septiembre',
     officialUrl: 'https://darksky.org/places/waterton-glacier-international-peace-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Mountain_Goat_at_Hidden_Lake.jpg/960px-Mountain_Goat_at_Hidden_Lake.jpg'
   },
   {
     id: 'ds-mammoth-cave',
@@ -983,7 +983,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año',
     officialUrl: 'https://darksky.org/places/flagstaff-dark-sky-community/',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/Clark_dome.jpg/960px-Clark_dome.jpg',
     featured: true
   },
   {
@@ -1014,7 +1014,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera, Verano y Otoño',
     officialUrl: 'https://darksky.org/places/sedona-dark-sky-community/',
-    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Cathedral_Rock_-_Sedona_AZ-1.jpg/960px-Cathedral_Rock_-_Sedona_AZ-1.jpg'
   },
   {
     id: 'ds-borrego-springs',
@@ -1044,7 +1044,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Noviembre a Abril',
     officialUrl: 'https://darksky.org/places/borrego-springs-dark-sky-community/',
-    imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Fontspoint02262006.JPG/960px-Fontspoint02262006.JPG'
   },
   {
     id: 'ds-badlands',
@@ -1074,7 +1074,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Junio a Septiembre',
     officialUrl: 'https://darksky.org/places/badlands-national-park-dark-sky-park/',
-    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/MK00609_Badlands.jpg/960px-MK00609_Badlands.jpg'
   },
   {
     id: 'ds-rainbow-bridge',
@@ -1103,7 +1103,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Primavera y Otoño',
     officialUrl: 'https://darksky.org/places/rainbow-bridge-national-monument-dark-sky-sanctuary/',
-    imageUrl: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Utah_Rainbow_Arch.jpg/960px-Utah_Rainbow_Arch.jpg'
   },
   {
     id: 'ds-central-idaho',
@@ -1132,7 +1132,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Verano y Principios de Otoño',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Stanley_Lake.JPG/960px-Stanley_Lake.JPG'
   },
   {
     id: 'ds-mont-megantic',
