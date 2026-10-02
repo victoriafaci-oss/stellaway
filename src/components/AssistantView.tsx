@@ -14,7 +14,7 @@ export const AssistantView: React.FC = () => {
         role: 'assistant',
         content: t(
           'assistantWelcome',
-          '¡Hola! Soy Stella, tu asistente de astronomía de StellaWay. Puedo aconsejarte sobre telescopios, la observación del Gran Eclipse Solar 2026, fotografía de la Vía Láctea, o darte efemérides para tu ubicación. ¿En qué te ayudo hoy?'
+          '¡Hola! Soy Stella, tu asistente de astronomía de StellaWay. Puedo guiarte sobre auroras boreales y australes, telescopios, la observación de eclipses solares, fotografía nocturna o efemérides. ¿En qué te ayudo hoy?'
         ),
         timestamp: 'Ahora'
       }
@@ -105,12 +105,12 @@ export const AssistantView: React.FC = () => {
             <h1 className="text-xl font-black text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2">
               <span>Asistente IA Starlight</span>
               <span className="px-2 py-0.5 rounded-full bg-[#0284C7]/30 border border-[#38BDF8]/50 text-[10px] text-[#7DD3FC] font-mono uppercase">
-                Stella 2.5
+                Stella AI
               </span>
             </h1>
             <p className="text-xs text-[#7DD3FC] flex items-center gap-1.5 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Conexión Activa 24/7 • Experta en Astroturismo, Eclipses y Óptica</span>
+              <span>Conexión Activa 24/7 • Experta en Auroras, Astroturismo, Eclipses y Óptica</span>
             </p>
           </div>
         </div>
@@ -118,6 +118,20 @@ export const AssistantView: React.FC = () => {
 
       {/* Preset Suggestion Pills */}
       <div className="flex flex-wrap gap-2 mb-4 shrink-0">
+        <button
+          onClick={() =>
+            handleSend(
+              language === 'de'
+                ? 'Wo und wie kann ich Polarlichter (Nord- und Südlichter) am besten beobachten und fotografieren, und welchen Kp-Index brauche ich?'
+                : language === 'en'
+                ? 'Where and how can I best observe and photograph Northern & Southern Lights (Auroras), and what Kp index is needed?'
+                : '¿Dónde y cómo puedo ver y fotografiar auroras boreales y australes, y qué índice Kp necesito?'
+            )
+          }
+          className="text-xs px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-400 hover:text-black border border-emerald-400/40 text-emerald-300 transition-all font-semibold cursor-pointer flex items-center gap-1 shadow-[0_0_12px_rgba(52,211,153,0.15)]"
+        >
+          ✨ {language === 'de' ? 'Polarlichter & Kp-Index' : language === 'en' ? 'Auroras & Kp Guide' : 'Auroras & Índice Kp'}
+        </button>
         <button
           onClick={() =>
             handleSend(
@@ -209,7 +223,7 @@ export const AssistantView: React.FC = () => {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Pregunta sobre telescopios, constelaciones o el Eclipse 2026..."
+          placeholder={t('assistantPlaceholder', 'Pregunta sobre auroras, telescopios o eclipses...')}
           className="flex-1 bg-transparent px-4 py-2 text-sm text-white placeholder-white/40 focus:outline-none"
         />
         <button

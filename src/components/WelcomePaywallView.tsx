@@ -3,6 +3,7 @@ import { ActiveTab } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { StellaLogo } from './StellaLogo';
 import { WORLD_DIAL_CODES } from '../data/countryDialCodes';
+import { SubscriptionCancellationModal } from './SubscriptionCancellationModal';
 
 interface WelcomePaywallViewProps {
   onEnterApp: () => void;
@@ -21,6 +22,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
 }) => {
   const { t, language, setLanguage, languageOptions } = useLanguage();
   const [selectedPlan, setSelectedPlan] = useState<'free2days' | 'mensual' | 'anual'>(selectedPlanDefault);
+  const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (selectedPlanDefault) {
@@ -65,6 +67,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
   } | null>(null);
 
   // Stripe card fields
+  const [billingEmail, setBillingEmail] = useState(() => (typeof window !== 'undefined' ? localStorage.getItem('stellaway_user_email') || '' : ''));
   const [cardHolder, setCardHolder] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
@@ -250,13 +253,18 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
     setIsProcessingPayment(true);
 
     try {
+      const emailToSend = billingEmail.trim() || 'usuario@stellaway.org';
+      if (billingEmail.trim()) {
+        localStorage.setItem('stellaway_user_email', billingEmail.trim());
+      }
+
       const res = await fetch('/api/create-stripe-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           planId: selectedPlan,
           customerName: cardHolder || 'Astrónomo Starlight',
-          customerEmail: 'usuario@stellaway.org',
+          customerEmail: emailToSend,
         }),
       });
 
@@ -1032,6 +1040,21 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                   <span className="material-symbols-outlined text-sm">open_in_new</span>
                 </a>
               </div>
+
+              {/* Direct Cancellation / Unsubscribe for 48h Free Trial */}
+              <div className="pt-3 border-t border-rose-500/20 flex flex-col items-center gap-2 text-center">
+                <span className="text-[11px] text-[#BAE6FD]">
+                  ¿Deseas dar de baja tu prueba de 48 horas o una suscripción activa?
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowCancelModal(true)}
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-rose-950/70 hover:bg-rose-900/90 text-rose-200 border-2 border-rose-500/60 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-md transition-all hover:scale-[1.02]"
+                >
+                  <span className="material-symbols-outlined text-base text-rose-400">cancel</span>
+                  <span>{t('welcomeCancelBtn', 'Dar de baja la suscripción')}</span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -1149,6 +1172,20 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                         <div className="flex gap-1.5 text-[10px] font-bold text-[#BAE6FD]">
                           <span>Visa</span> • <span>Mastercard</span> • <span>Amex</span> • <span>Apple Pay</span>
                         </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#BAE6FD] mb-1">
+                          Correo Electrónico (para facturación y gestión de suscripción)
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={billingEmail}
+                          onChange={(e) => setBillingEmail(e.target.value)}
+                          placeholder="tu-correo@ejemplo.com"
+                          className="w-full bg-[#082F49] border border-[#38BDF8]/50 rounded-xl px-3.5 py-2.5 text-white text-xs font-bold focus:border-[#7DD3FC] outline-none"
+                        />
                       </div>
 
                       <div>
@@ -1311,7 +1348,87 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
             </div>
           )}
         </div>
+
+        {/* 5. CANCELLATION & LEGAL UN-SUBSCRIPTION SECTION (COMPLIANCE WITH CONSUMER PROTECTION REGULATIONS) */}
+        <div
+          id="dar-de-baja-seccion"
+          className="rounded-3xl p-6 sm:p-7 bg-gradient-to-br from-rose-950/50 via-[#082F49]/80 to-[#031525] border-2 border-rose-500/60 shadow-[0_0_35px_rgba(244,63,94,0.25)] backdrop-blur-xl space-y-4"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border-2 border-rose-400/50 flex items-center justify-center text-rose-300 text-3xl shadow-inner shrink-0">
+                <span className="material-symbols-outlined text-3xl">cancel</span>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/40 text-[10px] font-black uppercase tracking-wider">
+                    {t('welcomeCancelSectionBadge', 'DERECHO DE DESISTIMIENTO Y BAJA DIRECTA')}
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold">
+                    ✓ Sin permanencia ni penalización
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-white font-['Plus_Jakarta_Sans']">
+                  {t('welcomeCancelSectionTitle', 'Dar de baja la suscripción o prueba gratuita')}
+                </h3>
+                <p className="text-xs sm:text-sm text-[#BAE6FD] font-medium leading-relaxed max-w-2xl">
+                  {t(
+                    'welcomeCancelSectionDesc',
+                    'Conforme a la normativa legal de protección de consumidores y usuarios (Real Decreto Legislativo 1/2007 y Directiva UE), puedes tramitar la baja o cancelación de la renovación de cualquier suscripción o prueba en cualquier momento de forma gratuita, inmediata y sin penalización.'
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="shrink-0 w-full md:w-auto">
+              <button
+                type="button"
+                onClick={() => setShowCancelModal(true)}
+                className="w-full md:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-600 via-rose-500 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-sm uppercase tracking-wider flex items-center justify-center gap-3 shadow-[0_0_25px_rgba(244,63,94,0.45)] hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-rose-300/70"
+              >
+                <span className="material-symbols-outlined text-2xl">cancel</span>
+                <span>{t('welcomeCancelBtn', 'Dar de baja la suscripción')}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-rose-500/20 flex flex-wrap items-center justify-between gap-3 text-xs text-[#94A3B8]">
+            <span className="flex items-center gap-1.5 font-medium">
+              <span className="material-symbols-outlined text-sm text-rose-400">verified</span>
+              {t('welcomeCancelLegal', 'Baja inmediata sin permanencia ni cobros futuros')}
+            </span>
+            <div className="flex items-center gap-3 font-semibold">
+              <a
+                href="https://billing.stripe.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#7DD3FC] hover:text-white underline"
+              >
+                Portal Clientes Stripe
+              </a>
+              <span>•</span>
+              <a
+                href="mailto:soporte@stellaway.app"
+                className="text-[#7DD3FC] hover:text-white underline font-mono"
+              >
+                soporte@stellaway.app
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Subscription Cancellation Modal */}
+      <SubscriptionCancellationModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        onCancellationSuccess={() => {
+          setActiveTrialPhone(null);
+          setSmsStep('phone');
+          setPaymentSuccessData(null);
+          setTrialError('');
+        }}
+      />
     </div>
   );
 };

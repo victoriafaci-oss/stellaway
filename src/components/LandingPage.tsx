@@ -332,9 +332,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       glow: 'shadow-rose-500/20',
     },
     {
-      icon: '🌑',
-      title: t('landingFeature2Title', 'Mapas Bortle Interactivos'),
-      desc: t('landingFeature2Desc', 'Descubre los mejores lugares de cielo oscuro en el Arco Mediterráneo con mapas de contaminación lumínica en tiempo real.'),
+      icon: '🌌',
+      title: t('landingFeature2Title', 'Los 3 Grandes Localizadores Mundiales'),
+      desc: t('landingFeature2Desc', 'Accede a los 3 buscadores integrados: Certificaciones Starlight, Parques DarkSky y el nuevo Atlas Mundial de Auroras Boreales y Australes con más de 90 localizaciones e imágenes reales.'),
       color: 'from-indigo-500/20 to-purple-600/20',
       border: 'border-indigo-400/30',
       glow: 'shadow-indigo-500/20',
@@ -406,6 +406,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       ],
       spotsLabel: t('landingCatDarkskySpotsLabel', 'Red de protección:'),
       sampleSpots: 'Aiguamolls, Parques Nacionales protegidos, Reservas transfronterizas y Red Dark Sky global',
+    },
+    {
+      id: 'auroras',
+      badge: t('landingCatAurorasBadge', 'Atlas Mundial de Auroras'),
+      title: t('landingCatAurorasTitle', 'Auroras Boreales & Australes'),
+      org: t('landingCatAurorasOrg', 'Redes de Observación y Turismo Polar Mundial'),
+      icon: '🟢',
+      color: 'from-emerald-500/20 via-teal-500/15 to-cyan-500/20',
+      border: 'border-emerald-400/40',
+      glow: 'rgba(16, 185, 129, 0.25)',
+      tagColor: 'bg-emerald-400/15 text-emerald-300 border-emerald-400/30',
+      desc: t('landingCatAurorasDesc', 'El 3.er gran buscador de StellaWay: catálogo global con más de 90 enclaves polares en ambos hemisferios para cazar las luces del norte y del sur con imágenes reales de alta luminosidad.'),
+      highlights: [
+        t('landingCatAurorasH1', 'Hemisferio Norte (Boreal): Noruega, Islandia, Suecia, Finlandia, Canadá, Alaska y Groenlandia'),
+        t('landingCatAurorasH2', 'Hemisferio Sur (Austral): Patagonia chilena y argentina, Tasmania, Nueva Zelanda y Antártida'),
+        t('landingCatAurorasH3', 'Segmentación por frecuencia: Núcleo auroral permanente, Frecuente, Ocasional y Expediciones'),
+        t('landingCatAurorasH4', 'Orientación magnética, ventanas de oscuridad estacional e imágenes reales sin oscuridad excesiva'),
+      ],
+      spotsLabel: t('landingCatAurorasSpotsLabel', 'Enclaves polares destacados:'),
+      sampleSpots: 'Tromsø, Reine (Lofoten), Abisko, Rovaniemi, Thingvellir, Fairbanks, Yellowknife, Ushuaia, Lake Tekapo',
     },
     {
       id: 'astroturismo',
@@ -513,7 +533,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <a href="#features" className="hover:text-amber-300 transition-colors font-medium">{t('landingNavFeatures', 'Funciones')}</a>
           <a href="#cielos-certificados" className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            {t('landingNavCertified', 'Cielos Certificados')}
+            {t('landingNavCertified', 'Cielos & Auroras')}
           </a>
           <a href="#eclipse" className="hover:text-amber-300 transition-colors font-medium">{t('landingNavEclipse', 'Eclipse 2027')}</a>
           <a href="#testimonios" className="hover:text-amber-300 transition-colors font-medium">{t('landingNavCommunity', 'Comunidad')}</a>
@@ -706,7 +726,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           className="text-lg md:text-xl mb-10 max-w-2xl leading-relaxed"
           style={{ color: 'rgba(255,255,255,0.65)' }}
         >
-          {t('landingHeroDesc', 'Zonas certificadas Starlight y DarkSky International, mapas Bortle, astrofotografía recomendada y el mayor evento celeste del siglo — el Eclipse Total Solar 2027 — todo en una sola app.')}
+          {t('landingHeroDesc', 'Los 3 grandes localizadores: Zonas Starlight, DarkSky International y Atlas de Auroras Boreales & Australes, mapas Bortle, astrofotografía recomendada y el mayor evento celeste del siglo — el Eclipse Total Solar 2027 — todo en una sola app.')}
         </p>
 
         {/* CTA 1: Primary Hero Button */}
@@ -866,20 +886,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest mb-4 bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 shadow-[0_0_20px_rgba(56,189,248,0.2)]">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              {t('landingCertifiedBadge', 'Estándares Internacionales de Calidad Celeste')}
+              {t('landingCertifiedBadge', 'Estándares Internacionales de Calidad Celeste & Auroral')}
             </div>
             <h2 className="font-luxury text-4xl md:text-5xl font-bold mb-4 text-white">
-              {t('landingCertifiedTitle', 'Zonas Certificadas & Cielos Oscuros')}
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-cyan-300 to-purple-300">
-                {t('landingCertifiedSubtitle', 'Buscador de Zonas Starlight y DarkSky')}
+              {t('landingCertifiedTitle', 'Zonas Certificadas, Cielos Oscuros & Auroras Polares')}
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-cyan-300 via-emerald-300 to-purple-300">
+                {t('landingCertifiedSubtitle', 'Los 3 Grandes Localizadores: Starlight, DarkSky y Auroras Boreales & Australes')}
               </span>
             </h2>
             <p className="text-white/60 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-              {t('landingCertifiedDesc', 'Explora enclaves avalados por auditorías científicas mundiales y seleccionados por su oscuridad estelar, transparencia atmosférica y protección medioambiental.')}
+              {t('landingCertifiedDesc', 'Explora enclaves avalados por auditorías científicas mundiales y el nuevo Atlas de Auroras Boreales y Australes: seleccionados por su oscuridad estelar, transparencia atmosférica, latitud magnética y nula contaminación lumínica.')}
             </p>
 
             {/* Filter Category Tabs (Modern Pill Switcher) */}
-            <div className="flex flex-wrap items-center justify-center gap-2.5 mt-8 p-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl max-w-xl mx-auto">
+            <div className="flex flex-wrap items-center justify-center gap-2.5 mt-8 p-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl max-w-2xl mx-auto">
               <button
                 type="button"
                 onClick={() => setSelectedCertifiedCat('all')}
@@ -915,6 +935,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </button>
               <button
                 type="button"
+                onClick={() => setSelectedCertifiedCat('auroras')}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                  selectedCertifiedCat === 'auroras'
+                    ? 'bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/25'
+                    : 'text-emerald-300/80 hover:text-emerald-200 hover:bg-emerald-400/10'
+                }`}
+              >
+                <span>🟢</span> {t('landingFilterAuroras', 'Auroras Boreales & Australes')}
+              </button>
+              <button
+                type="button"
                 onClick={() => setSelectedCertifiedCat('astroturismo')}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                   selectedCertifiedCat === 'astroturismo'
@@ -928,7 +959,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           {/* Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-6">
             {certifiedSkyCategories
               .filter((c) => selectedCertifiedCat === 'all' || selectedCertifiedCat === c.id)
               .map((c, i) => (
@@ -940,7 +971,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   style={{
                     background: 'linear-gradient(155deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
                     backdropFilter: 'blur(20px)',
-                    border: `1.5px solid ${c.id === 'starlight' ? 'rgba(251,191,36,0.35)' : c.id === 'darksky' ? 'rgba(56,189,248,0.35)' : 'rgba(192,132,252,0.35)'}`,
+                    border: `1.5px solid ${c.id === 'starlight' ? 'rgba(251,191,36,0.35)' : c.id === 'darksky' ? 'rgba(56,189,248,0.35)' : c.id === 'auroras' ? 'rgba(52,211,153,0.35)' : 'rgba(192,132,252,0.35)'}`,
                     boxShadow: `0 20px 40px -15px rgba(0,0,0,0.5), 0 0 30px ${c.glow}`,
                     opacity: isVisible(`certified-card-${c.id}`) ? 1 : 0,
                     transform: isVisible(`certified-card-${c.id}`) ? 'translateY(0) scale(1)' : 'translateY(35px) scale(0.98)',
@@ -950,7 +981,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   {/* Subtle corner aura */}
                   <div
                     className="absolute -top-16 -right-16 w-36 h-36 rounded-full blur-2xl pointer-events-none opacity-40 transition-opacity duration-300 group-hover:opacity-75"
-                    style={{ background: c.id === 'starlight' ? '#F59E0B' : c.id === 'darksky' ? '#38BDF8' : '#C084FC' }}
+                    style={{ background: c.id === 'starlight' ? '#F59E0B' : c.id === 'darksky' ? '#38BDF8' : c.id === 'auroras' ? '#10B981' : '#C084FC' }}
                   />
 
                   <div>
@@ -959,8 +990,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       <div
                         className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner"
                         style={{
-                          background: c.id === 'starlight' ? 'rgba(245,158,11,0.15)' : c.id === 'darksky' ? 'rgba(56,189,248,0.15)' : 'rgba(168,85,247,0.15)',
-                          border: `1px solid ${c.id === 'starlight' ? 'rgba(245,158,11,0.3)' : c.id === 'darksky' ? 'rgba(56,189,248,0.3)' : 'rgba(168,85,247,0.3)'}`,
+                          background: c.id === 'starlight' ? 'rgba(245,158,11,0.15)' : c.id === 'darksky' ? 'rgba(56,189,248,0.15)' : c.id === 'auroras' ? 'rgba(16,185,129,0.15)' : 'rgba(168,85,247,0.15)',
+                          border: `1px solid ${c.id === 'starlight' ? 'rgba(245,158,11,0.3)' : c.id === 'darksky' ? 'rgba(56,189,248,0.3)' : c.id === 'auroras' ? 'rgba(16,185,129,0.3)' : 'rgba(168,85,247,0.3)'}`,
                         }}
                       >
                         {c.icon}
@@ -975,7 +1006,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       {c.title}
                     </h3>
                     <p className="text-xs font-medium text-white/50 mb-4 flex items-center gap-1.5">
-                      <span className="w-1 h-1 rounded-full bg-amber-400" />
+                      <span className={`w-1 h-1 rounded-full ${c.id === 'starlight' ? 'bg-amber-400' : c.id === 'darksky' ? 'bg-cyan-400' : c.id === 'auroras' ? 'bg-emerald-400' : 'bg-purple-400'}`} />
                       {c.org}
                     </p>
 
@@ -988,7 +1019,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <div className="space-y-2.5 mb-6 pt-4 border-t border-white/10">
                       {c.highlights.map((h, idx) => (
                         <div key={idx} className="flex items-start gap-2.5 text-xs text-white/80">
-                          <span className={`text-sm shrink-0 leading-none ${c.id === 'starlight' ? 'text-amber-400' : c.id === 'darksky' ? 'text-cyan-400' : 'text-purple-400'}`}>
+                          <span className={`text-sm shrink-0 leading-none ${c.id === 'starlight' ? 'text-amber-400' : c.id === 'darksky' ? 'text-cyan-400' : c.id === 'auroras' ? 'text-emerald-400' : 'text-purple-400'}`}>
                             ✦
                           </span>
                           <span className="leading-tight">{h}</span>
@@ -1033,7 +1064,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   {t('landingDestSearchTitle', 'Buscador y Ficha Detallada de Cada Destino')}
                 </h4>
                 <p className="text-xs sm:text-sm text-white/65 max-w-2xl leading-relaxed">
-                  {t('landingDestSearchDesc', 'Filtra por certificación oficial, índice de Bortle (1 a 4), altitud, orientación estelar y recomendaciones de equipo astronómico para tus escapadas.')}
+                  {t('landingDestSearchDesc', 'Filtra por certificación Starlight, DarkSky International y Atlas de Auroras con índice de Bortle, altitud, orientación estelar e imágenes reales.')}
                 </p>
               </div>
             </div>

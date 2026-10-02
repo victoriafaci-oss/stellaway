@@ -6,6 +6,7 @@ import { ModalsContainer } from './components/ModalsContainer';
 import { DashboardView } from './components/DashboardView';
 import { SpotsView } from './components/SpotsView';
 import { DarkSkyView } from './components/DarkSkyView';
+import { AurorasView } from './components/AurorasView';
 import { EventsView } from './components/EventsView';
 import { WeatherView } from './components/WeatherView';
 import { AssistantView } from './components/AssistantView';
@@ -100,6 +101,21 @@ export default function App() {
         localStorage.setItem('stellaway_payment_provider', 'Stripe Payments');
         localStorage.setItem('stellaway_transaction_id', sessionId);
 
+        if (sessionId && sessionId.startsWith('cs_')) {
+          fetch(`/api/stripe-session-details?sessionId=${encodeURIComponent(sessionId)}`)
+            .then((r) => r.json())
+            .then((info) => {
+              if (info?.customerEmail) {
+                localStorage.setItem('stellaway_user_email', info.customerEmail);
+                localStorage.setItem('stellaway_customer_email', info.customerEmail);
+              }
+              if (info?.subscriptionId) {
+                localStorage.setItem('stellaway_transaction_id', info.subscriptionId);
+              }
+            })
+            .catch(() => {});
+        }
+
         if (planParam === 'free2days' || planParam === 'trial_48h') {
           // Strict 48h access
           const expiresAt = Date.now() + 48 * 3600 * 1000;
@@ -138,9 +154,15 @@ export default function App() {
       setTabHistory(['dashboard']);
     }
 
+    const handleCancelled = () => {
+      setActivePlanName(null);
+    };
+    window.addEventListener('stellaway-subscription-cancelled', handleCancelled);
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
       window.removeEventListener('open-install-modal', handleOpenInstall);
+      window.removeEventListener('stellaway-subscription-cancelled', handleCancelled);
     };
   }, []);
 
@@ -321,6 +343,7 @@ export default function App() {
             setNightVision={setNightVision}
             onExploreSpots={() => navigateTo('spots')}
             onExploreDarkSky={() => navigateTo('darksky')}
+            onExploreAuroras={() => navigateTo('auroras')}
             onExploreEvents={() => navigateTo('events')}
             onExploreWeather={() => navigateTo('weather')}
             openModal={(type) => setModalType(type)}
@@ -337,6 +360,13 @@ export default function App() {
 
         {activeTab === 'darksky' && (
           <DarkSkyView
+            onGoBack={handleGoBack}
+            onGoHome={() => navigateTo('dashboard')}
+          />
+        )}
+
+        {activeTab === 'auroras' && (
+          <AurorasView
             onGoBack={handleGoBack}
             onGoHome={() => navigateTo('dashboard')}
           />

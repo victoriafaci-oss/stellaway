@@ -14,19 +14,30 @@ export const EventsView: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<'upcoming' | 'energy'>('upcoming');
   const [selectedCategory, setSelectedCategory] = useState<string>('todos');
   const [timeFilter, setTimeFilter] = useState<'active_upcoming' | 'archived_past'>('active_upcoming');
-  const [currentDateString, setCurrentDateString] = useState<string>('25 de Agosto de 2026');
-  const [currentTimeString, setCurrentTimeString] = useState<string>('13:42');
+  const [currentDateString, setCurrentDateString] = useState<string>('2 de Octubre de 2026');
+  const [currentTimeString, setCurrentTimeString] = useState<string>('12:14');
 
-  // Real-time live date reference
-  const todayISO = '2026-08-25'; // Current synchronized live date reference
+  // Real-time live date reference: 2 de Octubre de 2026 (12:14h hora España)
+  const todayISO = '2026-10-02';
 
   useEffect(() => {
     const updateTime = () => {
-      const now = new Date();
-      // Format time in Spanish / European format
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      setCurrentTimeString(`${hours}:${minutes}`);
+      try {
+        const now = new Date();
+        const madridTimeStr = now.toLocaleTimeString('es-ES', {
+          timeZone: 'Europe/Madrid',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        });
+        if (madridTimeStr && madridTimeStr.includes(':')) {
+          setCurrentTimeString(madridTimeStr);
+        } else {
+          setCurrentTimeString('12:14');
+        }
+      } catch {
+        setCurrentTimeString('12:14');
+      }
     };
     updateTime();
     const interval = setInterval(updateTime, 30000);

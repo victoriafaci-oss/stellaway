@@ -3,6 +3,7 @@ import { ModalType, ActiveTab } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { SupportedLanguage } from '../data/translations';
 import { WORLD_DIAL_CODES } from '../data/countryDialCodes';
+import { SubscriptionCancellationModal } from './SubscriptionCancellationModal';
 
 interface ModalsContainerProps {
   modalType: ModalType;
@@ -28,6 +29,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
   const [langSuccessMsg, setLangSuccessMsg] = useState<string | null>(null);
   const [showAddCard, setShowAddCard] = useState<boolean>(false);
   const [sosActive, setSosActive] = useState<boolean>(false);
+  const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
 
   useEffect(() => {
     setTempLanguage(language);
@@ -491,6 +493,43 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                   </div>
                 )}
 
+                {/* DERECHO DE DESISTIMIENTO Y BAJA DIRECTA DE SUSCRIPCIÓN (COMPLIANCE LEGAL CONSUMIDORES) */}
+                <div className="p-4 bg-gradient-to-r from-rose-950/50 via-rose-900/40 to-[#082F49] rounded-2xl border-2 border-rose-500/70 text-white space-y-2.5 shadow-lg">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-rose-400 text-xl">cancel</span>
+                      <h5 className="text-xs font-black text-white uppercase tracking-wider">
+                        Dar de baja la suscripción o prueba gratuita
+                      </h5>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/40 text-[9px] font-black uppercase">
+                      Baja Inmediata Stripe
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#BAE6FD] leading-relaxed">
+                    Conforme a la normativa legal de protección a consumidores y usuarios, puedes tramitar la baja o cancelación de la renovación en cualquier momento. La baja se comunica a la pasarela de Stripe para frenar de inmediato cualquier cobro futuro.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowCancelModal(true)}
+                      className="flex-1 py-3 bg-gradient-to-r from-rose-600 via-rose-500 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all border border-rose-300/60"
+                    >
+                      <span className="material-symbols-outlined text-base">cancel</span>
+                      <span>Dar de baja la suscripción</span>
+                    </button>
+                    <a
+                      href="https://billing.stripe.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-3 bg-white/10 hover:bg-white/20 text-[#7DD3FC] hover:text-white font-bold rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-1 border border-white/20 transition-all"
+                    >
+                      <span>Portal Stripe</span>
+                      <span className="material-symbols-outlined text-sm">open_in_new</span>
+                    </a>
+                  </div>
+                </div>
+
                 <div className="flex gap-2 pt-2">
                   <button
                     onClick={() => {
@@ -584,6 +623,17 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                   <span className="px-2.5 py-1 bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] font-extrabold rounded-full shrink-0">
                     Activa
                   </span>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setShowCancelModal(true)}
+                    className="text-xs font-bold text-rose-600 hover:text-rose-800 flex items-center gap-1.5 underline cursor-pointer py-1"
+                  >
+                    <span className="material-symbols-outlined text-sm">cancel</span>
+                    <span>Dar de baja o cancelar renovación de la suscripción</span>
+                  </button>
                 </div>
 
                 {/* Official Stripe Links for Active Plans */}
@@ -973,6 +1023,31 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                 <p className="text-[11px] text-cyan-100/70 font-medium truncate">Santuarios y reservas de cielo oscuro en todo el mundo</p>
               </div>
               <span className="material-symbols-outlined text-cyan-300 text-base shrink-0">arrow_forward</span>
+            </button>
+
+            {/* Auroras Boreales & Australes */}
+            <button
+              onClick={() => {
+                closeModal();
+                setActiveTab('auroras');
+              }}
+              className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/70 via-teal-950/70 to-purple-950/80 hover:from-emerald-900/80 hover:to-purple-900/80 border-2 border-emerald-400/50 shadow-md transition-all flex items-center gap-3 text-left group cursor-pointer w-full"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 text-black flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                <span className="material-symbols-outlined text-xl">auto_awesome</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-black text-emerald-200 group-hover:text-white transition-colors font-['Plus_Jakarta_Sans'] truncate">
+                    Auroras Boreales & Australes
+                  </h3>
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-400/30 text-emerald-200 text-[9px] font-black uppercase tracking-wider">
+                    Atlas Polar
+                  </span>
+                </div>
+                <p className="text-[11px] text-emerald-100/70 font-medium truncate">Enclaves boreales y australes bajo el óvalo magnético</p>
+              </div>
+              <span className="material-symbols-outlined text-emerald-300 text-base shrink-0">arrow_forward</span>
             </button>
 
             {/* Instalar App en el móvil */}
@@ -1541,6 +1616,16 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
           </div>
         </div>
       )}
+
+      {/* Subscription Cancellation Modal */}
+      <SubscriptionCancellationModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        onCancellationSuccess={() => {
+          setRegisteredTrialPhone(null);
+          setPhoneInput('');
+        }}
+      />
     </div>
   );
 };

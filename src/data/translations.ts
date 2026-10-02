@@ -22,6 +22,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     dashboard: 'Dashboard Eclipse 2027',
     spots: 'Encuentra Zonas Starlight',
     darksky: 'Zonas DarkSky',
+    auroras: 'Auroras Boreales & Australes',
     events: 'Eventos Estelares',
     weather: 'Previsión del tiempo',
     assistant: 'Asistente IA Starlight',
@@ -141,8 +142,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
 
     // Assistant
     assistantTitle: 'Asistente Estelar AI (Stella)',
-    assistantWelcome: '¡Hola! Soy Stella, tu asistente astronómica de StellaWay. Puedo guiarte sobre telescopios, la observación del Gran Eclipse Solar Total 2026 o astrofotografía. ¿En qué te ayudo hoy?',
-    assistantPlaceholder: 'Escribe tu consulta astronómica...',
+    assistantWelcome: '¡Hola! Soy Stella, tu asistente astronómica de StellaWay. Puedo guiarte sobre auroras boreales y australes, telescopios, la observación del Gran Eclipse Solar Total 2026 o astrofotografía. ¿En qué te ayudo hoy?',
+    assistantPlaceholder: 'Pregunta sobre auroras, telescopios o eclipses...',
     send: 'Enviar',
 
     // Modals
@@ -167,7 +168,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingHeroEclipseBadge: "🌑 Gran Eclipse Total · 2 Agosto 2027 · España",
     landingHeroTitle1: "El cielo nocturno",
     landingHeroTitle2: "en tu bolsillo",
-    landingHeroDesc: "Zonas certificadas Starlight y DarkSky International, mapas Bortle, astrofotografía recomendada y el mayor evento celeste del siglo — el Eclipse Total Solar 2027 — todo en una sola app.",
+    landingHeroDesc: "Los 3 grandes localizadores: Zonas Starlight, DarkSky International y Atlas de Auroras Boreales & Australes, mapas Bortle, astrofotografía recomendada y el mayor evento celeste del siglo — el Eclipse Total Solar 2027 — todo en una sola app.",
     landingHeroBtnPrimary: "Lo Quiero",
     landingHeroBtnSecondary: "Ver funciones ↓",
     landingCountdownTitle: "⏳ Cuenta regresiva al Eclipse Total",
@@ -181,13 +182,14 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingFeaturesTitle: "Todo lo que necesitas",
     landingFeaturesTitleSub: "para conquistar el cielo",
     landingFeaturesDesc: "Desde mapas interactivos hasta inteligencia artificial astronómica, StellaWay es tu compañero definitivo bajo las estrellas.",
-    landingCertifiedBadge: "Estándares Internacionales de Calidad Celeste",
-    landingCertifiedTitle: "Zonas Certificadas & Cielos Oscuros",
-    landingCertifiedSubtitle: "Buscador de Zonas Starlight y DarkSky",
-    landingCertifiedDesc: "Explora enclaves avalados por auditorías científicas mundiales y seleccionados por su oscuridad estelar, transparencia atmosférica y protección medioambiental.",
+    landingCertifiedBadge: "Estándares Internacionales de Calidad Celeste & Auroral",
+    landingCertifiedTitle: "Zonas Certificadas, Cielos Oscuros & Auroras Polares",
+    landingCertifiedSubtitle: "Los 3 Grandes Localizadores: Starlight, DarkSky y Auroras Boreales & Australes",
+    landingCertifiedDesc: "Explora enclaves avalados por auditorías científicas mundiales y el nuevo Atlas de Auroras Boreales y Australes: seleccionados por su oscuridad estelar, transparencia atmosférica, latitud magnética y nula contaminación lumínica.",
     landingFilterAll: "Todos los Enclaves",
     landingFilterStarlight: "Fundación Starlight",
     landingFilterDarkSky: "DarkSky International",
+    landingFilterAuroras: "Auroras Boreales & Australes",
     landingFilterRecom: "Astrofotografía & Miradores",
     landingTestimonialsBadge: "Comunidad Starlight",
     landingTestimonialsTitle: "Amantes del cielo que ya confían en StellaWay",
@@ -198,8 +200,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Landing Features (5 cards)
     landingFeature1Title: "Modo Luz Roja (Visión Nocturna)",
     landingFeature1Desc: "Preserva la adaptación retiniana a la oscuridad absoluta bajo cielos Bortle 1-4. Consulta mapas estelares y telescopios sin cegarte ni deslumbrar a otros observadores.",
-    landingFeature2Title: "Mapas Bortle Interactivos",
-    landingFeature2Desc: "Descubre los mejores lugares de cielo oscuro en el Arco Mediterráneo con mapas de contaminación lumínica en tiempo real.",
+    landingFeature2Title: "Los 3 Grandes Localizadores Mundiales",
+    landingFeature2Desc: "Accede a los 3 buscadores integrados: Certificaciones Starlight, Parques DarkSky y el nuevo Atlas Mundial de Auroras Boreales y Australes con más de 90 localizaciones e imágenes reales.",
     landingFeature3Title: "Eclipse Solar 2027",
     landingFeature3Desc: "Seguimiento en tiempo real del Gran Eclipse Total del 2 de agosto de 2027 en España. Rutas, campamentos y alertas.",
     landingFeature4Title: "Asistente IA Stella",
@@ -228,6 +230,16 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatDarkskyH4: "Protección de la biodiversidad nocturna y observación astronómica",
     landingCatDarkskySpotsLabel: "Red de protección:",
 
+    landingCatAurorasBadge: "Atlas Mundial de Auroras",
+    landingCatAurorasTitle: "Auroras Boreales & Australes",
+    landingCatAurorasOrg: "Redes de Observación y Turismo Polar Mundial",
+    landingCatAurorasDesc: "El 3.er gran buscador de StellaWay: catálogo global con más de 90 enclaves polares en ambos hemisferios para cazar las luces del norte y del sur con imágenes reales de alta luminosidad.",
+    landingCatAurorasH1: "Hemisferio Norte (Boreal): Noruega, Islandia, Suecia, Finlandia, Canadá, Alaska y Groenlandia",
+    landingCatAurorasH2: "Hemisferio Sur (Austral): Patagonia chilena y argentina, Tasmania, Nueva Zelanda y Antártida",
+    landingCatAurorasH3: "Segmentación por frecuencia: Núcleo auroral permanente, Frecuente, Ocasional y Expediciones",
+    landingCatAurorasH4: "Orientación magnética, ventanas de oscuridad estacional e imágenes reales sin oscuridad excesiva",
+    landingCatAurorasSpotsLabel: "Enclaves polares destacados:",
+
     landingCatAstroBadge: "Recomendado / Observatorios",
     landingCatAstroTitle: "Astrofotografía & Miradores",
     landingCatAstroOrg: "Seleccionados por Observatorios & Organismos Turísticos",
@@ -239,7 +251,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatAstroSpotsLabel: "Miradores clave:",
 
     landingDestSearchTitle: "Buscador y Ficha Detallada de Cada Destino",
-    landingDestSearchDesc: "Filtra por certificación oficial, índice de Bortle (1 a 4), altitud, orientación estelar y recomendaciones de equipo astronómico para tus escapadas.",
+    landingDestSearchDesc: "Filtra por certificación Starlight, DarkSky International y Atlas de Auroras con índice de Bortle, altitud, orientación estelar e imágenes reales.",
     landingDestSearchBtn: "Explorar Zonas",
 
     // Eclipse 2027 Spotlight
@@ -359,6 +371,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     welcomePaypalDesc: "Inicia sesión con tu cuenta de PayPal para autorizar el pago con protección completa al comprador.",
     welcomePaypalBtn: "Pagar con PayPal Express",
     welcomePaypalProcessing: "Conectando con PayPal...",
+    welcomeCancelSectionBadge: "DERECHO DE DESISTIMIENTO Y BAJA DIRECTA",
+    welcomeCancelSectionTitle: "Dar de baja la suscripción o prueba gratuita",
+    welcomeCancelSectionDesc: "Conforme a la normativa legal de protección de consumidores y usuarios (Real Decreto Legislativo 1/2007 y Directiva UE), puedes tramitar la baja o cancelación de la renovación de cualquier suscripción o prueba en cualquier momento de forma gratuita, inmediata y sin penalización.",
+    welcomeCancelBtn: "Dar de baja la suscripción",
+    welcomeCancelLegal: "Baja inmediata sin permanencia ni cobros futuros",
   },
 
   en: {
@@ -366,6 +383,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     dashboard: 'Eclipse Dashboard',
     spots: 'Find Starlight Spots',
     darksky: 'DarkSky Zones',
+    auroras: 'Northern & Southern Lights',
     events: 'Stellar Events',
     weather: 'Weather Forecast',
     assistant: 'Starlight AI Assistant',
@@ -485,8 +503,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
 
     // Assistant
     assistantTitle: 'Starlight AI Assistant (Stella)',
-    assistantWelcome: 'Hello! I am Stella, your astronomy assistant from StellaWay. I can guide you on telescopes, observing the Great 2026 Solar Eclipse, or astrophotography. How can I help you today?',
-    assistantPlaceholder: 'Type your astronomy question...',
+    assistantWelcome: 'Hello! I am Stella, your astronomy assistant from StellaWay. I can guide you on polar auroras (Northern & Southern Lights), telescopes, observing the Great 2026 Solar Eclipse, or astrophotography. How can I help you today?',
+    assistantPlaceholder: 'Ask about auroras, telescopes, or eclipses...',
     send: 'Send',
 
     // Modals
@@ -511,7 +529,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingHeroEclipseBadge: "🌑 Great Total Eclipse · August 2, 2027 · Spain",
     landingHeroTitle1: "The night sky",
     landingHeroTitle2: "in your pocket",
-    landingHeroDesc: "Certified Starlight and DarkSky International spots, Bortle maps, recommended astrophotography, and the century’s biggest celestial event — the 2027 Total Solar Eclipse — all in one app.",
+    landingHeroDesc: "The 3 major locators: Starlight Zones, DarkSky International and the Atlas of Northern & Southern Lights, Bortle maps, recommended astrophotography, and the 2027 Total Solar Eclipse — all in one app.",
     landingHeroBtnPrimary: "Get Access",
     landingHeroBtnSecondary: "See features ↓",
     landingCountdownTitle: "⏳ Countdown to Total Eclipse",
@@ -525,13 +543,14 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingFeaturesTitle: "Everything you need",
     landingFeaturesTitleSub: "to conquer the sky",
     landingFeaturesDesc: "From interactive maps to astronomical AI, StellaWay is your ultimate companion under the stars.",
-    landingCertifiedBadge: "International Standards of Celestial Quality",
-    landingCertifiedTitle: "Certified Areas & Dark Skies",
-    landingCertifiedSubtitle: "Finder for Starlight & DarkSky Certified Zones",
-    landingCertifiedDesc: "Explore locations validated by global scientific audits, chosen for pristine darkness, atmospheric transparency, and environmental protection.",
+    landingCertifiedBadge: "International Standards of Celestial Quality & Auroras",
+    landingCertifiedTitle: "Certified Zones, Dark Skies & Polar Auroras",
+    landingCertifiedSubtitle: "The 3 Major Locators: Starlight, DarkSky and Northern & Southern Lights",
+    landingCertifiedDesc: "Explore locations validated by global scientific audits and the new Aurora Borealis & Australis Atlas: chosen for pristine darkness, atmospheric transparency, magnetic latitude, and zero light pollution.",
     landingFilterAll: "All Spots",
     landingFilterStarlight: "Starlight Foundation",
     landingFilterDarkSky: "DarkSky International",
+    landingFilterAuroras: "Northern & Southern Lights",
     landingFilterRecom: "Astrophotography & Spots",
     landingTestimonialsBadge: "Starlight Community",
     landingTestimonialsTitle: "Sky lovers who already trust StellaWay",
@@ -542,8 +561,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Landing Features (5 cards)
     landingFeature1Title: "Red Light Mode (Night Vision)",
     landingFeature1Desc: "Preserves retinal dark adaptation under Bortle 1-4 skies. Check star maps and telescopes without dazzling yourself or fellow observers.",
-    landingFeature2Title: "Interactive Bortle Maps",
-    landingFeature2Desc: "Discover the best dark sky spots across the Mediterranean with real-time light pollution satellite maps.",
+    landingFeature2Title: "The 3 Major Global Locators",
+    landingFeature2Desc: "Access 3 integrated finders: Starlight Certifications, DarkSky International Parks, and the new Polar Auroras Atlas with 90+ locations and vivid photos.",
     landingFeature3Title: "Solar Eclipse 2027",
     landingFeature3Desc: "Real-time tracking of the Great Total Solar Eclipse of August 2, 2027 in Spain. Routes, camps, and weather alerts.",
     landingFeature4Title: "AI Stella Assistant",
@@ -572,6 +591,16 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatDarkskyH4: "Protection of nocturnal wildlife and astronomical observation",
     landingCatDarkskySpotsLabel: "Protection network:",
 
+    landingCatAurorasBadge: "World Aurora Atlas",
+    landingCatAurorasTitle: "Northern & Southern Lights",
+    landingCatAurorasOrg: "Global Polar Tourism & Meteorological Networks",
+    landingCatAurorasDesc: "The 3rd major StellaWay locator: a global catalog with over 90 high-latitude polar spots in both hemispheres to chase northern and southern lights with bright, authentic imagery.",
+    landingCatAurorasH1: "Northern Hemisphere (Boreal): Norway, Iceland, Sweden, Finland, Canada, Alaska and Greenland",
+    landingCatAurorasH2: "Southern Hemisphere (Austral): Chilean & Argentine Patagonia, Tasmania, New Zealand and Antarctica",
+    landingCatAurorasH3: "Frequency tier classification: Permanent Auroral Oval Core, Frequent, Occasional, and Expeditions",
+    landingCatAurorasH4: "Magnetic orientation, darkness seasonality windows, and vivid true photos without excessive gloom",
+    landingCatAurorasSpotsLabel: "Flagship polar locations:",
+
     landingCatAstroBadge: "Recommended / Observatories",
     landingCatAstroTitle: "Astrophotography & Viewpoints",
     landingCatAstroOrg: "Selected by Observatories & Tourism Boards",
@@ -583,7 +612,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatAstroSpotsLabel: "Key viewpoints:",
 
     landingDestSearchTitle: "Search Engine & Detailed Destination Sheets",
-    landingDestSearchDesc: "Filter by official certification, Bortle index (1 to 4), elevation, stellar orientation, and telescope gear tips for your getaways.",
+    landingDestSearchDesc: "Filter by Starlight certification, DarkSky International, and Polar Auroras Atlas with Bortle ratings, celestial orientation, and genuine photos for each spot.",
     landingDestSearchBtn: "Explore Zones",
 
     // Eclipse 2027 Spotlight
@@ -703,6 +732,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     welcomePaypalDesc: "Log in with your PayPal account to authorize the payment with full buyer protection.",
     welcomePaypalBtn: "Pay with PayPal Express",
     welcomePaypalProcessing: "Connecting to PayPal...",
+    welcomeCancelSectionBadge: "RIGHT OF WITHDRAWAL & DIRECT CANCELLATION",
+    welcomeCancelSectionTitle: "Cancel subscription or free trial",
+    welcomeCancelSectionDesc: "In accordance with consumer protection regulations (EU Directive & legal rights), you can cancel the renewal of any subscription or trial at any time free of charge, immediately, and with no penalty.",
+    welcomeCancelBtn: "Cancel subscription / Unsubscribe",
+    welcomeCancelLegal: "Immediate cancellation with no commitment or future charges",
   },
 
   fr: {
@@ -710,6 +744,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     dashboard: 'Tableau de Bord Éclipse 2027',
     spots: 'Trouver des Sites Starlight',
     darksky: 'Zones DarkSky',
+    auroras: 'Aurores Boréales & Australes',
     events: 'Événements Stellaires',
     weather: 'Prévisions Météo',
     assistant: 'Assistant IA Starlight',
@@ -829,8 +864,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
 
     // Assistant
     assistantTitle: 'Assistant Stellaire IA (Stella)',
-    assistantWelcome: "Bonjour ! Je suis Stella, votre assistante astronomique StellaWay. Je peux vous conseiller sur les télescopes, l'observation de la Grande Éclipse Solaire Totale 2027 ou l'astrophotographie. Comment puis-je vous aider ?",
-    assistantPlaceholder: 'Posez votre question astronomique...',
+    assistantWelcome: "Bonjour ! Je suis Stella, votre assistante astronomique StellaWay. Je peux vous conseiller sur les aurores boréales et australes, les télescopes, l'observation de la Grande Éclipse Solaire Totale 2027 ou l'astrophotographie. Comment puis-je vous aider ?",
+    assistantPlaceholder: 'Posez votre question sur les aurores, télescopes...',
     send: 'Envoyer',
 
     // Modals
@@ -855,7 +890,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingHeroEclipseBadge: "🌑 Grande Éclipse Totale · 2 Août 2027 · Espagne",
     landingHeroTitle1: "Le ciel nocturne",
     landingHeroTitle2: "dans votre poche",
-    landingHeroDesc: "Sites certifiés Starlight et DarkSky International, cartes Bortle, astrophotographie recommandée et le plus grand événement céleste du siècle — l’Éclipse Solaire Totale 2027 — réunis dans une seule application.",
+    landingHeroDesc: "Les 3 grands moteurs : Sites Starlight, DarkSky International et l'Atlas des Aurores Boréales & Australes, cartes Bortle, astrophotographie et Éclipse Solaire 2027 — réunis dans une seule application.",
     landingHeroBtnPrimary: "J’en profite",
     landingHeroBtnSecondary: "Voir fonctions ↓",
     landingCountdownTitle: "⏳ Compte à rebours avant l’Éclipse Totale",
@@ -869,13 +904,14 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingFeaturesTitle: "Tout ce dont vous avez besoin",
     landingFeaturesTitleSub: "pour conquérir le ciel",
     landingFeaturesDesc: "Des cartes interactives à l’intelligence artificielle astronomique, StellaWay est votre compagnon ultime sous les étoiles.",
-    landingCertifiedBadge: "Normes Internationales de Qualité Céleste",
-    landingCertifiedTitle: "Zones Certifiées & Ciels Étoilés",
-    landingCertifiedSubtitle: "Moteur de Recherche de Zones Starlight & DarkSky",
-    landingCertifiedDesc: "Explorez des sites validés par des audits scientifiques mondiaux et choisis pour leur noirceur céleste, transparence et protection écologique.",
+    landingCertifiedBadge: "Normes Internationales de Qualité Céleste & Aurores",
+    landingCertifiedTitle: "Zones Certifiées, Ciels Étoilés & Aurores Polaires",
+    landingCertifiedSubtitle: "Les 3 Grands Moteurs : Starlight, DarkSky et Aurores Boréales & Australes",
+    landingCertifiedDesc: "Explorez des sites validés par des audits scientifiques mondiaux et le nouvel Atlas des Aurores : noirceur céleste, transparence et latitude polaire.",
     landingFilterAll: "Tous les Sites",
     landingFilterStarlight: "Fondation Starlight",
     landingFilterDarkSky: "DarkSky International",
+    landingFilterAuroras: "Aurores Boréales & Australes",
     landingFilterRecom: "Astrophotographie & Panoramas",
     landingTestimonialsBadge: "Communauté Starlight",
     landingTestimonialsTitle: "Passionnés du ciel qui font déjà confiance à StellaWay",
@@ -886,8 +922,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Landing Features (5 cards)
     landingFeature1Title: "Mode Lumière Rouge (Vision Nocturne)",
     landingFeature1Desc: "Préserve l’adaptation rétinienne à l’obscurité profonde sous ciels Bortle 1-4. Consultez cartes stellaires et télescopes sans éblouir.",
-    landingFeature2Title: "Cartes Bortle Interactives",
-    landingFeature2Desc: "Découvrez les meilleurs sites de ciel pur en Méditerranée grâce aux cartes de pollution lumineuse par satellite en temps réel.",
+    landingFeature2Title: "Les 3 Grands Moteurs Mondiaux",
+    landingFeature2Desc: "Accédez aux 3 moteurs intégrés : Certifications Starlight, Parcs DarkSky et le nouvel Atlas des Aurores avec plus de 90 sites et photos lumineuses.",
     landingFeature3Title: "Éclipse Solaire 2027",
     landingFeature3Desc: "Suivi en direct de la Grande Éclipse Totale du 2 août 2027 en Espagne. Itinéraires, camps d'observation et alertes météo.",
     landingFeature4Title: "Assistante IA Stella",
@@ -916,6 +952,16 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatDarkskyH4: "Protection de la biodiversité nocturne et recherche astronomique",
     landingCatDarkskySpotsLabel: "Réseau de protection :",
 
+    landingCatAurorasBadge: "Atlas Mondial des Aurores",
+    landingCatAurorasTitle: "Aurores Boréales & Australes",
+    landingCatAurorasOrg: "Réseaux d'Observation et Tourisme Polaire",
+    landingCatAurorasDesc: "Le 3e grand moteur de StellaWay : plus de 90 zones polaires des deux hémisphères avec des images réelles et lumineuses.",
+    landingCatAurorasH1: "Hémisphère Nord : Norvège, Islande, Suède, Finlande, Canada, Alaska et Groenland",
+    landingCatAurorasH2: "Hémisphère Sud : Patagonie, Tasmanie, Nouvelle-Zélande et Antarctique",
+    landingCatAurorasH3: "Niveaux de fréquence : Ovale auroral permanent, Fréquent, Occasionnel et Expéditions",
+    landingCatAurorasH4: "Orientation géomagnétique, saisons d'obscurité et photos réalistes haute luminosité",
+    landingCatAurorasSpotsLabel: "Sites polaires emblématiques :",
+
     landingCatAstroBadge: "Recommandé / Observatoires",
     landingCatAstroTitle: "Astrophotographie & Belvédères",
     landingCatAstroOrg: "Sélectionné par les Observatoires & Offices de Tourisme",
@@ -927,7 +973,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatAstroSpotsLabel: "Belvédères clés :",
 
     landingDestSearchTitle: "Moteur de Recherche et Fiches Détaillées de Destination",
-    landingDestSearchDesc: "Filtrez par certification officielle, indice Bortle (1 à 4), altitude, orientation céleste et équipement astronomique recommandé.",
+    landingDestSearchDesc: "Filtrez par certification Starlight, DarkSky International et Atlas des Aurores avec Bortle, altitude et photos réelles.",
     landingDestSearchBtn: "Explorer les Zones",
 
     // Eclipse 2027 Spotlight
@@ -1047,6 +1093,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     welcomePaypalDesc: "Connectez-vous à PayPal pour autoriser le paiement avec protection intégrale des achats.",
     welcomePaypalBtn: "Payer avec PayPal Express",
     welcomePaypalProcessing: "Connexion à PayPal...",
+    welcomeCancelSectionBadge: "DROIT DE RÉTRACTATION & RÉSILIATION DIRECTE",
+    welcomeCancelSectionTitle: "Résilier l'abonnement ou l'essai gratuit",
+    welcomeCancelSectionDesc: "Conformément à la réglementation sur la protection des consommateurs (Directive UE), vous pouvez résilier votre abonnement ou période d'essai à tout moment, sans frais, immédiatement et sans pénalité.",
+    welcomeCancelBtn: "Résilier l'abonnement",
+    welcomeCancelLegal: "Résiliation immédiate sans engagement ni frais futurs",
   },
 
   pt: {
@@ -1054,6 +1105,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     dashboard: 'Painel do Eclipse 2027',
     spots: 'Encontrar Zonas Starlight',
     darksky: 'Zonas DarkSky',
+    auroras: 'Auroras Boreais & Austrais',
     events: 'Eventos Estelares',
     weather: 'Previsão do Tempo',
     assistant: 'Assistente IA Starlight',
@@ -1173,8 +1225,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
 
     // Assistant
     assistantTitle: 'Assistente Estelar IA (Stella)',
-    assistantWelcome: 'Olá! Sou a Stella, sua assistente astronômica da StellaWay. Posso ajudar com telescópios, o Grande Eclipse Solar Total 2027 ou astrofotografia. Como posso ajudar hoje?',
-    assistantPlaceholder: 'Digite sua dúvida astronômica...',
+    assistantWelcome: 'Olá! Sou a Stella, sua assistente astronômica da StellaWay. Posso ajudar com auroras boreais e austrais, telescópios, o Grande Eclipse Solar Total 2027 ou astrofotografia. Como posso ajudar hoje?',
+    assistantPlaceholder: 'Pergunte sobre auroras, telescópios ou eclipses...',
     send: 'Enviar',
 
     // Modals
@@ -1199,7 +1251,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingHeroEclipseBadge: "🌑 Grande Eclipse Total · 2 de Agosto de 2027 · Espanha",
     landingHeroTitle1: "O céu noturno",
     landingHeroTitle2: "no seu bolso",
-    landingHeroDesc: "Zonas certificadas Starlight e DarkSky International, mapas Bortle, astrofotografia recomendada e o maior evento celeste do século — o Eclipse Solar Total 2027 — tudo em um só aplicativo.",
+    landingHeroDesc: "Os 3 grandes buscadores: Zonas Starlight, DarkSky International e o Atlas de Auroras Boreais & Austrais, mapas Bortle, astrofotografia recomendada e o Eclipse Total Solar 2027 — tudo em um só app.",
     landingHeroBtnPrimary: "Eu Quero",
     landingHeroBtnSecondary: "Ver recursos ↓",
     landingCountdownTitle: "⏳ Contagem regressiva para o Eclipse Total",
@@ -1213,13 +1265,14 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingFeaturesTitle: "Tudo o que você precisa",
     landingFeaturesTitleSub: "para conquistar o céu",
     landingFeaturesDesc: "De mapas interativos à inteligência artificial astronômica, o StellaWay é o seu companheiro definitivo sob as estrelas.",
-    landingCertifiedBadge: "Padrões Internacionais de Qualidade Celeste",
-    landingCertifiedTitle: "Zonas Certificadas & Céus Escuros",
-    landingCertifiedSubtitle: "Buscador de Zonas Starlight e DarkSky",
-    landingCertifiedDesc: "Explore locais certificados por auditorias científicas mundiais, escolhidos por escuridão estelar, transparência e proteção ambiental.",
+    landingCertifiedBadge: "Padrões Internacionais de Qualidade Celeste & Auroras",
+    landingCertifiedTitle: "Zonas Certificadas, Céus Escuros & Auroras Polares",
+    landingCertifiedSubtitle: "Os 3 Grandes Buscadores: Starlight, DarkSky e Auroras Boreais & Austrais",
+    landingCertifiedDesc: "Explore locais certificados por auditorias científicas mundiais e o novo Atlas de Auroras: escolhidos por escuridão estelar, transparência e latitude polar.",
     landingFilterAll: "Todos os Pontos",
     landingFilterStarlight: "Fundação Starlight",
     landingFilterDarkSky: "DarkSky International",
+    landingFilterAuroras: "Auroras Boreais & Austrais",
     landingFilterRecom: "Astrofotografia & Mirantes",
     landingTestimonialsBadge: "Comunidade Starlight",
     landingTestimonialsTitle: "Amantes do céu que já confiam no StellaWay",
@@ -1230,8 +1283,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Landing Features (5 cards)
     landingFeature1Title: "Modo Luz Vermelha (Visão Noturna)",
     landingFeature1Desc: "Preserva a adaptação da retina à escuridão absoluta em céus Bortle 1-4. Consulte mapas estrelares e telescópios sem ofuscamento.",
-    landingFeature2Title: "Mapas Bortle Interativos",
-    landingFeature2Desc: "Descubra os melhores locais de céu escuro no Mediterrâneo com mapas de poluição luminosa por satélite em tempo real.",
+    landingFeature2Title: "Os 3 Grandes Buscadores Globais",
+    landingFeature2Desc: "Acesse os 3 buscadores integrados: Certificações Starlight, Parques DarkSky e o novo Atlas de Auroras com mais de 90 locais e fotos reais luminosas.",
     landingFeature3Title: "Eclipse Solar 2027",
     landingFeature3Desc: "Acompanhamento em tempo real do Grande Eclipse Total Solar de 2 de agosto de 2027 em Espanha. Rotas, acampamentos e alertas meteorológicos.",
     landingFeature4Title: "Assistente IA Stella",
@@ -1260,6 +1313,16 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatDarkskyH4: "Proteção da biodiversidade noturna e observação astronômica",
     landingCatDarkskySpotsLabel: "Rede de proteção:",
 
+    landingCatAurorasBadge: "Atlas Mundial de Auroras",
+    landingCatAurorasTitle: "Auroras Boreais & Austrais",
+    landingCatAurorasOrg: "Redes Globais de Turismo Polar e Observação",
+    landingCatAurorasDesc: "O 3º grande localizador do StellaWay: catálogo global com mais de 90 enclaves polares nos dois hemisférios com fotos reais e luminosas.",
+    landingCatAurorasH1: "Hemisfério Norte: Noruega, Islândia, Suécia, Finlândia, Canadá, Alasca e Groenlândia",
+    landingCatAurorasH2: "Hemisfério Sul: Patagônia chilena e argentina, Tasmânia, Nova Zelândia e Antártida",
+    landingCatAurorasH3: "Classificação por frequência: Núcleo auroral permanente, Frequente, Ocasional e Expedições",
+    landingCatAurorasH4: "Orientação magnética, períodos de escuridão e imagens reais de alta luminosidade",
+    landingCatAurorasSpotsLabel: "Locais polares emblemáticos:",
+
     landingCatAstroBadge: "Recomendado / Observatórios",
     landingCatAstroTitle: "Astrofotografia & Mirantes",
     landingCatAstroOrg: "Selecionados por Observatórios & Órgãos de Turismo",
@@ -1271,7 +1334,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatAstroSpotsLabel: "Mirantes principais:",
 
     landingDestSearchTitle: "Buscador e Ficha Detalhada de Cada Destino",
-    landingDestSearchDesc: "Filtre por certificação oficial, índice Bortle (1 a 4), altitude, orientação estelar e recomendações de equipamentos.",
+    landingDestSearchDesc: "Filtre por certificação Starlight, DarkSky International e Atlas de Auroras com índice Bortle, altitude e imagens reais.",
     landingDestSearchBtn: "Explorar Zonas",
 
     // Eclipse 2027 Spotlight
@@ -1391,6 +1454,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     welcomePaypalDesc: "Faça login com sua conta do PayPal para autorizar o pagamento com proteção ao comprador.",
     welcomePaypalBtn: "Pagar com PayPal Express",
     welcomePaypalProcessing: "Conectando ao PayPal...",
+    welcomeCancelSectionBadge: "DIREITO DE LIVRE RESOLUÇÃO & CANCELAMENTO DIRETO",
+    welcomeCancelSectionTitle: "Cancelar assinatura ou teste gratuito",
+    welcomeCancelSectionDesc: "De acordo com as normas de proteção ao consumidor (Diretiva da UE), você pode cancelar a renovação de qualquer assinatura ou teste a qualquer momento, gratuitamente, imediatamente e sem penalidades.",
+    welcomeCancelBtn: "Cancelar assinatura",
+    welcomeCancelLegal: "Cancelamento imediato sem fidelidade nem cobranças futuras",
   },
 
   it: {
@@ -1398,6 +1466,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     dashboard: "Dashboard Eclisse 2027",
     spots: 'Trova Zone Starlight',
     darksky: 'Zone DarkSky',
+    auroras: 'Aurore Boreali & Australi',
     events: 'Eventi Stellari',
     weather: 'Previsioni Meteo',
     assistant: 'Assistente IA Starlight',
@@ -1517,8 +1586,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
 
     // Assistant
     assistantTitle: 'Assistente Stellare IA (Stella)',
-    assistantWelcome: "Ciao! Sono Stella, la tua assistente astronomica di StellaWay. Posso guidarti su telescopi, sull'osservazione della Grande Eclisse Solare Totale 2027 o sull'astrofotografia. Come posso aiutarti oggi?",
-    assistantPlaceholder: 'Scrivi la tua domanda astronomica...',
+    assistantWelcome: "Ciao! Sono Stella, la tua assistente astronomica di StellaWay. Posso guidarti su aurore boreali e australi, telescopi, sull'osservazione della Grande Eclisse Solare Totale 2027 o sull'astrofotografia. Come posso aiutarti oggi?",
+    assistantPlaceholder: 'Chiedi su aurore, telescopi o eclissi...',
     send: 'Invia',
 
     // Modals
@@ -1543,7 +1612,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingHeroEclipseBadge: "🌑 Grande Eclissi Totale · 2 Agosto 2027 · Spagna",
     landingHeroTitle1: "Il cielo notturno",
     landingHeroTitle2: "nella tua tasca",
-    landingHeroDesc: "Siti certificati Starlight e DarkSky International, mappe Bortle, astrofotografia consigliata e il più grande evento celeste del secolo — l’Eclissi Solare Totale 2027 — tutto in un’unica app.",
+    landingHeroDesc: "I 3 grandi motori: Aree Starlight, DarkSky International e l'Atlante delle Aurore Boreali & Australi, mappe Bortle, astrofotografia ed Eclissi Solare Totale 2027 — tutto in un’unica app.",
     landingHeroBtnPrimary: "Lo Voglio",
     landingHeroBtnSecondary: "Vedi funzioni ↓",
     landingCountdownTitle: "⏳ Conto alla rovescia per l’Eclissi Totale",
@@ -1557,13 +1626,14 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingFeaturesTitle: "Tutto ciò di cui hai bisogno",
     landingFeaturesTitleSub: "per conquistare il cielo",
     landingFeaturesDesc: "Dalle mappe interattive all’intelligenza artificiale astronomica, StellaWay è il tuo compagno ideale sotto le stelle.",
-    landingCertifiedBadge: "Standard Internazionali di Qualità Celeste",
-    landingCertifiedTitle: "Aree Certificate & Cieli Bui",
-    landingCertifiedSubtitle: "Motore di Ricerca per Zone Starlight e DarkSky",
-    landingCertifiedDesc: "Esplora luoghi convalidati da verifiche scientifiche globali, selezionati per oscurità, trasparenza atmosferica e tutela ambientale.",
+    landingCertifiedBadge: "Standard Internazionali di Qualità Celeste & Aurore",
+    landingCertifiedTitle: "Aree Certificate, Cieli Bui & Aurore Polari",
+    landingCertifiedSubtitle: "I 3 Grandi Motori di Ricerca: Starlight, DarkSky e Aurore Boreali & Australi",
+    landingCertifiedDesc: "Esplora luoghi convalidati da verifiche scientifiche globali e il nuovo Atlante delle Aurore: oscurità, trasparenza atmosferica e latitudine polare.",
     landingFilterAll: "Tutti i Punti",
     landingFilterStarlight: "Fondazione Starlight",
     landingFilterDarkSky: "DarkSky International",
+    landingFilterAuroras: "Aurore Boreali & Australi",
     landingFilterRecom: "Astrofotografia & Panorami",
     landingTestimonialsBadge: "Community Starlight",
     landingTestimonialsTitle: "Appassionati del cielo che si affidano già a StellaWay",
@@ -1574,8 +1644,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Landing Features (5 cards)
     landingFeature1Title: "Modalità Luce Rossa (Visione Notturna)",
     landingFeature1Desc: "Preserva l'adattamento retinico al buio assoluto sotto cieli Bortle 1-4. Consulta mappe stellari e telescopi senza abbagliare.",
-    landingFeature2Title: "Mappe Bortle Interattive",
-    landingFeature2Desc: "Scopri i migliori cieli bui del Mediterraneo con mappe dell'inquinamento luminoso satellitari in tempo reale.",
+    landingFeature2Title: "I 3 Grandi Motori Globali",
+    landingFeature2Desc: "Accedi ai 3 motori integrati: Certificazioni Starlight, Parchi DarkSky e il nuovo Atlante delle Aurore con oltre 90 siti e foto luminose.",
     landingFeature3Title: "Eclisse Solare 2027",
     landingFeature3Desc: "Monitoraggio in tempo reale della Grande Eclisse Totale del 2 agosto 2027 in Spagna. Percorsi, accampamenti e allerte meteo.",
     landingFeature4Title: "Assistente IA Stella",
@@ -1604,6 +1674,16 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatDarkskyH4: "Tutela della fauna notturna e ricerca astronomica",
     landingCatDarkskySpotsLabel: "Rete di tutela:",
 
+    landingCatAurorasBadge: "Atlante Mondiale delle Aurore",
+    landingCatAurorasTitle: "Aurore Boreali & Australi",
+    landingCatAurorasOrg: "Reti di Osservazione e Turismo Polare Mondiale",
+    landingCatAurorasDesc: "Il 3º grande localizzatore di StellaWay: oltre 90 aree polari in entrambi gli emisferi con foto reali e luminose.",
+    landingCatAurorasH1: "Emisfero Nord: Norvegia, Islanda, Svezia, Finlandia, Canada, Alaska e Groenlandia",
+    landingCatAurorasH2: "Emisfero Sud: Patagonia cilena e argentina, Tasmania, Nuova Zelanda e Antartide",
+    landingCatAurorasH3: "Frequenza: Ovale aurorale permanente, Frequente, Occasionale e Spedizioni",
+    landingCatAurorasH4: "Orientamento geomagnetico, stagioni di buio e foto autentiche non scure",
+    landingCatAurorasSpotsLabel: "Luoghi polari emblematici:",
+
     landingCatAstroBadge: "Consigliato / Osservatori",
     landingCatAstroTitle: "Astrofotografia & Belvedere",
     landingCatAstroOrg: "Selezionati da Osservatori & Enti Turistici",
@@ -1615,7 +1695,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatAstroSpotsLabel: "Belvedere principali:",
 
     landingDestSearchTitle: "Ricerca e Schede Dettagliate di Ogni Destinazione",
-    landingDestSearchDesc: "Filtra per certificazione ufficiale, indice Bortle (da 1 a 4), altitudine, orientamento stellare e attrezzatura consigliata.",
+    landingDestSearchDesc: "Filtra per certificazione Starlight, DarkSky International e Atlante delle Aurore con Bortle, altitudine e foto reali.",
     landingDestSearchBtn: "Esplora le Zone",
 
     // Eclipse 2027 Spotlight
@@ -1735,6 +1815,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     welcomePaypalDesc: "Accedi al tuo conto PayPal per autorizzare il pagamento con protezione completa acquirenti.",
     welcomePaypalBtn: "Paga con PayPal Express",
     welcomePaypalProcessing: "Connessione a PayPal...",
+    welcomeCancelSectionBadge: "DIRITTO DI RECESSO & DISDETTA DIRETTA",
+    welcomeCancelSectionTitle: "Disdire l'abbonamento o la prova gratuita",
+    welcomeCancelSectionDesc: "In conformità con la normativa di tutela dei consumatori (Direttiva UE), puoi disdire o annullare il rinnovo di qualsiasi abbonamento o prova in qualsiasi momento, gratuitamente, con effetto immediato e senza penali.",
+    welcomeCancelBtn: "Disdire l'abbonamento",
+    welcomeCancelLegal: "Disdetta immediata senza vincoli né addebiti futuri",
   },
 
   de: {
@@ -1742,6 +1827,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     dashboard: 'Sonnenfinsternis 2027 Dashboard',
     spots: 'Starlight-Zonen Finden',
     darksky: 'DarkSky-Zonen',
+    auroras: 'Polarlichter (Borealis & Australis)',
     events: 'Sternenereignisse',
     weather: 'Wettervorhersage',
     assistant: 'Starlight KI-Assistent',
@@ -1861,8 +1947,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
 
     // Assistant
     assistantTitle: 'Astronomische KI-Assistentin (Stella)',
-    assistantWelcome: 'Hallo! Ich bin Stella, deine astronomische Assistentin von StellaWay. Ich kann dir bei Teleskopen, der Beobachtung der Großen Totalen Sonnenfinsternis 2027 oder Astrofotografie helfen. Wie kann ich dir heute helfen?',
-    assistantPlaceholder: 'Stelle deine astronomische Frage...',
+    assistantWelcome: 'Hallo! Ich bin Stella, deine astronomische Assistentin von StellaWay. Ich kann dir bei Polarlichtern (Nord- & Südlichtern), Teleskopen, der Beobachtung der Sonnenfinsternis 2026/2027 oder Astrofotografie helfen. Wie kann ich dir heute helfen?',
+    assistantPlaceholder: 'Frage zu Polarlichtern, Teleskopen, Finsternissen...',
     send: 'Senden',
 
     // Modals
@@ -1887,7 +1973,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingHeroEclipseBadge: "🌑 Große Totale Sonnenfinsternis · 2. August 2027 · Spanien",
     landingHeroTitle1: "Der Nachthimmel",
     landingHeroTitle2: "in deiner Tasche",
-    landingHeroDesc: "Zertifizierte Starlight- und DarkSky-Zonen, Bortle-Karten, empfohlene Astrofotografie und das größte Himmelsereignis des Jahrhunderts — die totale Sonnenfinsternis 2027 — alles in einer App.",
+    landingHeroDesc: "Die 3 großen Suchportale: Starlight-Zonen, DarkSky International und der Atlas für Nord- & Südlichter, Bortle-Karten, Astrofotografie und die Sonnenfinsternis 2027 — alles in einer App.",
     landingHeroBtnPrimary: "Jetzt Sichern",
     landingHeroBtnSecondary: "Funktionen entdecken ↓",
     landingCountdownTitle: "⏳ Countdown zur totalen Sonnenfinsternis",
@@ -1901,13 +1987,14 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingFeaturesTitle: "Alles was du brauchst",
     landingFeaturesTitleSub: "um den Himmel zu erobern",
     landingFeaturesDesc: "Von interaktiven Karten bis hin zu astronomischer KI — StellaWay ist dein ultimativer Begleiter unter den Sternen.",
-    landingCertifiedBadge: "Internationale Standards für Himmelsqualität",
-    landingCertifiedTitle: "Zertifizierte Zonen & Dunkle Himmel",
-    landingCertifiedSubtitle: "Suchportal für Starlight- & DarkSky-Zonen",
-    landingCertifiedDesc: "Erkunde Standorte, die durch weltweite wissenschaftliche Audits geprüft und für Dunkelheit, atmosphärische Transparenz und Naturschutz ausgewählt wurden.",
+    landingCertifiedBadge: "Internationale Standards für Himmelsqualität & Polarlichter",
+    landingCertifiedTitle: "Zertifizierte Zonen, Dunkle Himmel & Polarlichter",
+    landingCertifiedSubtitle: "Die 3 großen Suchportale: Starlight, DarkSky & Polarlicht-Atlas",
+    landingCertifiedDesc: "Erkunde Standorte, die durch weltweite wissenschaftliche Audits geprüft wurden, und den neuen Polarlicht-Atlas für Nord- und Südlichter mit nativer Brillanz.",
     landingFilterAll: "Alle Standorte",
     landingFilterStarlight: "Starlight Stiftung",
     landingFilterDarkSky: "DarkSky International",
+    landingFilterAuroras: "Nord- & Südlichter (Polarlichter)",
     landingFilterRecom: "Astrofotografie & Aussichtspunkte",
     landingTestimonialsBadge: "Starlight Gemeinschaft",
     landingTestimonialsTitle: "Sternenbegeisterte, die bereits auf StellaWay vertrauen",
@@ -1918,8 +2005,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     // Landing Features (5 cards)
     landingFeature1Title: "Rotlichtmodus (Nachtsicht)",
     landingFeature1Desc: "Erhält die Dunkeladaption der Netzhaut unter Bortle 1-4 Himmeln. Sternkarten und Teleskope bedienen, ohne sich oder andere zu blenden.",
-    landingFeature2Title: "Interaktive Bortle-Karten",
-    landingFeature2Desc: "Entdecke die dunkelsten Orte im Mittelmeerraum mit Echtzeit-Satellitenkarten zur Lichtverschmutzung.",
+    landingFeature2Title: "Die 3 großen globalen Suchportale",
+    landingFeature2Desc: "Zugang zu den 3 integrierten Findern: Starlight-Zertifizierungen, DarkSky-Parks und der neue Polarlicht-Atlas mit über 90 Standorten und echten Bildern.",
     landingFeature3Title: "Sonnenfinsternis 2027",
     landingFeature3Desc: "Echtzeit-Tracking der Großen Totalen Sonnenfinsternis vom 2. August 2027 in Spanien. Routen, Beobachtungscamps und Wetterwarnungen.",
     landingFeature4Title: "KI-Assistentin Stella",
@@ -1948,6 +2035,16 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatDarkskyH4: "Schutz der nachtaktiven Tierwelt und astronomische Forschung",
     landingCatDarkskySpotsLabel: "Schutznetzwerk:",
 
+    landingCatAurorasBadge: "Weltweiter Polarlicht-Atlas",
+    landingCatAurorasTitle: "Nordlichter & Südlichter",
+    landingCatAurorasOrg: "Globale Polartourismus- und Wetterbeobachtungsnetzwerke",
+    landingCatAurorasDesc: "Der 3. große Finder von StellaWay: weltweiter Katalog mit über 90 Polarlichtzonen in beiden Hemisphären mit hellen Echtfotos.",
+    landingCatAurorasH1: "Nordhalbkugel: Norwegen, Island, Schweden, Finnland, Kanada, Alaska und Grönland",
+    landingCatAurorasH2: "Südhalbkugel: Patagonien, Tasmanien, Neuseeland und Antarktis",
+    landingCatAurorasH3: "Frequenz-Einteilung: Permanenter Polarlicht-Ovalkern, Häufig, Gelegentlich und Expeditionen",
+    landingCatAurorasH4: "Magnetische Orientierung, Dunkelheitsfenster und brillante Echtbilder",
+    landingCatAurorasSpotsLabel: "Herausragende Polarorte:",
+
     landingCatAstroBadge: "Empfohlen / Observatorien",
     landingCatAstroTitle: "Astrofotografie & Aussichtspunkte",
     landingCatAstroOrg: "Ausgewählt von Observatorien & Tourismusverbänden",
@@ -1959,7 +2056,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingCatAstroSpotsLabel: "Wichtige Aussichtspunkte:",
 
     landingDestSearchTitle: "Suchmaschine & Detaillierte Steckbriefe für jedes Ziel",
-    landingDestSearchDesc: "Filtere nach offizieller Zertifizierung, Bortle-Index (1 bis 4), Höhe, Himmelsausrichtung und Ausrüstungsempfehlungen.",
+    landingDestSearchDesc: "Filtere nach Starlight, DarkSky International und Polarlicht-Atlas mit Bortle-Index, Höhe, Ausrichtung und echten Fotos.",
     landingDestSearchBtn: "Gebiete Erkunden",
 
     // Eclipse 2027 Spotlight
@@ -2079,5 +2176,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     welcomePaypalDesc: "Melde dich mit deinem PayPal-Konto an, um die Zahlung mit Käuferschutz zu autorisieren.",
     welcomePaypalBtn: "Mit PayPal Express bezahlen",
     welcomePaypalProcessing: "Verbindung zu PayPal...",
+    welcomeCancelSectionBadge: "WIDERRUFSRECHT & DIREKTE KÜNDIGUNG",
+    welcomeCancelSectionTitle: "Abonnement oder kostenlose Testphase kündigen",
+    welcomeCancelSectionDesc: "Gemäß den Verbraucherschutzrichtlinien (EU-Richtlinie) können Sie die Verlängerung von Abonnements oder Testphasen jederzeit kostenlos, sofort und ohne Fristen kündigen.",
+    welcomeCancelBtn: "Abonnement kündigen",
+    welcomeCancelLegal: "Sofortige Kündigung ohne Bindung oder zukünftige Kosten",
   },
 };

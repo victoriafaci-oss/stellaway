@@ -398,11 +398,93 @@ En **StellaWay** tienes disponible el catálogo con las principales zonas certif
 *Nota:* Puedes explorar todas estas zonas en la pestaña **"DarkSky Int."** del menú de navegación, con cálculo de distancias GPS, fotos diurnas de los parques y fichas técnicas completas.`;
   }
 
+  // 9c. AURORAS BOREALES Y AUSTRALES
+  if (q.includes('aurora') || q.includes('auroras') || q.includes('boreal') || q.includes('boreales') || q.includes('austral') || q.includes('australes') || q.includes('northern lights') || q.includes('southern lights') || q.includes('polarlicht') || q.includes('polarlichter') || q.includes('tromso') || q.includes('abisko') || q.includes('rakiura') || q.includes('fairbanks') || q.includes('ushuaia') || q.includes('kp') || q.includes('geomagnet')) {
+    if (isGerman) {
+      return `✨ **Atlas der Polarlichter (Nord- und Südlichter) in StellaWay** 🌌
+
+In **StellaWay** steht dir das dritte weltweite Suchportal zur Verfügung, das der Beobachtung von Polarlichtern gewidmet ist:
+
+1. **Nordhalbkugel (Nordlichter / Aurora Borealis):**
+   - **Norwegen:** *Tromsø / Kvaløya*, *Alta*, *Senja*, *Lyngen-Alpen*, *Lofoten-Inseln*, *Vesterålen*, *Nordkap* und *Spitzbergen (Svalbard)* (mit Tagespolarlichtern in der Polarnacht).
+   - **Schweden:** *Abisko* (das berühmte „Blaue Loch“ mit mikroklimatisch klarem Himmel) und *Kiruna*.
+   - **Finnland:** *Inari*, *Ivalo*, *Saariselkä*, *Utsjoki* und *Rovaniemi* (am Polarkreis).
+   - **Island:** *Þingvellir-Nationalpark*, *Snæfellsnes / Kirkjufell*, *Reykjanes*, *Vík* und *Akureyri*.
+   - **Grönland:** *Kangerlussuaq* (>300 klare Nächte/Jahr) und *Ilulissat* (Disko-Bucht).
+   - **Kanada & Alaska:** *Yellowknife*, *Whitehorse (Yukon)*, *Fairbanks* und *Chena Hot Springs*.
+
+2. **Südhalbkugel (Südlichter / Aurora Australis):**
+   - **Tasmanien (Australien):** *Bruny Island / The Neck*, *Cockle Creek* und *kunanyi / Mount Wellington*.
+   - **Neuseeland:** *Rakiura / Stewart Island* (Dark Sky Sanctuary) und *Aoraki Mackenzie / Lake Tekapo*.
+   - **Südamerika:** *Ushuaia / Feuerland* (Argentinien) und *Puerto Williams* (Chile).
+
+3. **Wissenschaftliche Beobachtungskriterien:**
+   - **Kp-Index:** Kp 2–3 reicht im Polaroval; Kp 5–7+ (geomagnetischer Sturm) für mittlere Breiten.
+   - **Magnetfeld Bz:** Entscheidend ist ein **negativer Bz-Wert (Südausrichtung)**, der Sonnenwindpartikeln den Eintritt in die irdische Magnetosphäre ermöglicht.
+   - **Kamera-Tipps:** Blende f/1.4–f/2.8, Belichtungszeit 1–5 Sekunden (um tanzende Vorhänge scharf einzufrieren), ISO 1600–6400.
+
+*Alle Orte mit GPS-Routen, Kp-Prognosen und Fotos findest du im Reiter **„Auroras“** in StellaWay.*`;
+    }
+
+    if (isEnglish) {
+      return `✨ **Worldwide Aurora Atlas (Northern & Southern Lights) in StellaWay** 🌌
+
+In **StellaWay**, you have access to the 3rd integrated global locator dedicated to observing Polar Auroras:
+
+1. **Northern Hemisphere (Aurora Borealis / Northern Lights):**
+   - **Norway:** *Tromsø / Kvaløya*, *Alta*, *Senja*, *Lyngen Alps*, *Lofoten Islands (Reine, Hamnøy)*, *Vesterålen*, *North Cape*, and extreme *Svalbard* (daytime auroras during polar night).
+   - **Sweden:** *Abisko National Park* (the famed "Blue Hole" microclimate with maximum clear sky probability) and *Kiruna*.
+   - **Finland:** *Inari*, *Ivalo*, *Saariselkä*, *Utsjoki*, and *Rovaniemi* (at the Arctic Circle).
+   - **Iceland:** *Þingvellir*, *Snæfellsnes / Kirkjufell*, *Reykjanes*, *Vík*, and *Akureyri*.
+   - **Greenland:** *Kangerlussuaq* (>300 clear nights/year) and *Ilulissat* (icebergs in Disko Bay).
+   - **Canada & Alaska:** *Yellowknife* (aurora capital with teepee villages), *Yukon (Whitehorse)*, *Fairbanks*, and *Chena Hot Springs*.
+
+2. **Southern Hemisphere (Aurora Australis / Southern Lights):**
+   - **Tasmania (Australia):** *Bruny Island / The Neck*, *Cockle Creek* (southernmost drivable point), and *Mount Wellington*.
+   - **New Zealand:** *Rakiura / Stewart Island* (International Dark Sky Sanctuary), *Lake Tekapo / Aoraki Mackenzie*, and *The Catlins*.
+   - **Patagonia:** *Ushuaia* (Beagle Channel, Argentina) and *Puerto Williams / Navarino Island* (Chile).
+
+3. **Key Observing & Astrophotography Metrics:**
+   - **Kp Index:** Kp 2-3 is sufficient inside the auroral oval; Kp 5+ (geomagnetic storm G1-G5) reaches mid-latitudes.
+   - **Bz Component:** Crucial interplanetary magnetic field orientation — a **negative/southward Bz** connects directly with Earth's magnetosphere, allowing solar wind particles to enter.
+   - **Camera Settings:** Fast wide lens (f/1.4 to f/2.8), shutter speed between 1s and 5s (to freeze moving coronal rays without blur), ISO 1600-6400, sturdy tripod, manual focus on infinity.
+
+*Explore all cataloged aurora spots with live GPS navigation, coordinates, and weather in the **"Auroras"** tab in StellaWay.*`;
+    }
+
+    return `✨ **Atlas Mundial de Auroras Boreales y Australes en StellaWay** 🌌
+
+En **StellaWay** cuentas con el tercer gran localizador mundial dedicado exclusivamente a la observación de auroras polares:
+
+1. **Hemisferio Norte (Aurora Boreal):**
+   - **Noruega:** *Tromsø / Kvaløya*, *Alta*, *Senja*, *Lyngen*, *Islas Lofoten (Reine, Hamnøy)*, *Vesterålen*, *Cabo Norte* y la extrema *Svalbard* (con auroras diurnas durante la noche polar).
+   - **Suecia:** *Abisko* (el célebre "Agujero Azul" con la mayor tasa de noches despejadas del planeta para auroras), *Kiruna* y *Jukkasjärvi*.
+   - **Finlandia:** *Inari*, *Ivalo*, *Saariselkä*, *Utsjoki* y *Rovaniemi* (en el Círculo Polar Ártico).
+   - **Islandia:** *Þingvellir*, *Snæfellsnes / Kirkjufell*, *Reykjanes*, *Vík* y *Akureyri*.
+   - **Groenlandia:** *Kangerlussuaq* (>300 noches despejadas al año), *Ilulissat* (con icebergs gigantes en la bahía de Disko) y *Nuuk*.
+   - **Canadá:** *Yellowknife* (capital mundial de la aurora con poblados de tipis), *Whitehorse* (Yukón) y *Churchill* (Manitoba).
+   - **Alaska (EE.UU.):** *Fairbanks* (temporada de oro del 21 de agosto al 21 de abril), *Chena Hot Springs*, *Denali* y *Coldfoot*.
+
+2. **Hemisferio Sur (Aurora Austral / Southern Lights):**
+   - **Tasmania (Australia):** *Bruny Island / The Neck*, *Cockle Creek* (el punto de carretera más austral de Australia) y *kunanyi / Mount Wellington*.
+   - **Nueva Zelanda:** *Rakiura / Stewart Island* (Santuario Internacional Dark Sky), *Aoraki Mackenzie / Lake Tekapo* y *The Catlins*.
+   - **Chile y Argentina:** *Ushuaia* (Canal Beagle y Parque Nacional Tierra del Fuego) y *Puerto Williams / Isla Navarino*.
+   - **Antártida:** Continente blanco y bases científicas (*McMurdo*).
+
+3. **Criterios Científicos de Observación y Astrofotografía:**
+   - **Actividad Solar:** Depende del índice **Kp** (Kp 2-3 suficiente en el óvalo polar; Kp 5 a 8+ para tormentas solares visibles en latitudes medias), la orientación del campo magnético interplanetario (**Bz negativo / sur**, indispensable para abrir el escudo magnético terrestre) y la velocidad del viento solar (>400-800 km/s).
+   - **Temporada:** De finales de agosto a mediados de abril en el norte; de marzo a septiembre en el sur.
+   - **Parámetros de Cámara recomendados:** Objetivo gran angular f/1.4 a f/2.8, obturación corta de **1s a 5s** para congelar cortinas y rayos en movimiento sin que se empasten, ISO 1600 a 6400, trípode robusto y baterías de repuesto abrigadas contra el frío polar.
+
+*Puedes explorar todos los enclaves con distancias GPS, coordenadas exactas y fotografías en la sección **"Auroras"** de la barra de navegación de StellaWay.*`;
+  }
+
   // 10. GENERAL / BIENVENIDA
   if (isGerman) {
     return `✨ **Hallo! Ich bin Stella, deine astronomische KI-Assistentin von StellaWay.**
 
 Ich unterstütze dich bei allen Themen rund um den Nachthimmel:
+- 🌌 **Atlas der Polarlichter (Nord- & Südlichter)** (Kp-Index, Bz-Komponente, Reiseziele wie Tromsø, Abisko, Rovaniemi, Island, Neuseeland und Fototipps).
 - 🔭 **Teleskop- und Okularkauf** passend zu deinem Budget.
 - 🌑 **Totale Sonnenfinsternis 2026 & 2027 in Spanien** (Totalitätszonen, Zeiten, ISO-Filter).
 - 🏛️ **Zertifizierte Starlight-Zonen** (Saragossa, Galicien, Teruel, Kanaren, Andalusien).
@@ -415,6 +497,7 @@ Wie kann ich dir bei deiner nächsten Beobachtungsnacht helfen?`;
     return `✨ **Hello! I'm Stella, your Starlight Astronomical AI Assistant from StellaWay.**
 
 I am ready to assist you with everything related to astronomy and the cosmos:
+- 🌌 **Worldwide Auroras Atlas (Northern & Southern Lights)** (Kp index, southward Bz, prime locations like Tromsø, Abisko, Rovaniemi, Iceland, New Zealand, camera settings).
 - 🔭 **Telescope & Eyepiece recommendations** tailored to your budget and observing goals.
 - 🌑 **Planning the Great Total Solar Eclipses of 2026 & 2027 in Spain** (totality paths, timing, ISO 12312-2 filters).
 - 🏛️ **Certified Starlight Destinations** in Spain (Zaragoza, Galicia, Teruel, Canary Islands, Cuenca, Andalusia).
@@ -427,6 +510,7 @@ What would you like to explore in the night sky today?`;
   return `✨ **¡Hola! Soy Stella, tu Asistente Astronómica experta de StellaWay.**
 
 Estoy lista para guiarte en cualquier consulta astronómica:
+- 🌌 **Atlas Mundial de Auroras Boreales y Australes** (índice Kp, orientación Bz del viento solar, destinos top como Tromsø, Abisko, Rovaniemi, Islandia, Ushuaia o Nueva Zelanda y ajustes fotográficos).
 - 🔭 **Telescopios, oculares y equipo de observación** adaptados a tu presupuesto y nivel.
 - 🌑 **Gran Eclipse Solar Total de 2026 y 2027 en España** (franjas exactas de totalidad, horarios y filtros certificados ISO 12312-2).
 - 🏛️ **Zonas Certificadas Starlight** (Zaragoza, Galicia, Teruel, Castellón, Canarias, Serranía de Cuenca, Sierra Morena).

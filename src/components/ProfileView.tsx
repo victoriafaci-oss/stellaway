@@ -3,6 +3,7 @@ import { ObservationLog } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useOfflineStorage } from '../lib/offlineStorage';
+import { SubscriptionCancellationModal } from './SubscriptionCancellationModal';
 
 interface ProfileViewProps {
   nightVision: boolean;
@@ -38,6 +39,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
   ]);
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [newLog, setNewLog] = useState({
     location: 'Penyagolosa',
     targetObject: '',

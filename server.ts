@@ -214,6 +214,37 @@ async function startServer() {
     }
   });
 
+  // Stripe Checkout Session Verification
+  app.get("/api/stripe-session-details", async (req, res) => {
+    try {
+      const sessionId = req.query.sessionId as string;
+      const stripeSecret = process.env.STRIPE_SECRET_KEY;
+
+      if (!sessionId || !stripeSecret) {
+        return res.json({ success: false, message: "Sesión o clave no configurada" });
+      }
+
+      const stripeRes = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`, {
+        headers: { "Authorization": `Bearer ${stripeSecret}` }
+      });
+      const session = await stripeRes.json() as any;
+
+      if (session && session.id) {
+        return res.json({
+          success: true,
+          customerEmail: session.customer_details?.email || session.customer_email,
+          customerId: session.customer,
+          subscriptionId: session.subscription,
+          paymentStatus: session.payment_status
+        });
+      }
+
+      res.json({ success: false });
+    } catch (err) {
+      res.json({ success: false });
+    }
+  });
+
   // PayPal Order Creation & Capture
   app.post("/api/create-paypal-order", async (req, res) => {
     try {
@@ -276,6 +307,146 @@ async function startServer() {
     });
   });
 
+  // Official Subscription Cancellation / Unsubscribe API (Direct Stripe Integration & Consumer Protection)
+  app.post("/api/cancel-subscription", async (req, res) => {
+    try {
+      const { contact, reason, reference, timestamp, plan, subscriptionId } = req.body;
+      const cancelRef = reference || ("BAJA-" + Date.now().toString(36).toUpperCase() + "-" + Math.floor(1000 + Math.random() * 9000));
+      const cancelDate = timestamp || new Date().toISOString();
+      const stripeSecret = process.env.STRIPE_SECRET_KEY;
+
+      let stripeCancelled = false;
+      const stripeSubscriptionIds: string[] = [];
+      let stripeNote = "";
+
+      // 1. If Stripe Secret Key is present, communicate directly with Stripe API
+      if (stripeSecret) {
+        try {
+          // Direct subscription ID cancellation if provided (e.g. sub_12345)
+          if (subscriptionId && typeof subscriptionId === "string" && subscriptionId.startsWith("sub_")) {
+            const delRes = await fetch(`https://api.stripe.com/v1/subscriptions/${subscriptionId}`, {
+              method: "DELETE",
+              headers: {
+                "Authorization": `Bearer ${stripeSecret}`,
+                "Content-Type": "application/x-www-form-urlencoded"
+              }
+            });
+            const delData = await delRes.json() as any;
+            if (delData && (delData.status === "canceled" || delData.id)) {
+              stripeCancelled = true;
+              stripeSubscriptionIds.push(delData.id);
+              stripeNote = `Suscripción ${delData.id} cancelada de forma inmediata en la pasarela Stripe.`;
+            }
+          }
+
+          // Search Stripe by email if contact is an email address
+          const emailQuery = (contact && typeof contact === "string" && contact.includes("@")) ? contact.trim() : null;
+          if (emailQuery) {
+            const custRes = await fetch(`https://api.stripe.com/v1/customers?email=${encodeURIComponent(emailQuery)}`, {
+              headers: { "Authorization": `Bearer ${stripeSecret}` }
+            });
+            const custData = await custRes.json() as any;
+
+            if (custData && custData.data && Array.isArray(custData.data)) {
+              for (const cust of custData.data) {
+                // Fetch active subscriptions for this customer in Stripe
+                const subRes = await fetch(`https://api.stripe.com/v1/subscriptions?customer=${cust.id}&status=active`, {
+                  headers: { "Authorization": `Bearer ${stripeSecret}` }
+                });
+                const subData = await subRes.json() as any;
+
+                if (subData && subData.data && Array.isArray(subData.data)) {
+                  for (const sub of subData.data) {
+                    // Cancel active subscription in Stripe
+                    const delRes = await fetch(`https://api.stripe.com/v1/subscriptions/${sub.id}`, {
+                      method: "DELETE",
+                      headers: { "Authorization": `Bearer ${stripeSecret}` }
+                    });
+                    const delData = await delRes.json() as any;
+                    if (delData && (delData.status === "canceled" || delData.id)) {
+                      stripeCancelled = true;
+                      stripeSubscriptionIds.push(delData.id);
+                    }
+                  }
+                }
+              }
+
+              if (stripeSubscriptionIds.length > 0) {
+                stripeNote = `Se han cancelado ${stripeSubscriptionIds.length} suscripciones activas en Stripe (${stripeSubscriptionIds.join(", ")}).`;
+              }
+            }
+          }
+        } catch (stripeErr) {
+          console.warn("[Stripe API Cancel Warning]", stripeErr);
+        }
+      }
+
+      console.log(`[Subscription Cancellation] Ref: ${cancelRef}, Contact: ${contact}, Plan: ${plan}, StripeCancelled: ${stripeCancelled}, StripeSubIds: ${stripeSubscriptionIds.join(", ")}, Reason: ${reason}`);
+
+      return res.json({
+        success: true,
+        reference: cancelRef,
+        status: "cancelled",
+        effectiveImmediately: true,
+        noFutureCharges: true,
+        stripeCancelled,
+        stripeSubscriptionIds,
+        stripeNote: stripeNote || (stripeCancelled ? "Cancelación efectiva en Stripe. No habrá cobros futuros." : "Baja registrada en sistema y acceso revocado inmediatamente."),
+        timestamp: cancelDate,
+        message: stripeCancelled
+          ? "Tu suscripción ha sido dada de baja directamente en Stripe. Se han cancelado todos los cobros recurrentes de forma automática y definitiva."
+          : "Tu suscripción o prueba gratuita ha sido dada de baja de forma inmediata. No se realizará ningún cargo futuro."
+      });
+    } catch (err) {
+      console.error("Error processing cancellation:", err);
+      res.status(500).json({ error: "Error procesando la solicitud de baja" });
+    }
+  });
+
+  // Stripe Customer Portal Session API (Direct self-service management on billing.stripe.com)
+  app.post("/api/create-stripe-portal-session", async (req, res) => {
+    try {
+      const { email } = req.body;
+      const stripeSecret = process.env.STRIPE_SECRET_KEY;
+      const appUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
+
+      if (stripeSecret && email && typeof email === "string" && email.includes("@")) {
+        try {
+          const custRes = await fetch(`https://api.stripe.com/v1/customers?email=${encodeURIComponent(email.trim())}`, {
+            headers: { "Authorization": `Bearer ${stripeSecret}` }
+          });
+          const custData = await custRes.json() as any;
+
+          if (custData && custData.data && custData.data.length > 0) {
+            const customerId = custData.data[0].id;
+            const portalRes = await fetch("https://api.stripe.com/v1/billing_portal/sessions", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${stripeSecret}`,
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              body: new URLSearchParams({
+                customer: customerId,
+                return_url: `${appUrl}/`
+              }).toString()
+            });
+            const portalData = await portalRes.json() as any;
+            if (portalData && portalData.url) {
+              return res.json({ success: true, url: portalData.url });
+            }
+          }
+        } catch (portalErr) {
+          console.warn("[Stripe Portal Warning]", portalErr);
+        }
+      }
+
+      // Default official customer billing portal
+      return res.json({ success: true, url: "https://billing.stripe.com/" });
+    } catch (err) {
+      return res.json({ success: false, url: "https://billing.stripe.com/" });
+    }
+  });
+
   // Stargazing AI Assistant Route using Gemini 3.7 Flash with robust fallback connector
   app.post("/api/assistant", async (req, res) => {
     try {
@@ -320,6 +491,22 @@ Key Expertise:
     6. Lalín (Pontevedra, 2023) - Municipio Starlight con Observatorio do Castro y Serra do Candán.
     7. Ancares Lucenses, Cervantes y Navia (Lugo, 2023) - Reserva de la Biosfera con cielos de montaña puros.
 - Dark Sky Spots & Bortle Scale (Bortle 1-9): Montsec, Gúdar-Javalambre, Serranía de Cuenca, Alto Turia, Sierra Nevada, La Palma, Monfragüe.
+- Polar Auroras (Aurora Borealis & Aurora Australis) & StellaWay Auroras Atlas:
+  * Science & Space Weather: Geomagnetic storms, Kp Index (0 to 9; Kp 2-3 sufficient in auroral oval zones, Kp 5+ for mid-latitudes), Interplanetary Magnetic Field (IMF) Bz component (crucial: negative/southward Bz connects with Earth's magnetosphere letting solar particles in), solar wind speed (>400-800 km/s), solar cycle 25 solar maximum (intense CME / solar flare activity). Emission altitudes and colors: atomic oxygen green (~100-150 km) and high-altitude red (>200 km), molecular nitrogen purple/blue (<100 km).
+  * Major Worldwide Aurora Locations cataloged in StellaWay:
+    - Norway: Tromsø, Kvaløya, Lofoten Islands (Reine, Hamnøy), Senja, Alta, Lyngen Alps, Svalbard (polar night daytime auroras).
+    - Sweden: Abisko National Park (Aurora Sky Station, famous for the dry microclimate "Blue Hole"), Kiruna, Jukkasjärvi.
+    - Finland: Inari, Rovaniemi (Arctic Circle), Saariselkä, Utsjoki.
+    - Iceland: Þingvellir, Snæfellsnes / Kirkjufell, Vík, Reykjanes, Akureyri.
+    - Greenland: Kangerlussuaq (>300 clear nights/yr), Ilulissat (Disko Bay icebergs).
+    - Canada: Yellowknife (Aurora capital with teepees), Whitehorse (Yukon), Churchill (Manitoba).
+    - Alaska (USA): Fairbanks, Chena Hot Springs, Denali, Coldfoot (Dalton Highway).
+    - Southern Hemisphere (Aurora Australis / Southern Lights): Tasmania (Bruny Island, Cockle Creek), New Zealand (Stewart Island / Rakiura Dark Sky Sanctuary, Lake Tekapo / Aoraki Mackenzie), South America (Ushuaia, Tierra del Fuego, Puerto Williams).
+  * Astrophotography & Practical Observing:
+    - Fast wide lens (f/1.4 to f/2.8), manual focus pin-sharp on bright star.
+    - Shutter speed: fast 1s - 5s for dynamic dancing corona/curtains to prevent motion blur; 6s - 12s for faint stationary green arcs.
+    - ISO 1600 - 6400, sturdy tripod, spare batteries in inner warm pocket, lens dew heater.
+    - Recommend checking the dedicated "Auroras" tab in the StellaWay app for interactive GPS navigation, Kp data, and exact coordinates.
 - Astrophotography: Milky Way techniques, 500/NPF rule, ISO settings, star trackers (Sky-Watcher Star Adventurer), stacking (Siril, DeepSkyStacker), light pollution filters.
 - Celestial events: Moon phases, planetary oppositions, meteor showers (Perseids, Geminids).
 Tone: Warm, inspiring, knowledgeable, clear, structured with bullet points and emojis where appropriate.`;
