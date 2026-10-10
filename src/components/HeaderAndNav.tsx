@@ -145,7 +145,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('auroras')}
                 className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
                   activeTab === 'auroras'
-                    ? 'bg-gradient-to-r from-[#10B981] via-[#06B6D4] to-[#8B5CF6] text-white font-extrabold border border-emerald-300 shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#38BDF8] to-[#0284C7] text-white font-extrabold border border-[#7DD3FC] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
                 id="nav-link-auroras-mobile"
@@ -388,7 +388,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 onClick={() => handleNavClick('auroras')}
                 className={`w-full flex items-center gap-3.5 px-5 py-3 rounded-2xl transition-all duration-200 ${
                   activeTab === 'auroras'
-                    ? 'bg-gradient-to-r from-[#10B981] via-[#06B6D4] to-[#8B5CF6] text-white font-extrabold border border-emerald-300 shadow-lg shadow-black/30'
+                    ? 'bg-gradient-to-r from-[#38BDF8] to-[#0284C7] text-white font-extrabold border border-[#7DD3FC] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
                 id="nav-link-auroras"

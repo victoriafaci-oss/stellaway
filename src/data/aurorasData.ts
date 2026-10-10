@@ -144,7 +144,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Reflejos de Reine y Hamnøy bajo la cortina verde', 'Playas abiertas al norte en Haukland, Uttakleiv y Unstad', 'Contraste único de cabañas rojas iluminadas suavemente'],
     officialSource: 'Visit Lofoten',
     officialUrl: 'https://visitlofoten.com/en/',
-    imageUrl: 'https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Aurora_Borealis_(Northern_Light)_over_Reine%2C_Lofoten%2C_Norway.jpg/960px-Aurora_Borealis_(Northern_Light)_over_Reine%2C_Lofoten%2C_Norway.jpg',
     featured: true
   },
   {
@@ -191,7 +191,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Mirador de montaña de Narvikfjellet a 656 metros', 'Línea de tren panorámica Ofoten Line', 'Valles oscuros a pocos minutos del centro urbano'],
     officialSource: 'Visit Narvik',
     officialUrl: 'https://www.visitnarvik.com/',
-    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Northern_lights_curtain_over_Nordmo_in_Bjerkvik%2C_Narvik%2C_Nordland%2C_Norway%2C_2023_September.jpg/960px-Northern_lights_curtain_over_Nordmo_in_Bjerkvik%2C_Narvik%2C_Nordland%2C_Norway%2C_2023_September.jpg'
   },
   {
     id: 'aurora-kirkenes',
@@ -237,7 +237,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Monumento del Globo terráqueo en el borde del acantilado', 'Horizonte de 180° hacia el Ártico libre de luces', 'Sensación de estar en el fin del mundo conocido'],
     officialSource: 'Visit Nordkapp',
     officialUrl: 'https://www.nordkapp.no/',
-    imageUrl: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/Flames_in_the_sky.jpg/960px-Flames_in_the_sky.jpg'
   },
   {
     id: 'aurora-svalbard',
@@ -284,7 +284,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Mirador del monte Rønvikfjellet', 'El maelstrom más fuerte del mundo en Saltstraumen', 'Salidas fotográficas hacia la península de Kjerringøy'],
     officialSource: 'Visit Bodø',
     officialUrl: 'https://visitbodo.com/en/',
-    imageUrl: 'https://images.unsplash.com/photo-1579033461380-adb47c3eb938?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Aurora_borealis_above_Storfjorden_and_the_Lyngen_Alps_in_moonlight%2C_2012_March.jpg/960px-Aurora_borealis_above_Storfjorden_and_the_Lyngen_Alps_in_moonlight%2C_2012_March.jpg'
   },
   {
     id: 'aurora-abisko',
@@ -307,7 +307,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Aurora Sky Station en la cima del monte Nuolja', 'Lago Torneträsk congelado con horizontes gigantescos', 'La tasa estadística más alta de noches despejadas en Escandinavia'],
     officialSource: 'Visit Sweden',
     officialUrl: 'https://visitsweden.com/destinations/northern-sweden/swedish-lapland/abisko-aurora-sky-station/',
-    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Aurora_in_Abisko_near_Tornetr%C3%A4sk.jpg/960px-Aurora_in_Abisko_near_Tornetr%C3%A4sk.jpg',
     featured: true
   },
   {
@@ -331,7 +331,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Colina de Luossavaara para vistas elevadas', 'Centro de Investigación Espacial Esrange', 'Iglesia histórica de madera de Kiruna'],
     officialSource: 'Swedish Lapland',
     officialUrl: 'https://www.swedishlapland.com/kiruna/',
-    imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d8/Aurora_Borealis_Kiruna.jpg/960px-Aurora_Borealis_Kiruna.jpg'
   },
   {
     id: 'aurora-jukkasjarvi',
@@ -354,7 +354,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['El Icehotel original de hielo y nieve', 'El río Torne helado como pista de observación 360°', 'Cultura sami tradicional y renos'],
     officialSource: 'Swedish Lapland',
     officialUrl: 'https://www.swedishlapland.com/',
-    imageUrl: 'https://images.unsplash.com/photo-1483347756197-71ef80e95f73?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/09/Aurora_3_in_Kiruna.JPG/960px-Aurora_3_in_Kiruna.JPG'
   },
   {
     id: 'aurora-inari',
@@ -377,7 +377,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Inmensidad del lago Inari helado sin luces', 'Museo Sami Siida y Parlamento Sami', 'Tranquilidad mística de la taiga silenciosa'],
     officialSource: 'Visit Finland',
     officialUrl: 'https://www.visitfinland.com/es/articulos/auroras-boreales/',
-    imageUrl: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Aurora_Borealis_-_polar_lights.jpg/960px-Aurora_Borealis_-_polar_lights.jpg',
     featured: true
   },
   {
@@ -401,7 +401,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Aeropuerto ártico con vuelos diarios', 'Reflejos en el río Ivalojoki en otoño', 'Rutas en motonieve hacia colinas solitarias'],
     officialSource: 'Inari-Saariselkä Tourism',
     officialUrl: 'https://www.inarisaariselka.fi/',
-    imageUrl: 'https://images.unsplash.com/photo-1483347756197-71ef80e95f73?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Aurora_and_meteor.jpg/960px-Aurora_and_meteor.jpg'
   },
   {
     id: 'aurora-saariselka',
@@ -424,7 +424,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Cima de la colina Kaunispää con panorama 360°', 'Pioneros mundiales de los iglús de cristal térmico', 'Parque Nacional Urho Kekkonen'],
     officialSource: 'Visit Finland',
     officialUrl: 'https://www.visitfinland.com/',
-    imageUrl: 'https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/Y1A9749_Saariselk%C3%A4%2C_Finland_(15186395524).jpg/960px-Y1A9749_Saariselk%C3%A4%2C_Finland_(15186395524).jpg'
   },
   {
     id: 'aurora-utsjoki',
@@ -447,7 +447,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['El punto más septentrional de la UE', 'Valle del río Teno sin contaminación de luz', 'Comunidad de mayoría sami con gran tranquilidad'],
     officialSource: 'Explore Utsjoki',
     officialUrl: 'https://www.exploreutsjoki.fi/',
-    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Church_of_light.jpg/960px-Church_of_light.jpg'
   },
   {
     id: 'aurora-rovaniemi',
@@ -470,7 +470,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Línea del Círculo Polar Ártico', 'Jardín Ártico tras el museo Arktikum', 'Lagos congelados Ounasjärvi y Norvajärvi'],
     officialSource: 'Visit Rovaniemi',
     officialUrl: 'https://www.visitrovaniemi.fi/',
-    imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Rovaniemi_-_Aurora_Borealis.jpg/960px-Rovaniemi_-_Aurora_Borealis.jpg'
   },
   {
     id: 'aurora-thingvellir',
@@ -541,7 +541,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Puente entre continentes (Midlina)', 'Faro de Reykjanesviti con vista oceánica', 'Campos de lava y áreas geotermales de Gunnuhver'],
     officialSource: 'Visit Reykjanes',
     officialUrl: 'https://www.visitreykjanes.is/',
-    imageUrl: 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/039_Northern_lights_over_M%C3%BDvatn_(Iceland)_Photo_by_Giles_Laurent.jpg/960px-039_Northern_lights_over_M%C3%BDvatn_(Iceland)_Photo_by_Giles_Laurent.jpg'
   },
   {
     id: 'aurora-vik',
@@ -587,7 +587,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Fiordo de Eyjafjörður de 60 km de longitud', 'Península de Tröllaskagi y pueblos pesqueros', 'Cercanía a la cascada de Goðafoss y lago Mývatn'],
     officialSource: 'Visit North Iceland',
     officialUrl: 'https://www.northiceland.is/',
-    imageUrl: 'https://images.unsplash.com/photo-1529963183134-61a90db47eaf?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Iceland_Aurora_4.jpg/960px-Iceland_Aurora_4.jpg'
   },
   {
     id: 'aurora-grotta',
@@ -610,7 +610,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Faro histórico de Grótta con sendero mareal', 'Vista abierta hacia la montaña Esja y monte Akrafjall', 'Accesible sin necesidad de coche de alquiler'],
     officialSource: 'Visit Reykjavik',
     officialUrl: 'https://visitreykjavik.is/',
-    imageUrl: 'https://images.unsplash.com/photo-1504893524553-b855bce32c67?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Multicolored_aurora_borealis_pillar_over_Brastad.jpg/960px-Multicolored_aurora_borealis_pillar_over_Brastad.jpg'
   },
 
   // 2. GROENLANDIA - AURORA BOREALIS
@@ -635,7 +635,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Más de 300 noches de cielo despejado anuales', 'Acceso al casquete de hielo glaciar (Point 660)', 'Observatorio de radar de la ionosfera Sondrestrom'],
     officialSource: 'Visit Greenland',
     officialUrl: 'https://visitgreenland.com/things-to-do/northern-lights/',
-    imageUrl: 'https://images.unsplash.com/photo-1517824806704-9040b037703b?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3f/The_Aurora_Borealis%2C_or_Northern_Lights%2C_over_Greenland.jpg/960px-The_Aurora_Borealis%2C_or_Northern_Lights%2C_over_Greenland.jpg',
     featured: true
   },
   {
@@ -659,7 +659,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Icebergs del tamaño de rascacielos reflejando luces verdes', 'Fiordo Kangia Patrimonio de la Humanidad UNESCO', 'Trineos tirados por perros tradicionales'],
     officialSource: 'Visit Greenland',
     officialUrl: 'https://visitgreenland.com/destinations/ilulissat/',
-    imageUrl: 'https://images.unsplash.com/photo-1517824806704-9040b037703b?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Aurora_borealis_seen_from_Greenland_2013.jpg/960px-Aurora_borealis_seen_from_Greenland_2013.jpg',
     featured: true
   },
   {
@@ -683,7 +683,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Monte icónico de Sermitsiaq en el fiordo', 'Península de Nuuk con miradores marinos', 'Cultura inuit contemporánea y museo nacional'],
     officialSource: 'Visit Greenland',
     officialUrl: 'https://visitgreenland.com/destinations/nuuk/',
-    imageUrl: 'https://images.unsplash.com/photo-1517824806704-9040b037703b?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Aurora_and_Big_Dipper_Over_Greenland.jpg/960px-Aurora_and_Big_Dipper_Over_Greenland.jpg'
   },
 
   // 3. CANADÁ - AURORA BOREALIS
@@ -780,7 +780,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Lago Maligne y pirámide del monte Pyramid', 'Cielos certificados de oscuridad absoluta', 'Festival anual Dark Sky de Jasper en otoño'],
     officialSource: 'Parks Canada',
     officialUrl: 'https://parks.canada.ca/pn-np/ab/jasper/activ/etoiles-stars',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Aurora_Borealis_over_Vancouver_BC.jpg/960px-Aurora_Borealis_over_Vancouver_BC.jpg'
   },
 
   // 4. ALASKA - AURORA BOREALIS
@@ -829,7 +829,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Contemplar auroras desde piscinas termales a 40°C', 'Museo de Hielo Aurora Ice Museum', 'Tours en orugas de nieve hacia colinas altas'],
     officialSource: 'Travel Alaska',
     officialUrl: 'https://www.travelalaska.com/',
-    imageUrl: 'https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/Aurora_in_Alaska_20100919020743.jpg/960px-Aurora_in_Alaska_20100919020743.jpg'
   },
   {
     id: 'aurora-denali',
@@ -852,7 +852,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Silueta monumental de la Cordillera de Alaska', 'Cielos prístinos de clase Bortle 1', 'Tranquilidad invernal absoluta fuera de temporada estival'],
     officialSource: 'National Park Service Denali',
     officialUrl: 'https://www.nps.gov/dena/planyourvisit/aurora.htm',
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Aurora_borealis_over_Eielson_Air_Force_Base%2C_Alaska.jpg/960px-Aurora_borealis_over_Eielson_Air_Force_Base%2C_Alaska.jpg'
   },
   {
     id: 'aurora-coldfoot',
@@ -875,7 +875,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Aldea histórica de Wiseman con cabañas de pioneros', 'Paso de montaña de Atigun Pass en la Dalton Highway', 'Cielos completamente vírgenes de polución luminosa'],
     officialSource: 'Travel Alaska',
     officialUrl: 'https://www.travelalaska.com/destinations/cities-towns/coldfoot',
-    imageUrl: 'https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9b/Aurora_in_Alaska_20130228225835.jpg/960px-Aurora_in_Alaska_20130228225835.jpg'
   },
   {
     id: 'aurora-anchorage',
@@ -898,7 +898,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Mirador de Glen Alps en el Parque Estatal Chugach', 'Puntos costeros de Point Woronzof y Eklutna Tailrace', 'Excelente oferta gastronómica y de alojamiento'],
     officialSource: 'Visit Anchorage',
     officialUrl: 'https://www.anchorage.net/winter/aurora-borealis/',
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/2024-05-11_Aurora_Cannon_Falls%2C_MN_3_of_7.jpg/960px-2024-05-11_Aurora_Cannon_Falls%2C_MN_3_of_7.jpg'
   },
 
   // 5. TASMANIA Y AUSTRALIA - AURORA AUSTRALIS
@@ -923,7 +923,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Mirador elevado de madera en The Neck Game Reserve', 'Horizonte sur 100% marítimo hacia la Antártida', 'Luces verdes y magentas de la Southern Light reflejadas en dos bahías'],
     officialSource: 'Discover Tasmania',
     officialUrl: 'https://www.discovertasmania.com.au/things-to-do/nature-and-wildlife/auroras/',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/Aurora_Australis_Over_the_Tasman_Sea_from_SouthWest_National_Park.jpg/960px-Aurora_Australis_Over_the_Tasman_Sea_from_SouthWest_National_Park.jpg',
     featured: true
   },
   {
@@ -947,7 +947,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['El punto de carretera más austral de Australia', 'Cielos de oscuridad máxima sin luz artificial', 'Reflejos estelares sobre las aguas calmas de la bahía'],
     officialSource: 'Discover Tasmania',
     officialUrl: 'https://www.discovertasmania.com.au/',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Aurora_australis_panorama.jpg/960px-Aurora_australis_panorama.jpg'
   },
   {
     id: 'aurora-kunanyi',
@@ -970,7 +970,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Altitud de 1.271 metros sobre la capa de nubes costeras', 'Refugio cerrado The Pinnacle para viento frío', 'Acceso rápido e inmediato para residentes y turistas en Hobart'],
     officialSource: 'Discover Tasmania',
     officialUrl: 'https://www.discovertasmania.com.au/',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Aurora_Australis_Hobart.JPG/960px-Aurora_Australis_Hobart.JPG'
   },
   {
     id: 'aurora-south-arm',
@@ -993,7 +993,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Playas de Calverts Beach y Goats Beach', 'Horizonte meridional despejado sobre Storm Bay', 'Punto predilecto de la comunidad de astrofotógrafos de Tasmania'],
     officialSource: 'Discover Tasmania',
     officialUrl: 'https://www.discovertasmania.com.au/',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/91/Aurora_Australis_From_Melbourne.jpg/960px-Aurora_Australis_From_Melbourne.jpg'
   },
 
   // 6. NUEVA ZELANDA - AURORA AUSTRALIS
@@ -1018,7 +1018,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Nombre maorí "Cielos resplandecientes" en honor a la aurora', 'Certificada como Dark Sky Sanctuary internacional', 'Población mínima (400 hab) y cero farolas en el 99% de la isla'],
     officialSource: 'Tourism New Zealand',
     officialUrl: 'https://www.newzealand.com/int/feature/southern-lights/',
-    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Aurora_in_Auckland%2C_New_Zealand_11_May_2024.jpg/960px-Aurora_in_Auckland%2C_New_Zealand_11_May_2024.jpg',
     featured: true
   },
   {
@@ -1066,7 +1066,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Faro de Nugget Point sobre agujas de piedra en el mar', 'Slope Point, extremo sur de la Isla Sur neozelandesa', 'Vientos puros y ausencia total de focos lumínicos'],
     officialSource: 'Tourism New Zealand',
     officialUrl: 'https://www.newzealand.com/int/the-catlins/',
-    imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/May_2024_aurora_over_Hawke%27s_Bay.jpg/960px-May_2024_aurora_over_Hawke%27s_Bay.jpg'
   },
   {
     id: 'aurora-mount-cook',
@@ -1089,7 +1089,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Cumbres nevadas alpinas más altas de Oceanía', 'Valle de Hooker Valley con pasarelas de observación', 'Aire extremadamente seco y nítido de alta montaña'],
     officialSource: 'Tourism New Zealand',
     officialUrl: 'https://www.newzealand.com/int/aoraki-mount-cook/',
-    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/A_Little_Aurora_-_New_Zealand.jpg/960px-A_Little_Aurora_-_New_Zealand.jpg'
   },
 
   // 7. CHILE Y ARGENTINA - AURORA AUSTRALIS
@@ -1114,7 +1114,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Canal Beagle con horizonte abierto hacia el sur antártico', 'Noches invernales de hasta 17 horas de oscuridad', 'Faro Les Éclaireurs como fondo fotográfico emblemático'],
     officialSource: 'Turismo Ushuaia / Argentina Travel',
     officialUrl: 'https://turismoushuaia.com/',
-    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Aurora_australis.jpg/960px-Aurora_australis.jpg',
     featured: true
   },
   {
@@ -1138,7 +1138,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['El pueblo más austral del mundo a 55° Sur', 'Reserva de la Biosfera Cabo de Hornos', 'Vistas directas al Pasaje de Drake sin obstáculos al sur'],
     officialSource: 'Chile Travel / Sernatur',
     officialUrl: 'https://chile.travel/',
-    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Aurora_australis_20050911.jpg/960px-Aurora_australis_20050911.jpg'
   },
   {
     id: 'aurora-pn-tierra-del-fuego',
@@ -1161,7 +1161,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Bahía Lapataia, final de la Ruta Panamericana', 'Lago Acigami (Roca) reflejando montañas nevadas', 'Oscuridad de nivel 1 con aire antártico polar'],
     officialSource: 'Parques Nacionales Argentina',
     officialUrl: 'https://www.argentina.gob.ar/parquesnacionales/tierradelfuego',
-    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80'
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Aurora_australis_dancing_over_an_LED_illuminated_igloo.jpg/960px-Aurora_australis_dancing_over_an_LED_illuminated_igloo.jpg'
   },
 
   // 8. ANTÁRTIDA Y SUBANTÁRTICAS
@@ -1186,7 +1186,7 @@ export const AURORAS_DATA: AuroraSpot[] = [
     highlights: ['Centro permanente del óvalo auroral del hemisferio sur', 'El aire más transparente y seco de la Tierra', 'Espectáculo reservado a investigadores y expediciones polares'],
     officialSource: 'Australian Antarctic Program / INACH',
     officialUrl: 'https://www.antarctica.gov.au/about-antarctica/weather-and-climate/aurora/',
-    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Antarctic_aurora_ESA313457.jpg/960px-Antarctic_aurora_ESA313457.jpg',
     featured: true
   }
 ];

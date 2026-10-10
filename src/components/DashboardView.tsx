@@ -128,19 +128,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           {/* Card 3: Auroras Boreales y Australes (Tercer Gran Localizador Mundial) */}
           <button
             onClick={() => onExploreAuroras && onExploreAuroras()}
-            className="p-7 sm:p-8 rounded-[32px] card-celestial-blue-glass transition-all flex flex-col items-center justify-center text-center group cursor-pointer shadow-xl relative overflow-hidden backdrop-blur-md border border-emerald-400/40 hover:border-emerald-400"
+            className="p-7 sm:p-8 rounded-[32px] card-celestial-blue-glass transition-all flex flex-col items-center justify-center text-center group cursor-pointer shadow-xl relative overflow-hidden backdrop-blur-md border border-[#7DD3FC]/40 hover:border-[#7DD3FC]"
             id="btn-main-auroras"
           >
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/30 to-violet-500/30 backdrop-blur-sm flex items-center justify-center text-emerald-300 mb-4 group-hover:scale-105 transition-transform shadow-lg border border-emerald-400/60">
+            <div className="w-16 h-16 rounded-2xl bg-[#082F49]/80 backdrop-blur-sm flex items-center justify-center text-[#7DD3FC] mb-4 group-hover:scale-105 transition-transform shadow-lg border border-[#38BDF8]/60">
               <span className="material-symbols-outlined text-3xl font-bold">auto_awesome</span>
             </div>
             <span className="font-['Plus_Jakarta_Sans'] text-xl sm:text-2xl font-black text-white leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
               Auroras Boreales & Australes
             </span>
-            <span className="text-sm text-emerald-200 mt-1.5 font-bold">
+            <span className="text-sm text-[#BAE6FD] mt-1.5 font-bold">
               Atlas Ártico & Antártico
             </span>
-            <span className="mt-5 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#062419] bg-gradient-to-r from-emerald-400 to-teal-400 group-hover:from-emerald-300 group-hover:to-teal-300 px-6 py-2.5 rounded-full border border-emerald-300 shadow-md backdrop-blur-sm">
+            <span className="mt-5 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#F0F9FF] bg-[#0284C7]/90 group-hover:bg-[#0284C7] px-6 py-2.5 rounded-full border border-[#7DD3FC]/80 shadow-md backdrop-blur-sm">
               EXPLORAR AURORAS →
             </span>
           </button>

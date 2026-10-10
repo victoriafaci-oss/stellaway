@@ -128,7 +128,7 @@ export const AssistantView: React.FC = () => {
                 : '¿Dónde y cómo puedo ver y fotografiar auroras boreales y australes, y qué índice Kp necesito?'
             )
           }
-          className="text-xs px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-400 hover:text-black border border-emerald-400/40 text-emerald-300 transition-all font-semibold cursor-pointer flex items-center gap-1 shadow-[0_0_12px_rgba(52,211,153,0.15)]"
+          className="text-xs px-3 py-1.5 rounded-full bg-sky-500/15 hover:bg-[#38BDF8] hover:text-black border border-sky-400/40 text-sky-300 transition-all font-semibold cursor-pointer flex items-center gap-1 shadow-[0_0_12px_rgba(56,189,248,0.2)]"
         >
           ✨ {language === 'de' ? 'Polarlichter & Kp-Index' : language === 'en' ? 'Auroras & Kp Guide' : 'Auroras & Índice Kp'}
         </button>

@@ -412,11 +412,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       badge: t('landingCatAurorasBadge', 'Atlas Mundial de Auroras'),
       title: t('landingCatAurorasTitle', 'Auroras Boreales & Australes'),
       org: t('landingCatAurorasOrg', 'Redes de Observación y Turismo Polar Mundial'),
-      icon: '🟢',
-      color: 'from-emerald-500/20 via-teal-500/15 to-cyan-500/20',
-      border: 'border-emerald-400/40',
-      glow: 'rgba(16, 185, 129, 0.25)',
-      tagColor: 'bg-emerald-400/15 text-emerald-300 border-emerald-400/30',
+      icon: '✨',
+      color: 'from-sky-500/20 via-cyan-500/15 to-blue-500/20',
+      border: 'border-sky-400/40',
+      glow: 'rgba(56, 189, 248, 0.25)',
+      tagColor: 'bg-sky-400/15 text-sky-300 border-sky-400/30',
       desc: t('landingCatAurorasDesc', 'El 3.er gran buscador de StellaWay: catálogo global con más de 90 enclaves polares en ambos hemisferios para cazar las luces del norte y del sur con imágenes reales de alta luminosidad.'),
       highlights: [
         t('landingCatAurorasH1', 'Hemisferio Norte (Boreal): Noruega, Islandia, Suecia, Finlandia, Canadá, Alaska y Groenlandia'),
@@ -938,11 +938,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 onClick={() => setSelectedCertifiedCat('auroras')}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                   selectedCertifiedCat === 'auroras'
-                    ? 'bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/25'
-                    : 'text-emerald-300/80 hover:text-emerald-200 hover:bg-emerald-400/10'
+                    ? 'bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25'
+                    : 'text-cyan-300/80 hover:text-cyan-200 hover:bg-cyan-400/10'
                 }`}
               >
-                <span>🟢</span> {t('landingFilterAuroras', 'Auroras Boreales & Australes')}
+                <span>✨</span> {t('landingFilterAuroras', 'Auroras Boreales & Australes')}
               </button>
               <button
                 type="button"
@@ -971,7 +971,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   style={{
                     background: 'linear-gradient(155deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
                     backdropFilter: 'blur(20px)',
-                    border: `1.5px solid ${c.id === 'starlight' ? 'rgba(251,191,36,0.35)' : c.id === 'darksky' ? 'rgba(56,189,248,0.35)' : c.id === 'auroras' ? 'rgba(52,211,153,0.35)' : 'rgba(192,132,252,0.35)'}`,
+                    border: `1.5px solid ${c.id === 'starlight' ? 'rgba(251,191,36,0.35)' : c.id === 'darksky' ? 'rgba(56,189,248,0.35)' : c.id === 'auroras' ? 'rgba(56,189,248,0.35)' : 'rgba(192,132,252,0.35)'}`,
                     boxShadow: `0 20px 40px -15px rgba(0,0,0,0.5), 0 0 30px ${c.glow}`,
                     opacity: isVisible(`certified-card-${c.id}`) ? 1 : 0,
                     transform: isVisible(`certified-card-${c.id}`) ? 'translateY(0) scale(1)' : 'translateY(35px) scale(0.98)',
@@ -981,7 +981,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   {/* Subtle corner aura */}
                   <div
                     className="absolute -top-16 -right-16 w-36 h-36 rounded-full blur-2xl pointer-events-none opacity-40 transition-opacity duration-300 group-hover:opacity-75"
-                    style={{ background: c.id === 'starlight' ? '#F59E0B' : c.id === 'darksky' ? '#38BDF8' : c.id === 'auroras' ? '#10B981' : '#C084FC' }}
+                    style={{ background: c.id === 'starlight' ? '#F59E0B' : c.id === 'darksky' ? '#38BDF8' : c.id === 'auroras' ? '#38BDF8' : '#C084FC' }}
                   />
 
                   <div>
@@ -990,8 +990,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       <div
                         className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner"
                         style={{
-                          background: c.id === 'starlight' ? 'rgba(245,158,11,0.15)' : c.id === 'darksky' ? 'rgba(56,189,248,0.15)' : c.id === 'auroras' ? 'rgba(16,185,129,0.15)' : 'rgba(168,85,247,0.15)',
-                          border: `1px solid ${c.id === 'starlight' ? 'rgba(245,158,11,0.3)' : c.id === 'darksky' ? 'rgba(56,189,248,0.3)' : c.id === 'auroras' ? 'rgba(16,185,129,0.3)' : 'rgba(168,85,247,0.3)'}`,
+                          background: c.id === 'starlight' ? 'rgba(245,158,11,0.15)' : c.id === 'darksky' ? 'rgba(56,189,248,0.15)' : c.id === 'auroras' ? 'rgba(56,189,248,0.15)' : 'rgba(168,85,247,0.15)',
+                          border: `1px solid ${c.id === 'starlight' ? 'rgba(245,158,11,0.3)' : c.id === 'darksky' ? 'rgba(56,189,248,0.3)' : c.id === 'auroras' ? 'rgba(56,189,248,0.3)' : 'rgba(168,85,247,0.3)'}`,
                         }}
                       >
                         {c.icon}
@@ -1006,7 +1006,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       {c.title}
                     </h3>
                     <p className="text-xs font-medium text-white/50 mb-4 flex items-center gap-1.5">
-                      <span className={`w-1 h-1 rounded-full ${c.id === 'starlight' ? 'bg-amber-400' : c.id === 'darksky' ? 'bg-cyan-400' : c.id === 'auroras' ? 'bg-emerald-400' : 'bg-purple-400'}`} />
+                      <span className={`w-1 h-1 rounded-full ${c.id === 'starlight' ? 'bg-amber-400' : c.id === 'darksky' ? 'bg-cyan-400' : c.id === 'auroras' ? 'bg-cyan-400' : 'bg-purple-400'}`} />
                       {c.org}
                     </p>
 
@@ -1019,7 +1019,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <div className="space-y-2.5 mb-6 pt-4 border-t border-white/10">
                       {c.highlights.map((h, idx) => (
                         <div key={idx} className="flex items-start gap-2.5 text-xs text-white/80">
-                          <span className={`text-sm shrink-0 leading-none ${c.id === 'starlight' ? 'text-amber-400' : c.id === 'darksky' ? 'text-cyan-400' : c.id === 'auroras' ? 'text-emerald-400' : 'text-purple-400'}`}>
+                          <span className={`text-sm shrink-0 leading-none ${c.id === 'starlight' ? 'text-amber-400' : c.id === 'darksky' ? 'text-cyan-400' : c.id === 'auroras' ? 'text-cyan-400' : 'text-purple-400'}`}>
                             ✦
                           </span>
                           <span className="leading-tight">{h}</span>
