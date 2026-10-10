@@ -1340,10 +1340,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               boxShadow: '0 0 40px rgba(255,215,0,0.45), 0 4px 20px rgba(0,0,0,0.4)',
             }}
           >
-            <span>{t('landingCtaBtn', 'Lo Quiero')}</span>
+            <span>{t('landingCtaBtn', 'Comenzar Ahora')}</span>
             <span className="text-xl">→</span>
           </button>
-          <p className="mt-4 text-white/30 text-xs">{t('landingCtaNote', 'Sin tarjeta de crédito · 48h de prueba gratuita')}</p>
+
+          {/* Tres cajitas informativas de tarifas (sin enlaces ni redirección a Stripe) */}
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-4 max-w-lg mx-auto mt-8 pt-6 border-t border-white/10">
+            <div className="py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl bg-white/[0.05] border border-white/15 backdrop-blur-md flex flex-col items-center justify-center text-center select-none cursor-default">
+              <span className="text-xs sm:text-sm md:text-base font-bold text-white tracking-wide">
+                {t('landingTariffFree', '48H gratis')}
+              </span>
+              <span className="text-[10px] sm:text-xs text-white/50 tracking-wider font-medium mt-0.5">
+                {t('landingTariffNoCard', 'sin tarjeta')}
+              </span>
+            </div>
+            <div className="py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl bg-white/[0.05] border border-white/15 backdrop-blur-md flex flex-col items-center justify-center text-center select-none cursor-default">
+              <span className="text-xs sm:text-sm md:text-base font-bold text-white tracking-wide">
+                {t('landingTariffMonthly', '3,99 € mensual')}
+              </span>
+            </div>
+            <div className="py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl bg-white/[0.05] border border-amber-400/35 backdrop-blur-md flex flex-col items-center justify-center text-center select-none cursor-default shadow-[0_0_15px_rgba(255,215,0,0.08)]">
+              <span className="text-xs sm:text-sm md:text-base font-bold text-amber-300 tracking-wide">
+                {t('landingTariffAnnual', '19,99 € anual')}
+              </span>
+            </div>
+          </div>
         </div>
       </section>
 

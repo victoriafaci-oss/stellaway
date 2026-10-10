@@ -195,7 +195,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingTestimonialsTitle: "Amantes del cielo que ya confían en StellaWay",
     landingCtaTitle: "¿Listo para tu próxima noche bajo las estrellas?",
     landingCtaDesc: "Únete a miles de astrónomos y fotógrafos que exploran el universo con precisión profesional.",
-    landingCtaBtn: "Comenzar Ahora →",
+    landingCtaBtn: "Comenzar Ahora",
+    landingTariffFree: "48H gratis",
+    landingTariffNoCard: "sin tarjeta",
+    landingTariffMonthly: "3,99 € mensual",
+    landingTariffAnnual: "19,99 € anual",
 
     // Landing Features (5 cards)
     landingFeature1Title: "Modo Luz Roja (Visión Nocturna)",
@@ -556,7 +560,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingTestimonialsTitle: "Sky lovers who already trust StellaWay",
     landingCtaTitle: "Ready for your next night under the stars?",
     landingCtaDesc: "Join thousands of astronomers and photographers exploring the universe with professional precision.",
-    landingCtaBtn: "Get Started Now →",
+    landingCtaBtn: "Get Started Now",
+    landingTariffFree: "48h free",
+    landingTariffNoCard: "no card needed",
+    landingTariffMonthly: "€3.99 monthly",
+    landingTariffAnnual: "€19.99 annual",
 
     // Landing Features (5 cards)
     landingFeature1Title: "Red Light Mode (Night Vision)",
@@ -917,7 +925,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingTestimonialsTitle: "Passionnés du ciel qui font déjà confiance à StellaWay",
     landingCtaTitle: "Prêt pour votre prochaine nuit sous les étoiles ?",
     landingCtaDesc: "Rejoignez des milliers d’astronomes et photographes explorant l’univers avec une précision professionnelle.",
-    landingCtaBtn: "Commencer Maintenant →",
+    landingCtaBtn: "Commencer Maintenant",
+    landingTariffFree: "48h gratuit",
+    landingTariffNoCard: "sans carte",
+    landingTariffMonthly: "3,99 € mensuel",
+    landingTariffAnnual: "19,99 € annuel",
 
     // Landing Features (5 cards)
     landingFeature1Title: "Mode Lumière Rouge (Vision Nocturne)",
@@ -1278,7 +1290,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingTestimonialsTitle: "Amantes do céu que já confiam no StellaWay",
     landingCtaTitle: "Pronto para a sua próxima noite sob as estrelas?",
     landingCtaDesc: "Junte-se a milhares de astrônomos e fotógrafos que exploram o universo com precisão profissional.",
-    landingCtaBtn: "Começar Agora →",
+    landingCtaBtn: "Começar Agora",
+    landingTariffFree: "48h grátis",
+    landingTariffNoCard: "sem cartão",
+    landingTariffMonthly: "3,99 € mensal",
+    landingTariffAnnual: "19,99 € anual",
 
     // Landing Features (5 cards)
     landingFeature1Title: "Modo Luz Vermelha (Visão Noturna)",
@@ -1639,7 +1655,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingTestimonialsTitle: "Appassionati del cielo che si affidano già a StellaWay",
     landingCtaTitle: "Pronto per la tua prossima notte sotto le stelle?",
     landingCtaDesc: "Unisciti a migliaia di astronomi e fotografi che esplorano l’universo con precisione professionale.",
-    landingCtaBtn: "Inizia Ora →",
+    landingCtaBtn: "Inizia Ora",
+    landingTariffFree: "48 ore gratis",
+    landingTariffNoCard: "senza carta",
+    landingTariffMonthly: "3,99 € mensile",
+    landingTariffAnnual: "19,99 € annuale",
 
     // Landing Features (5 cards)
     landingFeature1Title: "Modalità Luce Rossa (Visione Notturna)",
@@ -2000,7 +2020,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     landingTestimonialsTitle: "Sternenbegeisterte, die bereits auf StellaWay vertrauen",
     landingCtaTitle: "Bereit für deine nächste Nacht unter den Sternen?",
     landingCtaDesc: "Schließe dich Tausenden von Astronomen und Fotografen an, die das Universum mit professioneller Präzision erkunden.",
-    landingCtaBtn: "Jetzt Starten →",
+    landingCtaBtn: "Jetzt Starten",
+    landingTariffFree: "48h gratis",
+    landingTariffNoCard: "ohne Kreditkarte",
+    landingTariffMonthly: "3,99 € monatlich",
+    landingTariffAnnual: "19,99 € jährlich",
 
     // Landing Features (5 cards)
     landingFeature1Title: "Rotlichtmodus (Nachtsicht)",
