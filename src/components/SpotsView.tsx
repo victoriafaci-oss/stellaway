@@ -3,6 +3,7 @@ import { STARLIGHT_SPOTS } from '../data/stellaData';
 import { StarlightSpot } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { useOfflineStorage } from '../lib/offlineStorage';
+import { getRegionImage } from '../lib/regionImages';
 
 interface SpotsViewProps {
   onGoBack?: () => void;
@@ -70,7 +71,8 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
     { value: 'extremadura', label: 'Extremadura (Monfragüe, Gata, Hurdes, Tajo Internacional, Alqueva)' },
     { value: 'navarra', label: 'Navarra (Valle de Roncal Pirenaico)' },
     { value: 'la rioja', label: 'La Rioja (Valles del Leza, Jubera, Cidacos y Alhama)' },
-    { value: 'cataluna', label: 'Cataluña (Montsec Lleida, Prades y Montsant Tarragona)' },
+    { value: 'cataluna', label: 'Cataluña (Aigüestortes, Montsec Lleida, Prades y Montsant)' },
+    { value: 'pais vasco', label: 'País Vasco (Valderejo, Izki, Santa Catalina)' },
     { value: 'asturias', label: 'Asturias / Cantabria (Picos de Europa)' }
   ];
 
@@ -123,7 +125,8 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           spotRegionNorm.includes('cuenca') ||
           spotRegionNorm.includes('albacete') ||
           spotRegionNorm.includes('ciudad real') ||
-          spotRegionNorm.includes('toledo');
+          spotRegionNorm.includes('toledo') ||
+          spotRegionNorm.includes('guadalajara');
         if (!isMancha) return false;
       } else if (targetProvNorm.includes('leon')) {
         const isCastillaLeon =
@@ -132,8 +135,20 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           spotRegionNorm.includes('soria') ||
           spotRegionNorm.includes('salamanca') ||
           spotRegionNorm.includes('burgos') ||
+          spotRegionNorm.includes('zamora') ||
+          spotRegionNorm.includes('valladolid') ||
+          spotRegionNorm.includes('palencia') ||
+          spotRegionNorm.includes('segovia') ||
           spotRegionNorm.includes('castilla y leon');
         if (!isCastillaLeon) return false;
+      } else if (targetProvNorm.includes('vasco') || targetProvNorm.includes('alava')) {
+        const isPaisVasco =
+          spotRegionNorm.includes('vasco') ||
+          spotRegionNorm.includes('alava') ||
+          spotRegionNorm.includes('araba') ||
+          spotRegionNorm.includes('guipuzcoa') ||
+          spotRegionNorm.includes('vizcaya');
+        if (!isPaisVasco) return false;
       } else if (targetProvNorm === 'canarias') {
         const isCanarias =
           spotRegionNorm.includes('canarias') ||
@@ -147,6 +162,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           spotRegionNorm.includes('baleares') ||
           spotRegionNorm.includes('menorca') ||
           spotRegionNorm.includes('mallorca') ||
+          spotRegionNorm.includes('cabrera') ||
           spotRegionNorm.includes('ibiza');
         if (!isBaleares) return false;
       } else if (targetProvNorm === 'extremadura' || targetProvNorm === 'caceres') {
@@ -163,7 +179,8 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           spotRegionNorm.includes('girona') ||
           spotRegionNorm.includes('barcelona') ||
           spotRegionNorm.includes('montsec') ||
-          spotRegionNorm.includes('prades');
+          spotRegionNorm.includes('prades') ||
+          spotRegionNorm.includes('aiguestortes');
         if (!isCataluna) return false;
       } else if (!spotRegionNorm.includes(targetProvNorm)) {
         return false;
@@ -268,16 +285,16 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
   return (
     <div className="flex-1 px-4 md:px-8 max-w-7xl mx-auto w-full pt-6 md:pt-10 pb-28 md:pb-16">
       {/* Header */}
-      <header className="py-4 md:py-6 max-w-3xl">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/30 text-[#FFD700] text-xs font-bold uppercase tracking-wider mb-3">
-          <span className="material-symbols-outlined text-sm">map</span>
-          {t('spotsTitle', 'Buscar Localización y Miradores Astronómicos')}
+      <header className="py-4 md:py-6 max-w-4xl">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-wider mb-3 shadow-sm">
+          <span className="material-symbols-outlined text-sm">stars</span>
+          <span>Fundación Starlight • Destinos & Reservas Certificadas</span>
         </div>
         <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-3 font-['Plus_Jakarta_Sans'] tracking-tight">
-          {t('spotsTitle', 'Buscar Localización y Miradores')}
+          Zonas & Destinos Starlight
         </h1>
         <p className="text-base text-[#e1e3e4]/80 leading-relaxed font-['Plus_Jakarta_Sans']">
-          {t('spotsSubtitle', 'Explora destinos certificados Starlight y otros rincones óptimos para observar el cielo nocturno sin contaminación lumínica.')}
+          Localiza y explora reservas y destinos turísticos certificados por la Fundación Starlight, con auditoría científica de cielo oscuro, coordenadas GPS con enlace a Google Maps, valores SQM y guías de observación.
         </p>
       </header>
 
@@ -702,53 +719,111 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredSpots.map((spot) => (
-                <div
-                  key={spot.id}
-                  onClick={() => setSelectedSpot(spot)}
-                  className="card-pastel-gold card-pastel-gold-hover rounded-3xl overflow-hidden shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between border-2 border-[#38BDF8]"
-                >
-                  <div>
-                    <div className="h-48 md:h-56 relative overflow-hidden">
+            <>
+              {/* Territorial / Regional Hero Banner */}
+              {(() => {
+                const activeRegionInfo = getRegionImage({
+                  country: selectedCountry !== 'todos' ? selectedCountry : 'España',
+                  region: selectedProvince !== 'todas' ? selectedProvince : searchQuery || 'Andalucía',
+                });
+                if (!activeRegionInfo) return null;
+                return (
+                  <div className="rounded-3xl overflow-hidden border border-[#38BDF8]/40 shadow-2xl bg-gradient-to-br from-[#0c1a30] via-[#10223f] to-[#071326] mb-8 relative">
+                    <div className="relative h-60 sm:h-72 w-full overflow-hidden">
                       <img
-                        src={spot.imageUrl}
-                        alt={spot.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        src={activeRegionInfo.imageUrl}
+                        alt={activeRegionInfo.nombre_localizacion_principal}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30" />
-
-                      <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                        {spot.certified ? (
-                          <span className="bg-[#0284C7] text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow-md border border-[#BAE6FD]">
-                            ⭐ Certificado Starlight
-                          </span>
-                        ) : (
-                          <span className="bg-[#059669] text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow-md">
-                            🌄 Lugar Óptimo (Punto Libre)
-                          </span>
-                        )}
-
-                        <span className="bg-black/80 backdrop-blur-md text-[#38BDF8] font-['JetBrains_Mono'] text-xs px-2.5 py-1 rounded-full font-black border border-[#38BDF8]/40">
-                          Bortle {spot.bortleClass}
-                        </span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#071326] via-[#071326]/50 to-transparent" />
+                      <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-amber-400/40 text-[11px] font-extrabold text-amber-300 shadow-lg flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm text-amber-300">image</span>
+                        Imagen Representativa: {activeRegionInfo.region || activeRegionInfo.pais}
                       </div>
-
-                      <div className="absolute top-3 right-3">
-                        <span className="bg-black/80 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full border border-white/20">
-                          🌍 {spot.country || 'España'}
+                      <div className="absolute bottom-4 left-4 right-4 space-y-1">
+                        <span className="text-xs uppercase font-extrabold text-[#7DD3FC] tracking-wider block font-['JetBrains_Mono']">
+                          {activeRegionInfo.pais} • {activeRegionInfo.region}
                         </span>
-                      </div>
-
-                      <div className="absolute bottom-3 left-4 right-4">
-                        <span className="text-xs text-[#7DD3FC] font-black uppercase tracking-wider drop-shadow">
-                          {spot.region}
-                        </span>
-                        <h3 className="text-xl md:text-2xl font-black text-white font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                          {spot.name}
-                        </h3>
+                        <h2 className="text-xl sm:text-2xl font-black text-white font-['Plus_Jakarta_Sans'] drop-shadow-md">
+                          {activeRegionInfo.nombre_localizacion_principal}
+                        </h2>
+                        <p className="text-xs sm:text-sm text-white/90 line-clamp-2 max-w-3xl drop-shadow">
+                          {activeRegionInfo.descripcion_imagen_generica}
+                        </p>
                       </div>
                     </div>
+                    <div className="px-5 py-3 bg-[#082F49]/80 border-t border-[#38BDF8]/30 flex flex-wrap items-center justify-between text-xs text-[#BAE6FD] gap-2">
+                      <span className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm text-[#7DD3FC]">verified</span>
+                        Imagen del territorio / bloque. Los enclaves inferiores presentan su ficha técnica detallada sin fotos redundantes.
+                      </span>
+                      <span className="font-['JetBrains_Mono'] font-bold text-[#FEE685] bg-black/50 px-2.5 py-0.5 rounded-lg border border-white/10">
+                        {filteredSpots.length} enclaves catalogados
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {filteredSpots.map((spot) => (
+                  <div
+                    key={spot.id}
+                    onClick={() => setSelectedSpot(spot)}
+                    className="card-pastel-gold card-pastel-gold-hover rounded-3xl overflow-hidden shadow-xl transition-all duration-300 group cursor-pointer flex flex-col justify-between border-2 border-[#38BDF8]"
+                  >
+                    <div>
+                      {/* Enclave Technical Header (No individual photo) */}
+                      <div className="p-5 pb-4 bg-gradient-to-br from-[#0c192e] via-[#0f2442] to-[#091629] border-b border-[#38BDF8]/40">
+                        <div className="flex items-center justify-between gap-2 mb-2.5">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {spot.certified ? (
+                              <span className="bg-[#0284C7] text-white text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow-sm border border-[#BAE6FD]/40">
+                                ⭐ Certificado Starlight
+                              </span>
+                            ) : (
+                              <span className="bg-[#059669] text-white text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                                🌄 Lugar Óptimo (Punto Libre)
+                              </span>
+                            )}
+                            <span className="bg-black/80 text-[#38BDF8] font-['JetBrains_Mono'] text-xs px-2.5 py-0.5 rounded-full font-black border border-[#38BDF8]/40 shadow-sm">
+                              Bortle {spot.bortleClass}
+                            </span>
+                          </div>
+
+                          <span className="bg-black/60 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-white/20">
+                            🌍 {spot.country || 'España'}
+                          </span>
+                        </div>
+
+                        <div>
+                          <span className="text-xs text-[#7DD3FC] font-black uppercase tracking-wider block font-['JetBrains_Mono']">
+                            {spot.region}
+                          </span>
+                          <h3 className="text-xl md:text-2xl font-black text-white font-['Plus_Jakarta_Sans'] leading-tight group-hover:text-[#7DD3FC] transition-colors mt-0.5">
+                            {spot.name}
+                          </h3>
+                        </div>
+
+                        {/* Astronomical Telemetry Grid */}
+                        <div className="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-white/10 text-xs font-['JetBrains_Mono']">
+                          <div className="bg-black/50 p-2 rounded-xl border border-white/10">
+                            <span className="text-[#7DD3FC] block text-[9px] uppercase font-bold">Altitud</span>
+                            <span className="text-white font-black text-sm">{spot.elevationMeters}m</span>
+                          </div>
+                          <div className="bg-black/50 p-2 rounded-xl border border-white/10">
+                            <span className="text-[#7DD3FC] block text-[9px] uppercase font-bold">SQM Cielo</span>
+                            <span className="text-white font-black text-sm">{spot.sqm}</span>
+                          </div>
+                          <div className="bg-black/50 p-2 rounded-xl border border-white/10">
+                            <span className="text-[#7DD3FC] block text-[9px] uppercase font-bold">GPS</span>
+                            <span className="text-white font-black text-[10px] truncate block" title={`${spot.latitude}, ${spot.longitude}`}>
+                              {spot.latitude.toFixed(2)}°, {spot.longitude.toFixed(2)}°
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
                     <div className="p-6">
                       <p className="text-sm md:text-base text-[#030712] font-bold leading-relaxed mb-4 line-clamp-3">
@@ -829,7 +904,8 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                 </div>
               ))}
             </div>
-          )}
+          </>
+        )}
         </div>
       )}
 
@@ -875,6 +951,8 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                       <img
                         src={spot.imageUrl}
                         alt={spot.name}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#2D1B4E] via-transparent to-black/30" />
@@ -1310,18 +1388,36 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             </div>
 
             <div className="space-y-6">
-              <div className="h-56 rounded-2xl overflow-hidden relative border border-[#38BDF8]/60 shadow-md">
-                <img src={selectedSpot.imageUrl} alt={selectedSpot.name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                <div className="absolute bottom-4 left-4 flex gap-2">
-                  <span className="bg-[#0284C7] text-white text-xs font-extrabold px-3 py-1 rounded-full font-['JetBrains_Mono'] shadow-sm">
-                    Bortle Clase {selectedSpot.bortleClass}
-                  </span>
-                  <span className="bg-black/80 text-white backdrop-blur-md text-xs font-bold px-3 py-1 rounded-full font-['JetBrains_Mono']">
-                    SQM: {selectedSpot.sqm} mag/arcsec²
-                  </span>
-                </div>
-              </div>
+              {(() => {
+                const regImg = getRegionImage(selectedSpot);
+                return (
+                  <div className="h-60 rounded-2xl overflow-hidden relative border border-[#38BDF8]/60 shadow-lg bg-black">
+                    <img
+                      src={regImg?.imageUrl || '/images/regions/esp_andalucia_default.jpg'}
+                      alt={regImg?.nombre_localizacion_principal || selectedSpot.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                    <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-amber-400/40 text-[10px] font-bold text-amber-300">
+                      🌄 Imagen del Territorio: {regImg?.region || selectedSpot.region} ({regImg?.nombre_localizacion_principal})
+                    </div>
+                    <div className="absolute bottom-3 left-4 right-4 flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex gap-2">
+                        <span className="bg-[#0284C7] text-white text-xs font-extrabold px-3 py-1 rounded-full font-['JetBrains_Mono'] shadow-sm">
+                          Bortle Clase {selectedSpot.bortleClass}
+                        </span>
+                        <span className="bg-black/80 text-white backdrop-blur-md text-xs font-bold px-3 py-1 rounded-full font-['JetBrains_Mono']">
+                          SQM: {selectedSpot.sqm} mag/arcsec²
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-white/90 font-['JetBrains_Mono'] bg-black/70 px-2.5 py-1 rounded-lg">
+                        📍 {selectedSpot.latitude.toFixed(4)}°, {selectedSpot.longitude.toFixed(4)}°
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               <p className="text-base text-[#E0F2FE] font-medium leading-relaxed">
                 {selectedSpot.description}

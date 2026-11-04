@@ -1,0 +1,667 @@
+
+
+
+[
+  {
+    "pais": "España",
+    "region": "Andalucía",
+    "nombre_localizacion_principal": "Parque Estelar Gorafe",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y nítida de los badlands desérticos de Gorafe bajo un cielo azul despejado y sol alto. Paisaje natural claro, sin sombras profundas.",
+    "imagen_referencia": "esp_andalucia_default.jpg"
+  },
+  {
+    "pais": "España",
+    "region": "Aragón",
+    "nombre_localizacion_principal": "Observatorio Astrofísico de Javalambre (CEFCA)",
+    "descripcion_imagen_generica": "Fotografía diurna clara y brillante de las cúpulas del Observatorio de Javalambre en la cima de la montaña, con iluminación natural directa y un cielo azul puro de fondo.",
+    "imagen_referencia": "esp_aragon_default.jpg"
+  },
+  {
+    "pais": "España",
+    "region": "Canarias",
+    "nombre_localizacion_principal": "Observatorio del Teide e Izaña",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa en la cumbre del Teide. Se aprecian las torres blancas de los telescopios solares sobre un mar de nubes blancas y brillantes bajo la luz directa del sol.",
+    "imagen_referencia": "esp_canarias_default.jpg"
+  },
+  {
+    "pais": "España",
+    "region": "Castilla-La Mancha",
+    "nombre_localizacion_principal": "Parque Natural de la Serranía de Cuenca",
+    "descripcion_imagen_generica": "Paisaje diurno soleado y nítido de las formaciones rocosas de la Ciudad Encantada en la Serranía de Cuenca. Luz natural intensa que resalta los tonos verdes de los pinos y el cielo azul vivo.",
+    "imagen_referencia": "esp_castilla_mancha_default.jpg"
+  },
+  {
+    "pais": "España",
+    "region": "Castilla y León",
+    "nombre_localizacion_principal": "Sierra de Gredos (Parque Regional)",
+    "descripcion_imagen_generica": "Fotografía diurna brillante del Circo de Gredos en verano, con montañas de granito gris claro iluminadas por el sol y cielo azul sin nubes. Alta claridad visual.",
+    "imagen_referencia": "esp_castilla_leon_default.jpg"
+  },
+  {
+    "pais": "España",
+    "region": "Cataluña",
+    "nombre_localizacion_principal": "Parc Astronòmic Montsec (PAM)",
+    "descripcion_imagen_generica": "Vista diurna y muy luminosa del complejo del observatorio y planetario del Montsec. Edificios del centro de observación claramente visibles con el desfiladero de Terradets de fondo bajo el sol de mediodía.",
+    "imagen_referencia": "esp_catalunya_default.jpg"
+  },
+  {
+    "pais": "España",
+    "region": "Comunidad Valenciana",
+    "nombre_localizacion_principal": "Reserva Starlight Alto Turia",
+    "descripcion_imagen_generica": "Paisaje natural diurno y claro de los bosques y el valle del río Turia. Fotografía muy luminosa que transmite naturaleza limpia y cielo despejado.",
+    "imagen_referencia": "esp_valencia_default.jpg"
+  },
+  {
+    "pais": "España",
+    "region": "Extremadura",
+    "nombre_localizacion_principal": "Reserva de la Biosfera de Monfragüe",
+    "descripcion_imagen_generica": "Vista panorámica diurna a plena luz del Salto del Gitano en Monfragüe. Río Tajo brillando bajo el sol, rocas iluminadas y cielo celeste sin sombras oscuras.",
+    "imagen_referencia": "esp_extremadura_default.jpg"
+  },
+  {
+    "pais": "España",
+    "region": "Galicia",
+    "nombre_localizacion_principal": "Parque Nacional de las Islas Cíes (Destino Starlight)",
+    "descripcion_imagen_generica": "Fotografía diurna espectacular y luminosa de la playa de Rodas en las Islas Cíes, con arena blanca brillante, agua cristalina y cielo azul limpio.",
+    "imagen_referencia": "esp_galicia_default.jpg"
+  },
+  {
+    "pais": "España",
+    "region": "Islas Baleares",
+    "nombre_localizacion_principal": "Menorca (Reserva y Destino Starlight)",
+    "descripcion_imagen_generica": "Paisaje diurno soleado de la costa escarpada de Menorca y el Faro de Cavalleria bajo un cielo azul turquesa. Alta luminosidad y colores vivos.",
+    "imagen_referencia": "esp_baleares_default.jpg"
+  },
+  {
+    "pais": "España",
+    "region": "La Rioja",
+    "nombre_localizacion_principal": "Reserva de la Biosfera Valles del Leza, Jubera, Cidacos y Alhama",
+    "descripcion_imagen_generica": "Fotografía diurna clara de los valles verdes riojanos. Sol alto, colinas suaves iluminadas y cielo totalmente despejado.",
+    "imagen_referencia": "esp_larioja_default.jpg"
+  },
+  {
+    "pais": "España",
+    "region": "Navarra",
+    "nombre_localizacion_principal": "Valle de Roncal",
+    "descripcion_imagen_generica": "Paisaje pirenaico diurno en el Valle de Roncal, Navarra. Montañas verdes iluminadas con luz directa, picos claros y cielos azules brillantes sin neblina.",
+    "imagen_referencia": "esp_navarra_default.jpg"
+  }
+]
+[
+  {
+    "pais": "Andorra",
+    "region": "Ordino / Sorteny",
+    "nombre_localizacion_principal": "Parc Natural de la Vall de Sorteny",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y nítida del valle alpino de Sorteny en Andorra. Prados verdes brillantes, arroyos cristalinos y altas cumbres bajo un sol radiante de mediodía.",
+    "imagen_referencia": "andorra_sorteny_default.jpg"
+  },
+  {
+    "pais": "Portugal",
+    "region": "Alentejo / Alqueva",
+    "nombre_localizacion_principal": "Dark Sky Alqueva",
+    "descripcion_imagen_generica": "Paisaje diurno soleado y amplio del gran lago de Alqueva en Portugal. Orillas limpias, llanuras con olivos y alcornoques bajo un cielo azul despejado y luz natural intensa.",
+    "imagen_referencia": "portugal_alqueva_default.jpg"
+  },
+  {
+    "pais": "Francia",
+    "region": "Pirineos Centrales",
+    "nombre_localizacion_principal": "Pic du Midi de Bigorre",
+    "descripcion_imagen_generica": "Impresionante fotografía diurna del observatorio en la cumbre nevada del Pic du Midi[cite: 5]. Cúpulas metálicas brillando bajo el sol de alta montaña y un mar de nubes blancas abajo.",
+    "imagen_referencia": "france_picdumidi_default.jpg"
+  },
+  {
+    "pais": "Francia",
+    "region": "Cévennes",
+    "nombre_localizacion_principal": "Parque Nacional de Cévennes",
+    "descripcion_imagen_generica": "Vista panorámica diurna de colinas boscosas y valles profundos en el Parque Nacional de Cévennes[cite: 5]. Luz solar directa sobre la vegetación y cielos totalmente claros.",
+    "imagen_referencia": "france_cevennes_default.jpg"
+  },
+  {
+    "pais": "Austria",
+    "region": "Alta Austria / Estiria",
+    "nombre_localizacion_principal": "Naturpark Attersee-Traunsee / Eisenwurzen",
+    "descripcion_imagen_generica": "Paisaje alpino diurno de Austria con lagos de aguas turquesas rodeados de bosques verdes y picos montañosos iluminados por un sol brillante.",
+    "imagen_referencia": "austria_eisenwurzen_default.jpg"
+  },
+  {
+    "pais": "Alemania",
+    "region": "Brandeburgo",
+    "nombre_localizacion_principal": "Westhavelland Nature Park",
+    "descripcion_imagen_generica": "Fotografía diurna de los humedales y praderas abiertas del Parque Natural de Westhavelland en Alemania. Luz natural suave, ríos reflejando el cielo y total amplitud visual.",
+    "imagen_referencia": "germany_westhavelland_default.jpg"
+  }
+]
+[
+  {
+    "pais": "Irlanda",
+    "region": "Condado de Kerry",
+    "nombre_localizacion_principal": "Kerry International Dark Sky Reserve",
+    "descripcion_imagen_generica": "Fotografía diurna y luminosa de la costa atlántica de Kerry con acantilados verdes, praderas despejadas y el mar bajo un sol brillante y cielo azul limpio.",
+    "imagen_referencia": "ireland_kerry_default.jpg"
+  },
+  {
+    "pais": "Reino Unido",
+    "region": "Gales",
+    "nombre_localizacion_principal": "Parque Nacional Eryri / Snowdonia (Eryri)",
+    "descripcion_imagen_generica": "Impresionante paisaje diurno del pico y los valles glaciares de Snowdonia en Gales. Colinas verdes, formaciones rocosas milenarias e iluminación solar directa muy nítida.",
+    "imagen_referencia": "uk_wales_eryri_default.jpg"
+  },
+  {
+    "pais": "Reino Unido",
+    "region": "Inglaterra",
+    "nombre_localizacion_principal": "Northumberland National Park & Kielder Water",
+    "descripcion_imagen_generica": "Vista panorámica diurna del gran embalse y los bosques de Kielder en Inglaterra, con luz natural brillante reflejada en el agua y paisajes abiertos.",
+    "imagen_referencia": "uk_england_northumberland_default.jpg"
+  },
+  {
+    "pais": "Reino Unido",
+    "region": "Escocia",
+    "nombre_localizacion_principal": "Galloway Forest Park",
+    "descripcion_imagen_generica": "Fotografía diurna clara y luminosa de los densos bosques y lagos de Galloway en Escocia, bañados por la luz del sol de mediodía sin sombras oscuras.",
+    "imagen_referencia": "uk_scotland_galloway_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "DarkSky / Observatorios",
+    "pais": "Chile",
+    "region": "Desierto de Atacama / Antofagasta",
+    "nombre_localizacion_principal": "Paranal Observatory / Cerro Paranal",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y nítida de los ciber-domos plateados del Observatorio Paranal en medio de la inmensidad árida del desierto de Atacama, bajo un sol radiante de mediodía y un cielo azul completamente despejado.",
+    "imagen_referencia": "chile_atacama_paranal_default.jpg"
+  },
+  {
+    "pais": "Colombia",
+    "region": "Desierto de la Tatacoa",
+    "nombre_localizacion_principal": "Destino Starlight Tatacoa",
+    "descripcion_imagen_generica": "Fotografía diurna nítida y colorida de los laberintos de tierra ocre y rojiza del desierto de la Tatacoa en Colombia, bajo un sol fuerte y cielo azul sin nubes.",
+    "imagen_referencia": "colombia_tatacoa_default.jpg"
+  },
+  {
+    "pais": "Canadá",
+    "region": "Nueva Escocia",
+    "nombre_localizacion_principal": "Hotel Trout Point Lodge (Alojamiento Starlight)",
+    "descripcion_imagen_generica": "Impresionante vista diurna de los frondosos bosques canadienses y un río cristalino junto al albergue de Trout Point Lodge, bañado por una luz natural brillante y limpia.",
+    "imagen_referencia": "canada_troutpoint_default.jpg"
+  }
+]
+[
+  {
+    "pais": "Estados Unidos",
+    "region": "Utah",
+    "nombre_localizacion_principal": "Parque Nacional Bryce Canyon (Destino Starlight)",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y de colores vivos de los anfiteatros naturales y formaciones rocosas (hoodoos) de Bryce Canyon bajo un sol radiante de mediodía y cielo azul despejado.",
+    "imagen_referencia": "us_utah_brycecanyon_default.jpg"
+  },
+  {
+    "pais": "Estados Unidos",
+    "region": "Arizona",
+    "nombre_localizacion_principal": "Parque Nacional del Gran Cañón (Destino Starlight)",
+    "descripcion_imagen_generica": "Vista panorámica diurna y de gran amplitud del Gran Cañón de Arizona. Las paredes de roca rojiza y los abismos brillan bajo la luz directa del sol con total nitidez.",
+    "imagen_referencia": "us_arizona_grandcanyon_default.jpg"
+  },
+  {
+    "pais": "Estados Unidos",
+    "region": "Nuevo México",
+    "nombre_localizacion_principal": "Parque Nacional de las Cavernas de Carlsbad",
+    "descripcion_imagen_generica": "Paisaje exterior diurno y luminoso de las áridas colinas y el entorno natural desértico de Carlsbad bajo un cielo completamente despejado y luz natural intensa.",
+    "imagen_referencia": "us_newmexico_carlsbad_default.jpg"
+  },
+  {
+    "pais": "Canadá",
+    "region": "Alberta",
+    "nombre_localizacion_principal": "Parque Nacional Jasper (Reserva de Cielo Oscuro Starlight)",
+    "descripcion_imagen_generica": "Impresionante fotografía diurna de las montañas rocosas canadienses reflejadas en un lago alpino de aguas turquesas bajo un cielo azul vivo y sol brillante.",
+    "imagen_referencia": "canada_jasper_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "DarkSky",
+    "pais": "Estados Unidos",
+    "region": "California",
+    "nombre_localizacion_principal": "Parque Nacional Death Valley",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y amplia de las formaciones de sal en Badwater Basin, Death Valley, bajo un sol brillante de mediodía y un cielo azul despejado sin sombras oscuras.",
+    "imagen_referencia": "darksky_us_deathvalley_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Estados Unidos",
+    "region": "Utah",
+    "nombre_localizacion_principal": "Parque Nacional Arches",
+    "descripcion_imagen_generica": "Paisaje diurno claro y de colores vivos de los arcos de piedra arenisca roja de Arches bajo una luz solar intensa y directa, destacando sobre un fondo de cielo azul puro.",
+    "imagen_referencia": "darksky_us_arches_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Estados Unidos",
+    "region": "Colorado",
+    "nombre_localizacion_principal": "Parque Nacional Black Canyon of the Gunnison",
+    "descripcion_imagen_generica": "Impresionante vista diurna de los profundos y escarpados acantilados oscuros del cañón iluminados plenamente por la luz del sol, con vegetación verde y alta nitidez visual.",
+    "imagen_referencia": "darksky_us_blackcanyon_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Estados Unidos",
+    "region": "Pennsylvania",
+    "nombre_localizacion_principal": "Cherry Springs State Park",
+    "descripcion_imagen_generica": "Fotografía diurna brillante del espeso y verde bosque circundante de Cherry Springs, con luz natural limpia filtrándose entre las copas de los árboles bajo un cielo despejado.",
+    "imagen_referencia": "darksky_us_cherrysprings_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Brasil",
+    "region": "Río de Janeiro",
+    "nombre_localizacion_principal": "Desengano State Park",
+    "descripcion_imagen_generica": "Paisaje diurno exuberante y muy luminoso de las montañas y la selva atlántica protegida del Parque Estatal do Desengano bajo un sol radiante.",
+    "imagen_referencia": "darksky_brazil_desengano_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Nueva Zelanda",
+    "region": "Mackenzie / Aoraki",
+    "nombre_localizacion_principal": "Aoraki Mackenzie International Dark Sky Reserve",
+    "descripcion_imagen_generica": "Fotografía diurna panorámica de los picos alpinos nevados de los Alpes Neozelandeses y lagos glaciares de color turquesa intenso bajo la luz directa del sol.",
+    "imagen_referencia": "darksky_nz_aoraki_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "DarkSky",
+    "pais": "Estados Unidos",
+    "region": "Montana",
+    "nombre_localizacion_principal": "Parque Nacional Glacier",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y nítida de los picos alpinos escarpados y lagos de aguas cristalinas en el Parque Nacional Glacier bajo un sol brillante de verano.",
+    "imagen_referencia": "darksky_us_glacier_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Estados Unidos",
+    "region": "Carolina del Norte",
+    "nombre_localizacion_principal": "Mayland Earth-to-Sky Park",
+    "descripcion_imagen_generica": "Vista panorámica diurna y despejada de las colinas boscosas de los Apalaches en Carolina del Norte, con luz natural directa y cielos abiertos.",
+    "imagen_referencia": "darksky_us_mayland_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Estados Unidos",
+    "region": "Oregón",
+    "nombre_localizacion_principal": "Prineville Reservoir State Park",
+    "descripcion_imagen_generica": "Paisaje diurno brillante y amplio del embalse de Prineville en Oregón, reflejando la luz del sol sobre orillas limpias y colinas áridas.",
+    "imagen_referencia": "darksky_us_prineville_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Estados Unidos",
+    "region": "Maine",
+    "nombre_localizacion_principal": "Katahdin Woods and Waters National Monument",
+    "descripcion_imagen_generica": "Fotografía diurna clara y luminosa de los densos bosques y ríos de Maine bañados por la luz del sol de mediodía.",
+    "imagen_referencia": "darksky_us_katahdin_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Estados Unidos",
+    "region": "Washington",
+    "nombre_localizacion_principal": "Sun Lakes-Dry Falls State Park",
+    "descripcion_imagen_generica": "Impresionante vista diurna de los acantilados geológicos y cañones esculpidos de Dry Falls en Washington bajo un cielo azul despejado y luz intensa.",
+    "imagen_referencia": "darksky_us_dryfalls_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Estados Unidos",
+    "region": "Hawái",
+    "nombre_localizacion_principal": "Parque Nacional de los Volcanes de Hawái",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa de los paisajes volcánicos y cráteres de Hawái, con vegetación tropical iluminada por el sol y cielos puros.",
+    "imagen_referencia": "darksky_us_hawaiivolcanoes_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "DarkSky",
+    "pais": "Canadá",
+    "region": "Territorios del Noroeste / Alberta",
+    "nombre_localizacion_principal": "Wood Buffalo National Park",
+    "descripcion_imagen_generica": "Fotografía diurna amplia y luminosa de los grandes bosques boreales, ríos serpenteantes y llanuras del parque de cielo oscuro más grande de Canadá bajo el sol.",
+    "imagen_referencia": "darksky_canada_woodbuffalo_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "DarkSky",
+    "pais": "Brasil",
+    "region": "Río de Janeiro",
+    "nombre_localizacion_principal": "Desengano State Park",
+    "descripcion_imagen_generica": "Fotografía diurna exuberante y muy luminosa de las montañas y la selva atlántica protegida del Parque Estatal do Desengano bajo un sol radiante de mediodía.",
+    "imagen_referencia": "darksky_latinamerica_brasil_desengano_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "México",
+    "region": "Baja California",
+    "nombre_localizacion_principal": "Observatorio Astronómico Nacional - Sierra de San Pedro Mártir",
+    "descripcion_imagen_generica": "Impresionante vista diurna de los edificios del observatorio en la cima de la Sierra de San Pedro Mártir, rodeados de bosques de pinos bajo un sol brillante y gran nitidez atmosférica.",
+    "imagen_referencia": "darksky_latinamerica_mexico_sanpedromartir_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "Starlight / DarkSky",
+    "pais": "Chile",
+    "region": "Coquimbo",
+    "nombre_localizacion_principal": "Parque Nacional Bosque Fray Jorge",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y de gran contraste del bosque hidrófilo relicto de Fray Jorge contrastando con las áridas costas del Pacífico bajo un sol radiante.",
+    "imagen_referencia": "latam_chile_frayjorge_default.jpg"
+  },
+  {
+    "pais": "Perú",
+    "region": "Arequipa",
+    "nombre_localizacion_principal": "Cañón del Colca",
+    "descripcion_imagen_generica": "Paisaje andino diurno y muy luminoso del cañón del Colca, con terrazas agrícolas incas esculpidas en las laderas de las montañas bajo un cielo azul puro.",
+    "imagen_referencia": "latam_peru_colca_default.jpg"
+  },
+  {
+    "pais": "Colombia",
+    "region": "Boyacá / Villa de Leyva",
+    "nombre_localizacion_principal": "Observatorio de Los Zaques y Desierto de Monquira",
+    "descripcion_imagen_generica": "Fotografía diurna clara de las mesetas y formaciones arcillosas de Villa de Leyva iluminadas por un sol brillante de mediodía.",
+    "imagen_referencia": "latam_colombia_villadeleyva_default.jpg"
+  },
+  {
+    "pais": "Bolivia",
+    "region": "Potosí",
+    "nombre_localizacion_principal": "Salar de Uyuni",
+    "descripcion_imagen_generica": "Vista panorámica diurna de la inmensa costra de sal blanca del Salar de Uyuni brillando intensamente bajo la luz directa del sol y un cielo completamente despejado.",
+    "imagen_referencia": "latam_bolivia_uyuni_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "DarkSky / Starlight",
+    "pais": "México",
+    "region": "Baja California Sur",
+    "nombre_localizacion_principal": "Parque Nacional Archipiélago de Espíritu Santo",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y nítida de las formaciones rocosas volcánicas y las aguas cristalinas del golfo de California en Espíritu Santo bajo un sol brillante.",
+    "imagen_referencia": "latam_mexico_espiritusanto_default.jpg"
+  },
+  {
+    "categoria": "Starlight",
+    "pais": "Chile",
+    "region": "Atacama",
+    "nombre_localizacion_principal": "Parque Nacional Llanos de Challes",
+    "descripcion_imagen_generica": "Fotografía diurna clara y luminosa del desierto florido en Llanos de Challes, con vegetación costera y suelo arenoso bañado por la luz directa del sol.",
+    "imagen_referencia": "latam_chile_llanoschalles_default.jpg"
+  },
+  {
+    "categoria": "Starlight",
+    "pais": "Argentina",
+    "region": "Mendoza",
+    "nombre_localizacion_principal": "Reserva Natural Villavicencio",
+    "descripcion_imagen_generica": "Paisaje de alta montaña diurno y brillante en la cordillera mendocina, con sinuosos caminos, vegetación andina y picos iluminados por la luz natural directa.",
+    "imagen_referencia": "latam_argentina_villavicencio_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "DarkSky",
+    "pais": "Japón",
+    "region": "Okayama",
+    "nombre_localizacion_principal": "Bisei",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y nítida de los valles rurales y colinas verdes de Bisei bajo un sol brillante de mediodía y cielo azul despejado.",
+    "imagen_referencia": "darksky_asia_japan_bisei_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "China",
+    "region": "Sichuan",
+    "nombre_localizacion_principal": "Huanglong National Scenic Area (Xueshanliang)",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa de las terrazas de piscinas de aguas cristalinas y cumbres nevadas de Huanglong bajo un sol brillante de alta montaña.",
+    "imagen_referencia": "darksky_asia_china_huanglong_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Taiwán",
+    "region": "Nantou / Taroko",
+    "nombre_localizacion_principal": "Hehuan Mountain (Taroko National Park)",
+    "descripcion_imagen_generica": "Fotografía diurna muy nítida y de gran altitud de los picos montañosos y sinuosas carreteras alpinas de Hehuan Mountain bañadas por una luz solar intensa.",
+    "imagen_referencia": "darksky_asia_taiwan_hehuan_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "DarkSky",
+    "pais": "India",
+    "region": "Ladakh",
+    "nombre_localizacion_principal": "Hanle Dark Sky Reserve",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y de gran altitud de los paisajes desérticos de gran altitud y cúpulas científicas en Ladakh bajo un cielo azul puro y sol brillante.",
+    "imagen_referencia": "darksky_asia_india_hanle_default.jpg"
+  },
+  {
+    "categoria": "DarkSky",
+    "pais": "Corea del Sur",
+    "region": "Gyeongsang del Norte",
+    "nombre_localizacion_principal": "Yeongyang Firefly Ecological Park",
+    "descripcion_imagen_generica": "Paisaje diurno claro y natural de los valles fluviales protegidos y bosques frondosos de Yeongyang bajo una luz solar intensa y limpia.",
+    "imagen_referencia": "darksky_asia_koreasouth_yeongyang_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "Rusia - Zonas de Cielo Oscuro y Árticas",
+    "pais": "Rusia",
+    "region": "Óblast de Múrmansk / Península de Kola",
+    "nombre_localizacion_principal": "Múrmansk",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y nítida de los paisajes árticos de Múrmansk bajo un sol radiante de mediodía, con colinas nevadas brillantes y un cielo azul completamente despejado[cite: 1].",
+    "imagen_referencia": "rusia_murmansk_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "Oceanía - Cielos Oscuros y Reservas",
+    "pais": "Australia",
+    "region": "Nueva Gales del Sur",
+    "nombre_localizacion_principal": "Warrumbungle National Park",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y nítida de las formaciones volcánicas y los bosques de eucaliptos del Parque Nacional Warrumbungle bajo un sol radiante de mediodía y cielo azul despejado[cite: 3].",
+    "imagen_referencia": "australia_warrumbungle_default.jpg"
+  },
+  
+  {
+    "categoria": "Oceanía - Cielos Oscuros y Reservas",
+    "pais": "Australia",
+    "region": "Tasmania",
+    "nombre_localizacion_principal": "Cradle Mountain",
+    "descripcion_imagen_generica": "Impresionante paisaje diurno del parque nacional de Cradle Mountain en Tasmania, con picos afilados y lagos glaciares cristalinos reflejando la luz directa del sol[cite: 3].",
+    "imagen_referencia": "australia_cradlemountain_default.jpg"
+  },
+  {
+    "categoria": "Oceanía - Cielos Oscuros y Reservas",
+    "pais": "Nueva Zelanda",
+    "region": "Región de Canterbury",
+    "nombre_localizacion_principal": "Aoraki Mackenzie International Dark Sky Reserve",
+    "descripcion_imagen_generica": "Fotografía diurna nítida y luminosa de los Alpes Neozelandeses y el lago Tekapo de aguas turquesas bajo un sol radiante de mediodía[cite: 3].",
+    "imagen_referencia": "nz_aoraki_mackenzie_default.jpg"
+  },
+  {
+    "categoria": "Oceanía - Cielos Oscuros y Reservas",
+    "pais": "Reino Unido / Territorios Insulares",
+    "region": "Islas Pitcairn",
+    "nombre_localizacion_principal": "Islas Pitcairn Sanctuary",
+    "descripcion_imagen_generica": "Paisaje insular diurno y nítido de las colinas volcánicas verdes de las Islas Pitcairn rodeadas por el océano Pacífico bajo la luz directa del sol[cite: 3].",
+    "imagen_referencia": "oceania_pitcairn_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "Auroras Australes",
+    "pais": "Reino Unido / Territorios de Ultramar",
+    "region": "Islas Georgias del Sur y Sandwich del Sur",
+    "nombre_localizacion_principal": "Isla Georgias del Sur",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y nítida de los majestuosos glaciares y montañas nevadas de Georgia del Sur bajo un sol radiante de mediodía y un cielo azul completamente despejado.",
+    "imagen_referencia": "auroras_georgias_del_sur_default.jpg"
+  },
+  {
+    "categoria": "Auroras Australes",
+    "pais": "Reino Unido / Territorios de Ultramar",
+    "region": "Islas Malvinas",
+    "nombre_localizacion_principal": "Falkland Islands / Islas Malvinas",
+    "descripcion_imagen_generica": "Paisaje costero diurno sumamente claro y brillante en las Islas Malvinas, con praderas verdes, playas de arena blanca y aguas turquesas bajo la luz solar directa.",
+    "imagen_referencia": "auroras_islas_malvinas_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Noruega",
+    "region": "Condado de Troms y Finnmark",
+    "nombre_localizacion_principal": "Tromsø",
+    "descripcion_imagen_generica": "Fotografía diurna sumamente luminosa y nítida de los fiordos noruegos rodeados de montañas nevadas bajo un sol radiante de mediodía y un cielo azul despejado.",
+    "imagen_referencia": "auroras_noruega_tromso_default.jpg"
+  },
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Suecia",
+    "region": "Laponia Sueca",
+    "nombre_localizacion_principal": "Abisko",
+    "descripcion_imagen_generica": "Paisaje diurno claro y amplio del Parque Nacional de Abisko en la Laponia sueca, con bosques de abedules y valles bañados por una luz solar directa y brillante.",
+    "imagen_referencia": "auroras_suecia_abisko_default.jpg"
+  },
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Islandia",
+    "region": "Región de la Capital / Reikiavik",
+    "nombre_localizacion_principal": "Reikiavik y zonas norteñas",
+    "descripcion_imagen_generica": "Vista panorámica diurna y de gran nitidez de la costa volcánica de Islandia, con formaciones rocosas y montañas iluminadas plenamente por la luz natural.",
+    "imagen_referencia": "auroras_islandia_default.jpg"
+  },
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Finlandia",
+    "region": "Laponia Finlandesa",
+    "nombre_localizacion_principal": "Rovaniemi / Laponia",
+    "descripcion_imagen_generica": "Paisaje diurno ártico muy luminoso de la taiga finlandesa con abundante nieve limpia resplandeciendo bajo un sol brillante y un cielo completamente despejado.",
+    "imagen_referencia": "auroras_finlandia_laponia_default.jpg"
+  },
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Canadá",
+    "region": "Territorios del Noroeste / Yukón",
+    "nombre_localizacion_principal": "Yellowknife",
+    "descripcion_imagen_generica": "Fotografía diurna amplia y nítida de los lagos y bosques boreales canadienses en Yellowknife bajo un sol intenso de mediodía y máxima claridad visual.",
+    "imagen_referencia": "auroras_canada_yellowknife_default.jpg"
+  },
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Estados Unidos",
+    "region": "Alaska",
+    "nombre_localizacion_principal": "Fairbanks",
+    "descripcion_imagen_generica": "Paisaje diurno despejado de los valles del interior de Alaska, con la naturaleza salvaje y los ríos bañados por una luz solar directa y limpia.",
+    "imagen_referencia": "auroras_eeuu_alaska_default.jpg"
+  }
+]
+
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Noruega",
+    "region": "Condado de Troms y Finnmark",
+    "nombre_localizacion_principal": "Tromsø",
+    "descripcion_imagen_generica": "Fotografía diurna sumamente luminosa y nítida de los fiordos noruegos rodeados de montañas nevadas bajo un sol radiante de mediodía y un cielo azul despejado.",
+    "imagen_referencia": "auroras_noruega_tromso_default.jpg"
+  },
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Suecia",
+    "region": "Laponia Sueca",
+    "nombre_localizacion_principal": "Abisko",
+    "descripcion_imagen_generica": "Paisaje diurno claro y amplio del Parque Nacional de Abisko en la Laponia sueca, con bosques de abedules y valles bañados por una luz solar directa y brillante.",
+    "imagen_referencia": "auroras_suecia_abisko_default.jpg"
+  },
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Islandia",
+    "region": "Región de la Capital / Reikiavik",
+    "nombre_localizacion_principal": "Reikiavik y zonas norteñas",
+    "descripcion_imagen_generica": "Vista panorámica diurna y de gran nitidez de la costa volcánica de Islandia, con formaciones rocosas y montañas iluminadas plenamente por la luz natural.",
+    "imagen_referencia": "auroras_islandia_default.jpg"
+  },
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Finlandia",
+    "region": "Laponia Finlandesa",
+    "nombre_localizacion_principal": "Rovaniemi / Laponia",
+    "descripcion_imagen_generica": "Paisaje diurno ártico muy luminoso de la taiga finlandesa con abundante nieve limpia resplandeciendo bajo un sol brillante y un cielo completamente despejado.",
+    "imagen_referencia": "auroras_finlandia_laponia_default.jpg"
+  },
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Canadá",
+    "region": "Territorios del Noroeste / Yukón",
+    "nombre_localizacion_principal": "Yellowknife",
+    "descripcion_imagen_generica": "Fotografía diurna amplia y nítida de los lagos y bosques boreales canadienses en Yellowknife bajo un sol intenso de mediodía y máxima claridad visual.",
+    "imagen_referencia": "auroras_canada_yellowknife_default.jpg"
+  },
+  {
+    "categoria": "Auroras Boreales",
+    "pais": "Estados Unidos",
+    "region": "Alaska",
+    "nombre_localizacion_principal": "Fairbanks",
+    "descripcion_imagen_generica": "Paisaje diurno despejado de los valles del interior de Alaska, con la naturaleza salvaje y los ríos bañados por una luz solar directa y limpia.",
+    "imagen_referencia": "auroras_eeuu_alaska_default.jpg"
+  }
+]
+[
+  {
+    "categoria": "Auroras Australes",
+    "pais": "Reino Unido / Territorios de Ultramar",
+    "region": "Islas Georgias del Sur y Sandwich del Sur",
+    "nombre_localizacion_principal": "Isla Georgias del Sur",
+    "descripcion_imagen_generica": "Fotografía diurna muy luminosa y nítida de los majestuosos glaciares y montañas nevadas de Georgia del Sur bajo un sol radiante de mediodía y un cielo azul completamente despejado.",
+    "imagen_referencia": "auroras_georgias_del_sur_default.jpg"
+  },
+  {
+    "categoria": "Auroras Australes",
+    "pais": "Reino Unido / Territorios de Ultramar",
+    "region": "Islas Malvinas",
+    "nombre_localizacion_principal": "Falkland Islands / Islas Malvinas",
+    "descripcion_imagen_generica": "Paisaje costero diurno sumamente claro y brillante en las Islas Malvinas, con praderas verdes, playas de arena blanca y aguas turquesas bajo la luz solar directa.",
+    "imagen_referencia": "auroras_islas_malvinas_default.jpg"
+  },
+{
+    "categoria": "Auroras Australes",
+    "pais": "Nueva Zelanda",
+    "region": "Isla Sur (Queenstown / Aoraki / Stewart Island)",
+    "nombre_localizacion_principal": "Aoraki / Mount Cook National Park",
+    "descripcion_imagen_generica": "Impresionante fotografía diurna de alta nitidez de los picos alpinos nevados de Nueva Zelanda reflejados en un lago cristalino bajo la luz directa del sol.",
+    "imagen_referencia": "aurora_austral_nuevazelanda_default.jpg"
+  },
+  {
+    "categoria": "Auroras Australes",
+    "pais": "Australia",
+    "region": "Tasmania",
+    "nombre_localizacion_principal": "Cradle Mountain-Lake St Clair National Park",
+    "descripcion_imagen_generica": "Paisaje diurno luminoso de los bosques nativos, lagos glaciares y cumbres escarpadas de Tasmania bajo un sol radiante de mediodía.",
+    "imagen_referencia": "aurora_austral_australia_tasmania_default.jpg"
+  },
+  {
+    "categoria": "Auroras Australes",
+    "pais": "Chile",
+    "region": "Patagonia / Tierra del Fuego",
+    "nombre_localizacion_principal": "Parque Nacional Torres del Paine",
+    "descripcion_imagen_generica": "Fotografía diurna amplia y muy luminosa de los característicos cuernos de granito del Paine y lagos turquesas bajo un cielo azul despejado y luz solar directa.",
+    "imagen_referencia": "aurora_austral_chile_patagonia_default.jpg"
+  },
+  {
+    "categoria": "Auroras Australes",
+    "pais": "Argentina",
+    "region": "Patagonia / Tierra del Fuego",
+    "nombre_localizacion_principal": "Parque Nacional Tierra del Fuego",
+    "descripcion_imagen_generica": "Paisaje diurno claro y despejado de los bosques fueguinos, canales y montañas del fin del mundo con iluminación natural intensa.",
+    "imagen_referencia": "aurora_austral_argentina_tierradelfuego_default.jpg"
+  },
+  {
+    "categoria": "Auroras Australes",
+    "pais": "Antártida",
+    "region": "Península Antártica",
+    "nombre_localizacion_principal": "Base Antártica Bernardo O'Higgins",
+    "descripcion_imagen_generica": "Fotografía diurna de gran luminosidad de la base científica rodeada de majestuosas formaciones de hielo, icebergs y cielos puros bajo el sol antártico.",
+    "imagen_referencia": "aurora_austral_antartida_ohiggins_default.jpg"
+  }
+]

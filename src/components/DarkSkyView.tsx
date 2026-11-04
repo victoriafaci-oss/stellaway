@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DARKSKY_ZONES, DarkSkyZone } from '../data/darkSkyData';
 import { useLanguage } from '../context/LanguageContext';
+import { getRegionImage } from '../lib/regionImages';
 
 interface DarkSkyViewProps {
   onGoBack?: () => void;
@@ -443,6 +444,53 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
         </div>
       )}
 
+      {/* Territorial / Regional Hero Banner for DarkSky */}
+      {(() => {
+        const activeRegionInfo = getRegionImage({
+          country: selectedCountry !== 'todos' ? selectedCountry : 'Estados Unidos',
+          region: searchQuery || (selectedContinent !== 'todos' ? selectedContinent : 'California'),
+          category: 'DarkSky',
+        });
+        if (!activeRegionInfo) return null;
+        return (
+          <div className="rounded-3xl overflow-hidden border border-cyan-400/40 shadow-2xl bg-gradient-to-br from-[#120826] via-[#1a0f35] to-[#0c051a] mb-8 relative">
+            <div className="relative h-60 sm:h-72 w-full overflow-hidden">
+              <img
+                src={activeRegionInfo.imageUrl}
+                alt={activeRegionInfo.nombre_localizacion_principal}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0c051a] via-[#0c051a]/50 to-transparent" />
+              <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-cyan-400/40 text-[11px] font-extrabold text-cyan-300 shadow-lg flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-sm text-cyan-300">image</span>
+                Imagen Representativa: {activeRegionInfo.region || activeRegionInfo.pais}
+              </div>
+              <div className="absolute bottom-4 left-4 right-4 space-y-1">
+                <span className="text-xs uppercase font-extrabold text-cyan-300 tracking-wider block font-['JetBrains_Mono']">
+                  {activeRegionInfo.pais} {activeRegionInfo.region ? `• ${activeRegionInfo.region}` : ''}
+                </span>
+                <h2 className="text-xl sm:text-2xl font-black text-white font-['Plus_Jakarta_Sans'] drop-shadow-md">
+                  {activeRegionInfo.nombre_localizacion_principal}
+                </h2>
+                <p className="text-xs sm:text-sm text-white/90 line-clamp-2 max-w-3xl drop-shadow">
+                  {activeRegionInfo.descripcion_imagen_generica}
+                </p>
+              </div>
+            </div>
+            <div className="px-5 py-3 bg-black/60 border-t border-cyan-400/20 flex flex-wrap items-center justify-between text-xs text-cyan-200 gap-2">
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-sm text-cyan-300">verified</span>
+                Imagen del territorio. Las localizaciones inferiores muestran su ficha técnica oficial sin fotos redundantes.
+              </span>
+              <span className="font-['JetBrains_Mono'] font-bold text-amber-300 bg-black/50 px-2.5 py-0.5 rounded-lg border border-white/10">
+                {filteredZones.length} santuarios y parques DarkSky
+              </span>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Grid of DarkSky Places */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredZones.map((zone) => {
@@ -456,45 +504,46 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
               className="group rounded-3xl overflow-hidden bg-[#180E2B]/85 border border-cyan-500/30 hover:border-cyan-400 transition-all duration-300 shadow-xl flex flex-col justify-between hover:shadow-cyan-500/20"
             >
               <div>
-                {/* Image & Badges */}
-                <div className="relative h-48 w-full overflow-hidden">
-                  <img
-                    src={zone.imageUrl}
-                    alt={zone.name}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#180E2B] via-transparent to-black/30" />
-
-                  <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[85%]">
-                    <span className="px-2.5 py-0.5 rounded-full bg-cyan-950/90 text-cyan-300 border border-cyan-400/50 text-[10px] font-extrabold tracking-wider uppercase backdrop-blur-md shadow-sm">
-                      {zone.categoryLabel}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-black/70 text-amber-300 border border-amber-400/40 text-[10px] font-extrabold backdrop-blur-md">
-                      Bortle {zone.bortleClass}
-                    </span>
-                  </div>
-
-                  <div className="absolute top-3 right-3 flex items-center gap-1.5">
+                {/* Technical Header (No individual photo) */}
+                <div className="p-5 pb-3 bg-gradient-to-br from-[#1a0e30] via-[#20123c] to-[#120822] border-b border-cyan-500/30">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="px-2.5 py-0.5 rounded-full bg-cyan-950/90 text-cyan-300 border border-cyan-400/50 text-[10px] font-extrabold tracking-wider uppercase shadow-sm">
+                        {zone.categoryLabel}
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-black/70 text-amber-300 border border-amber-400/40 text-[10px] font-extrabold">
+                        Bortle {zone.bortleClass}
+                      </span>
+                    </div>
                     {distanceKm !== null && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-400/60 text-emerald-300 text-[10px] font-extrabold backdrop-blur-md shadow-sm">
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-400/60 text-emerald-300 text-[10px] font-extrabold">
                         {distanceKm.toLocaleString()} km
                       </span>
                     )}
-                    <span className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-xs font-bold text-white">
-                      {zone.designationYear}
-                    </span>
                   </div>
 
-                  <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-[11px] text-white/90 font-['JetBrains_Mono']">
-                    <span className="bg-black/70 px-2 py-0.5 rounded-md backdrop-blur-sm border border-white/10">
-                      SQM: {zone.sqm.toFixed(2)} mag/arcsec²
-                    </span>
-                    {zone.areaKm2 && (
-                      <span className="bg-black/70 px-2 py-0.5 rounded-md backdrop-blur-sm border border-white/10">
-                        {zone.areaKm2.toLocaleString()} km²
-                      </span>
-                    )}
+                  <div>
+                    <div className="flex items-center gap-1 text-[11px] text-cyan-300/90 font-bold mb-0.5 font-['JetBrains_Mono']">
+                      <span>{zone.region} • {zone.country}</span>
+                    </div>
+                    <h3 className="text-lg font-black text-white font-['Plus_Jakarta_Sans'] group-hover:text-cyan-200 transition-colors leading-tight">
+                      {zone.name}
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-white/10 text-xs font-['JetBrains_Mono']">
+                    <div className="bg-black/50 p-2 rounded-xl border border-white/10">
+                      <span className="text-cyan-300 block text-[9px] uppercase font-bold">SQM Cielo</span>
+                      <span className="text-white font-black text-sm">{zone.sqm.toFixed(2)}</span>
+                    </div>
+                    <div className="bg-black/50 p-2 rounded-xl border border-white/10">
+                      <span className="text-cyan-300 block text-[9px] uppercase font-bold">Área Protegida</span>
+                      <span className="text-white font-black text-[11px] truncate block">{zone.areaKm2 ? `${zone.areaKm2.toLocaleString()} km²` : 'Protegida'}</span>
+                    </div>
+                    <div className="bg-black/50 p-2 rounded-xl border border-white/10">
+                      <span className="text-cyan-300 block text-[9px] uppercase font-bold">Año Sello</span>
+                      <span className="text-white font-black text-sm">{zone.designationYear}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -616,23 +665,34 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
             {/* Scrollable Content */}
             <div className="overflow-y-auto space-y-4 py-4 pr-1 text-xs">
               {/* Image banner */}
-              <div className="relative h-56 rounded-2xl overflow-hidden border border-white/10 shadow-md">
-                <img
-                  src={selectedZone.imageUrl}
-                  alt={selectedZone.name}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white font-['JetBrains_Mono'] text-xs">
-                  <span className="bg-black/70 px-2.5 py-1 rounded-lg backdrop-blur-sm border border-white/20">
-                    Bortle {selectedZone.bortleClass} (SQM: {selectedZone.sqm})
-                  </span>
-                  <span className="bg-black/70 px-2.5 py-1 rounded-lg backdrop-blur-sm border border-white/20">
-                    📍 {selectedZone.latitude.toFixed(4)}°, {selectedZone.longitude.toFixed(4)}°
-                  </span>
-                </div>
-              </div>
+              {(() => {
+                const regImg = getRegionImage(selectedZone);
+                const displayImg = regImg?.imageUrl || selectedZone.imageUrl;
+                return (
+                  <div className="relative h-56 rounded-2xl overflow-hidden border border-white/10 shadow-md bg-black">
+                    <img
+                      src={displayImg}
+                      alt={selectedZone.name}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
+                    {regImg && (
+                      <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-cyan-400/40 text-[10px] font-bold text-cyan-300">
+                        🌄 Territorio: {regImg.region || selectedZone.region} ({regImg.nombre_localizacion_principal})
+                      </div>
+                    )}
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white font-['JetBrains_Mono'] text-xs">
+                      <span className="bg-black/70 px-2.5 py-1 rounded-lg backdrop-blur-sm border border-white/20">
+                        Bortle {selectedZone.bortleClass} (SQM: {selectedZone.sqm})
+                      </span>
+                      <span className="bg-black/70 px-2.5 py-1 rounded-lg backdrop-blur-sm border border-white/20">
+                        📍 {selectedZone.latitude.toFixed(4)}°, {selectedZone.longitude.toFixed(4)}°
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Description */}
               <div className="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-1.5">

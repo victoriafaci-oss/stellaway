@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AURORAS_DATA, AuroraSpot } from '../data/aurorasData';
 import { useLanguage } from '../context/LanguageContext';
+import { getRegionImage } from '../lib/regionImages';
 
 interface AurorasViewProps {
   onGoBack?: () => void;
@@ -294,6 +295,55 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
         </div>
       </div>
 
+      {/* Territorial / Regional Hero Banner for Auroras */}
+      {(() => {
+        const activeRegionInfo = getRegionImage({
+          country: selectedCountry !== 'todos' ? selectedCountry : (selectedHemisphere === 'sur' ? 'Chile' : 'Noruega'),
+          region: searchQuery || (selectedHemisphere === 'sur' ? 'Tierra del Fuego' : 'Troms'),
+          category: selectedHemisphere === 'sur' ? 'Aurora Austral' : 'Aurora Boreal',
+          hemisphere: selectedHemisphere !== 'todos' ? selectedHemisphere : undefined,
+          isAurora: true,
+        });
+        if (!activeRegionInfo) return null;
+        return (
+          <div className="rounded-3xl overflow-hidden border border-[#38BDF8]/40 shadow-2xl bg-gradient-to-br from-[#0b1b33] via-[#09152b] to-[#040b17] mb-8 relative">
+            <div className="relative h-60 sm:h-72 w-full overflow-hidden">
+              <img
+                src={activeRegionInfo.imageUrl}
+                alt={activeRegionInfo.nombre_localizacion_principal}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#040b17] via-[#040b17]/50 to-transparent" />
+              <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-sky-400/40 text-[11px] font-extrabold text-sky-300 shadow-lg flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-sm text-sky-300">image</span>
+                Imagen Representativa: {activeRegionInfo.region || activeRegionInfo.pais}
+              </div>
+              <div className="absolute bottom-4 left-4 right-4 space-y-1">
+                <span className="text-xs uppercase font-extrabold text-[#7DD3FC] tracking-wider block font-['JetBrains_Mono']">
+                  {activeRegionInfo.pais} {activeRegionInfo.region ? `• ${activeRegionInfo.region}` : ''}
+                </span>
+                <h2 className="text-xl sm:text-2xl font-black text-white font-['Plus_Jakarta_Sans'] drop-shadow-md">
+                  {activeRegionInfo.nombre_localizacion_principal}
+                </h2>
+                <p className="text-xs sm:text-sm text-white/90 line-clamp-2 max-w-3xl drop-shadow">
+                  {activeRegionInfo.descripcion_imagen_generica}
+                </p>
+              </div>
+            </div>
+            <div className="px-5 py-3 bg-black/60 border-t border-sky-400/20 flex flex-wrap items-center justify-between text-xs text-sky-200 gap-2">
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-sm text-[#38BDF8]">verified</span>
+                Imagen del territorio. Las fichas inferiores muestran las especificaciones astronómicas y geomagnéticas oficiales.
+              </span>
+              <span className="font-['JetBrains_Mono'] font-bold text-amber-300 bg-black/50 px-2.5 py-0.5 rounded-lg border border-white/10">
+                {filteredSpots.length} enclaves aurorales catalogados
+              </span>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* MAP VIEW */}
       {viewMode === 'map' && (
         <div className="mb-8 rounded-3xl bg-[#080315] border-2 border-[#38BDF8]/40 p-4 sm:p-6 shadow-2xl relative overflow-hidden backdrop-blur-xl">
@@ -382,27 +432,11 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
               className="rounded-3xl overflow-hidden bg-gradient-to-b from-[#130B22] to-[#0A0614] border border-[#38BDF8]/40 hover:border-[#7DD3FC] transition-all duration-300 shadow-xl hover:shadow-[0_0_25px_rgba(56,189,248,0.25)] flex flex-col justify-between group cursor-pointer"
             >
               <div>
-                {/* Luminous, colourful high-contrast image container */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-900">
-                  <img
-                    src={spot.imageUrl}
-                    alt={spot.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      if (!target.src.includes('photo-1579033461380-adb47c3eb938')) {
-                        target.src = 'https://images.unsplash.com/photo-1579033461380-adb47c3eb938?auto=format&fit=crop&w=1200&q=80';
-                      }
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#130B22] via-transparent to-black/30" />
-
-                  {/* Top Badges */}
-                  <div className="absolute top-3 inset-x-3 flex items-center justify-between gap-2">
+                {/* Technical Telemetry Header (No individual photo) */}
+                <div className="p-5 pb-3 bg-gradient-to-br from-[#0c1e3a] via-[#09152b] to-[#040b17] border-b border-[#38BDF8]/30">
+                  <div className="flex items-center justify-between gap-2 mb-2">
                     <span
-                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md border shadow-md ${
+                      className={`px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md border shadow-md ${
                         isBoreal
                           ? 'bg-[#0284C7]/90 text-white border-[#7DD3FC]'
                           : 'bg-violet-500/80 text-white border-violet-300'
@@ -411,22 +445,26 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                       {isBoreal ? '🌌 Aurora Boreal' : '✨ Aurora Austral'}
                     </span>
 
-                    <span className="px-2 py-0.5 rounded-full bg-black/70 text-white text-[10px] font-mono font-bold border border-white/20 backdrop-blur-md">
+                    <span className="px-2 py-0.5 rounded-full bg-black/70 text-amber-300 text-[10px] font-mono font-bold border border-amber-400/30">
                       {spot.bortle.split(' - ')[0]}
                     </span>
                   </div>
 
-                  {/* Bottom Image Info */}
-                  <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-xs text-white">
-                    <span className="font-extrabold flex items-center gap-1 drop-shadow-md">
+                  <div className="flex items-center justify-between text-xs text-white mt-3">
+                    <span className="font-extrabold flex items-center gap-1">
                       <span className="material-symbols-outlined text-sm text-[#38BDF8]">location_on</span>
-                      {spot.country}
+                      {spot.country} • {spot.region}
                     </span>
                     {distance !== null && (
-                      <span className="text-[11px] font-mono text-[#7DD3FC] font-bold bg-[#082F49]/80 border border-[#38BDF8]/40 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                      <span className="text-[11px] font-mono text-[#7DD3FC] font-bold bg-black/60 border border-[#38BDF8]/40 px-2 py-0.5 rounded-full">
                         {distance.toLocaleString()} km
                       </span>
                     )}
+                  </div>
+
+                  <div className="mt-2 text-[11px] font-['JetBrains_Mono'] text-white/70 flex items-center justify-between">
+                    <span>📍 {spot.latitude.toFixed(2)}°, {spot.longitude.toFixed(2)}°</span>
+                    <span className="text-[#7DD3FC] font-bold">{spot.frequencyLabel}</span>
                   </div>
                 </div>
 
@@ -508,58 +546,64 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
             className="relative w-full max-w-2xl bg-[#090414] text-white rounded-3xl border-2 border-[#38BDF8]/60 shadow-[0_0_50px_rgba(56,189,248,0.35)] overflow-hidden my-auto max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Image Header */}
-            <div className="relative aspect-[16/9] w-full shrink-0 bg-slate-900 overflow-hidden">
-              <img
-                src={selectedSpot.imageUrl}
-                alt={selectedSpot.name}
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  if (!target.src.includes('photo-1579033461380-adb47c3eb938')) {
-                    target.src = 'https://images.unsplash.com/photo-1579033461380-adb47c3eb938?auto=format&fit=crop&w=1200&q=80';
-                  }
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#090414] via-transparent to-black/50" />
+            {/* Modal Image Header with Regional Image */}
+            {(() => {
+              const regImg = getRegionImage({ ...selectedSpot, isAurora: true });
+              const displayImg = regImg?.imageUrl || selectedSpot.imageUrl;
+              return (
+                <div className="relative aspect-[16/9] w-full shrink-0 bg-slate-900 overflow-hidden">
+                  <img
+                    src={displayImg}
+                    alt={selectedSpot.name}
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#090414] via-transparent to-black/50" />
 
-              {/* Close Button */}
-              <button
-                onClick={() => setSelectedSpot(null)}
-                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-all cursor-pointer border border-white/30 backdrop-blur-md"
-                aria-label="Cerrar modal"
-              >
-                <span className="material-symbols-outlined text-lg">close</span>
-              </button>
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setSelectedSpot(null)}
+                    className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-all cursor-pointer border border-white/30 backdrop-blur-md z-10"
+                    aria-label="Cerrar modal"
+                  >
+                    <span className="material-symbols-outlined text-lg">close</span>
+                  </button>
 
-              {/* Badges on modal image */}
-              <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider backdrop-blur-md border ${
-                    selectedSpot.hemisphere === 'norte'
-                      ? 'bg-[#0284C7] text-white border-[#7DD3FC]'
-                      : 'bg-violet-500 text-white border-violet-300'
-                  }`}
-                >
-                  {selectedSpot.hemisphere === 'norte' ? '🌌 Aurora Boreal' : '✨ Aurora Austral'}
-                </span>
+                  {/* Badges on modal image */}
+                  <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider backdrop-blur-md border ${
+                        selectedSpot.hemisphere === 'norte'
+                          ? 'bg-[#0284C7] text-white border-[#7DD3FC]'
+                          : 'bg-violet-500 text-white border-violet-300'
+                      }`}
+                    >
+                      {selectedSpot.hemisphere === 'norte' ? '🌌 Aurora Boreal' : '✨ Aurora Austral'}
+                    </span>
 
-                <span className="px-3 py-1 rounded-full bg-[#082F49]/80 text-[#7DD3FC] text-xs font-black uppercase tracking-wider border border-[#38BDF8]/50 backdrop-blur-md">
-                  {selectedSpot.frequencyLabel}
-                </span>
-              </div>
+                    <span className="px-3 py-1 rounded-full bg-[#082F49]/80 text-[#7DD3FC] text-xs font-black uppercase tracking-wider border border-[#38BDF8]/50 backdrop-blur-md">
+                      {selectedSpot.frequencyLabel}
+                    </span>
 
-              {/* Spot Title on image */}
-              <div className="absolute bottom-3 left-4 right-4">
-                <span className="text-xs font-mono font-bold text-[#7DD3FC] block">
-                  {selectedSpot.region}, {selectedSpot.country}
-                </span>
-                <h2 className="text-xl sm:text-3xl font-black text-white font-['Plus_Jakarta_Sans'] leading-tight drop-shadow-md">
-                  {selectedSpot.name}
-                </h2>
-              </div>
-            </div>
+                    {regImg && (
+                      <span className="px-2.5 py-1 rounded-full bg-black/75 text-amber-300 text-[10px] font-bold border border-amber-400/40 backdrop-blur-md">
+                        🌄 Territorio: {regImg.region || selectedSpot.region}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Spot Title on image */}
+                  <div className="absolute bottom-3 left-4 right-4">
+                    <span className="text-xs font-mono font-bold text-[#7DD3FC] block">
+                      {selectedSpot.region}, {selectedSpot.country}
+                    </span>
+                    <h2 className="text-xl sm:text-3xl font-black text-white font-['Plus_Jakarta_Sans'] leading-tight drop-shadow-md">
+                      {selectedSpot.name}
+                    </h2>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Modal Body Content */}
             <div className="p-5 sm:p-6 overflow-y-auto space-y-4 text-xs">

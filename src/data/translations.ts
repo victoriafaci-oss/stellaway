@@ -20,7 +20,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
   es: {
     // Nav & TopBar
     dashboard: 'Dashboard Eclipse 2027',
-    spots: 'Encuentra Zonas Starlight',
+    spots: 'Zonas & Destinos Starlight',
     darksky: 'Zonas DarkSky',
     auroras: 'Auroras Boreales & Australes',
     events: 'Eventos Estelares',
@@ -47,7 +47,7 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     realtimeAnim: 'Tiempo real & Animación',
     aiAssistant: 'Stella AI 24/7',
     myJournal: 'Sincronizado Cloud',
-    exploreSpotsBadge: 'Explorar Miradores →',
+    exploreSpotsBadge: 'Explorar Starlight →',
     viewCalendarBadge: 'Ver Calendario →',
     checkSkyBadge: 'Consultar Cielo →',
     eclipseCardTitle: 'El Gran Eclipse del Siglo: 2 de Agosto de 2027',
@@ -57,11 +57,11 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     milkyWayCardBadge: 'Cielos Prístinos Bortle 1-3',
     milkyWayCardDesc: 'Explora miradores astronómicos libres de contaminación lumínica para contemplar el brazo de Sagitario, la Vía Láctea y las Lágrimas de San Lorenzo.',
     viewEclipseGuide: 'Ver Información y Ruta del Eclipse 2027 →',
-    viewMilkyWaySpots: 'Ver Miradores de Cielo Oscuro →',
+    viewMilkyWaySpots: 'Ver Zonas Starlight →',
     
-    // Spots
-    spotsTitle: 'Buscar Localización y Miradores Astronómicos',
-    spotsSubtitle: 'Explora destinos certificados Starlight y otros rincones óptimos para observar el cielo nocturno sin contaminación lumínica.',
+    // Spots (Starlight)
+    spotsTitle: 'Zonas & Destinos Starlight',
+    spotsSubtitle: 'Explora destinos certificados por la Fundación Starlight, reservas astronómicas y rincones óptimos para observar el cielo nocturno sin contaminación lumínica.',
     searchPlaceholder: 'Buscar municipio, mirador, parque natural o provincia...',
     allCountries: 'Todos los Países',
     allTypes: 'Todos los Tipos',

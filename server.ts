@@ -5,9 +5,11 @@ import { generateAstronomicalAnswer } from "./src/lib/astronomyKnowledge";
 
 async function startServer() {
   const app = express();
-  const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  const isProd = process.env.NODE_ENV === "production";
+  const PORT = isProd && process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
   app.use(express.json());
+  app.use(express.static(path.join(process.cwd(), "public")));
 
   // Initialize Gemini client lazy/safely
   const getAiClient = () => {
@@ -566,8 +568,12 @@ Tone: Warm, inspiring, knowledgeable, clear, structured with bullet points and e
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
+  const server = app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://0.0.0.0:${PORT}`);
+  });
+
+  server.on("error", (err: any) => {
+    console.error("Server listen error:", err);
   });
 }
 

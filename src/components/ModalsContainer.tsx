@@ -1000,6 +1000,31 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               </div>
             </button>
 
+            {/* Zonas & Destinos Starlight */}
+            <button
+              onClick={() => {
+                closeModal();
+                setActiveTab('spots');
+              }}
+              className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-950/70 via-yellow-950/60 to-slate-900/80 hover:from-amber-900/80 hover:to-yellow-900/80 border-2 border-amber-400/50 shadow-md transition-all flex items-center gap-3 text-left group cursor-pointer w-full"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-black flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                <span className="material-symbols-outlined text-xl font-bold">stars</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-black text-amber-200 group-hover:text-white transition-colors font-['Plus_Jakarta_Sans'] truncate">
+                    Zonas & Destinos Starlight
+                  </h3>
+                  <span className="px-1.5 py-0.5 rounded bg-amber-400/30 text-amber-200 text-[9px] font-black uppercase tracking-wider">
+                    Certificados
+                  </span>
+                </div>
+                <p className="text-[11px] text-amber-100/70 font-medium truncate">Reservas y destinos de la Fundación Starlight</p>
+              </div>
+              <span className="material-symbols-outlined text-amber-300 text-base shrink-0">arrow_forward</span>
+            </button>
+
             {/* Zonas & Lugares DarkSky Internacionales */}
             <button
               onClick={() => {
