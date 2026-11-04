@@ -8,6 +8,26 @@ interface AurorasViewProps {
   onGoHome?: () => void;
 }
 
+const AURORA_LEGENDARY_ENCLAVES: Record<string, string[]> = {
+  Noruega: ['Tromsø', 'Alta', 'Lofoten', 'Senja', 'Svalbard', 'Nordkapp'],
+  Suecia: ['Abisko', 'Kiruna', 'Jukkasjärvi', 'Porjus', 'Luleå'],
+  Finlandia: ['Rovaniemi', 'Inari', 'Saariselkä', 'Levi', 'Utsjoki'],
+  Islandia: ['Thingvellir', 'Kirkjufell', 'Vík', 'Jökulsárlón', 'Akureyri'],
+  Canadá: ['Yellowknife', 'Whitehorse', 'Churchill', 'Banff', 'Dawson City'],
+  'Estados Unidos': ['Fairbanks', 'Coldfoot', 'Denali', 'Anchorage'],
+  'Nueva Zelanda': ['Rakiura / Stewart Island', 'Lake Tekapo', 'Queenstown', 'Dunedin'],
+  Australia: ['Tasmania / Hobart', 'Cradle Mountain', 'Bruny Island'],
+  Chile: ['Punta Arenas', 'Torres del Paine', 'Puerto Williams', 'Cabo de Hornos'],
+  Argentina: ['Ushuaia', 'Canal Beagle', 'Tolhuin', 'Paso Garibaldi'],
+  Rusia: ['Múrmansk', 'Teriberka', 'Península de Kola'],
+  Antártida: ['Base O\'Higgins', 'Península Antártica', 'Isla Decepción'],
+  'Islas Georgias del Sur': ['Grytviken', 'Bahía Cumberland'],
+  'Islas Malvinas': ['Puerto Argentino / Stanley'],
+  boreal: ['Tromsø', 'Abisko', 'Rovaniemi', 'Kirkjufell', 'Yellowknife', 'Fairbanks', 'Múrmansk'],
+  austral: ['Rakiura (N. Zelanda)', 'Tasmania (Australia)', 'Ushuaia (Argentina)', 'Punta Arenas (Chile)', 'Antártida', 'Georgias del Sur'],
+  global: ['Tromsø (Noruega)', 'Abisko (Suecia)', 'Rovaniemi (Finlandia)', 'Kirkjufell (Islandia)', 'Yellowknife (Canadá)', 'Fairbanks (Alaska)', 'Rakiura (N. Zelanda)', 'Ushuaia (Argentina)']
+};
+
 export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) => {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
@@ -293,13 +313,102 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
             ))}
           </select>
         </div>
+
+        {/* Quick Tag Pills: Enclaves Legendarios Aurorales */}
+        {(() => {
+          const detectedCountry = (() => {
+            if (selectedCountry !== 'todos') {
+              const match = Object.keys(AURORA_LEGENDARY_ENCLAVES).find(
+                (c) => c.toLowerCase() === selectedCountry.toLowerCase()
+              );
+              if (match) return match;
+            }
+            const q = searchQuery.toLowerCase();
+            if (q.includes('noruega') || q.includes('troms') || q.includes('lofot') || q.includes('svalbard') || q.includes('senja') || q.includes('alta') || q.includes('nordkapp')) return 'Noruega';
+            if (q.includes('suecia') || q.includes('abisko') || q.includes('kiruna') || q.includes('jukkasjarvi') || q.includes('porjus')) return 'Suecia';
+            if (q.includes('finlandia') || q.includes('laponia') || q.includes('rovaniemi') || q.includes('inari') || q.includes('saariselka')) return 'Finlandia';
+            if (q.includes('islandia') || q.includes('reykjavik') || q.includes('thingvellir') || q.includes('vik') || q.includes('kirkjufell')) return 'Islandia';
+            if (q.includes('canada') || q.includes('yellowknife') || q.includes('whitehorse') || q.includes('yukon') || q.includes('churchill')) return 'Canadá';
+            if (q.includes('alaska') || q.includes('fairbanks') || q.includes('eeuu') || q.includes('estados unidos') || q.includes('denali')) return 'Estados Unidos';
+            if (q.includes('rusia') || q.includes('murmansk') || q.includes('teriberka') || q.includes('kola')) return 'Rusia';
+            if (q.includes('nueva zelanda') || q.includes('rakiura') || q.includes('stewart') || q.includes('tekapo')) return 'Nueva Zelanda';
+            if (q.includes('australia') || q.includes('tasmania') || q.includes('hobart') || q.includes('cradle')) return 'Australia';
+            if (q.includes('chile') || q.includes('patagonia') || q.includes('punta arenas') || q.includes('paine')) return 'Chile';
+            if (q.includes('argentina') || q.includes('tierra del fuego') || q.includes('ushuaia')) return 'Argentina';
+            if (q.includes('antartida') || q.includes('ohiggins')) return 'Antártida';
+            if (q.includes('georgia')) return 'Islas Georgias del Sur';
+            if (q.includes('malvina')) return 'Islas Malvinas';
+            if (selectedHemisphere === 'sur') return 'austral';
+            if (selectedHemisphere === 'norte') return 'boreal';
+            return 'global';
+          })();
+
+          const enclaves = AURORA_LEGENDARY_ENCLAVES[detectedCountry] || (selectedHemisphere === 'sur' ? AURORA_LEGENDARY_ENCLAVES.austral : (selectedHemisphere === 'norte' ? AURORA_LEGENDARY_ENCLAVES.boreal : AURORA_LEGENDARY_ENCLAVES.global));
+
+          return (
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/10 text-xs">
+              <span className="text-[#BAE6FD]/80 text-[11px] font-semibold">
+                Enclaves Legendarios{detectedCountry !== 'global' && detectedCountry !== 'boreal' && detectedCountry !== 'austral' ? ` (${detectedCountry})` : ''}:
+              </span>
+              {enclaves.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => {
+                    const clean = tag.replace(/\s*\([^)]*\)/g, '').trim();
+                    setSearchQuery(clean);
+                  }}
+                  className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold transition-all cursor-pointer border ${
+                    searchQuery.toLowerCase().includes(tag.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim())
+                      ? 'bg-[#38BDF8] text-black border-[#7DD3FC] font-extrabold shadow-sm'
+                      : 'bg-white/10 hover:bg-white/20 text-white/90 border-white/15'
+                  }`}
+                >
+                  🌌 {tag}
+                </button>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Territorial / Regional Hero Banner for Auroras */}
       {(() => {
+        let activeCountry: string | undefined = selectedCountry !== 'todos' ? selectedCountry : undefined;
+        let activeRegion: string | undefined = searchQuery || undefined;
+
+        if (!activeCountry && searchQuery) {
+          const q = searchQuery.toLowerCase();
+          if (q.includes('noruega') || q.includes('troms') || q.includes('lofot') || q.includes('svalbard') || q.includes('senja') || q.includes('alta') || q.includes('nordkapp')) activeCountry = 'Noruega';
+          else if (q.includes('suecia') || q.includes('abisko') || q.includes('kiruna') || q.includes('jukkasjarvi') || q.includes('porjus')) activeCountry = 'Suecia';
+          else if (q.includes('finlandia') || q.includes('laponia') || q.includes('rovaniemi') || q.includes('inari') || q.includes('saariselka')) activeCountry = 'Finlandia';
+          else if (q.includes('islandia') || q.includes('reykjavik') || q.includes('thingvellir') || q.includes('vik') || q.includes('kirkjufell')) activeCountry = 'Islandia';
+          else if (q.includes('canada') || q.includes('yellowknife') || q.includes('whitehorse') || q.includes('yukon') || q.includes('churchill')) activeCountry = 'Canadá';
+          else if (q.includes('alaska') || q.includes('fairbanks') || q.includes('eeuu') || q.includes('estados unidos') || q.includes('denali')) activeCountry = 'Estados Unidos';
+          else if (q.includes('rusia') || q.includes('murmansk') || q.includes('teriberka') || q.includes('kola')) activeCountry = 'Rusia';
+          else if (q.includes('nueva zelanda') || q.includes('rakiura') || q.includes('stewart') || q.includes('tekapo')) activeCountry = 'Nueva Zelanda';
+          else if (q.includes('australia') || q.includes('tasmania') || q.includes('hobart') || q.includes('cradle')) activeCountry = 'Australia';
+          else if (q.includes('chile') || q.includes('patagonia') || q.includes('punta arenas') || q.includes('paine')) activeCountry = 'Chile';
+          else if (q.includes('argentina') || q.includes('tierra del fuego') || q.includes('ushuaia')) activeCountry = 'Argentina';
+          else if (q.includes('antartida') || q.includes('ohiggins')) activeCountry = 'Antártida';
+          else if (q.includes('georgia')) activeCountry = 'Islas Georgias del Sur';
+          else if (q.includes('malvina')) activeCountry = 'Islas Malvinas';
+          else if (filteredSpots.length > 0) activeCountry = filteredSpots[0].country;
+        }
+
+        if (!activeCountry) {
+          if (filteredSpots.length > 0) {
+            activeCountry = filteredSpots[0].country;
+            if (!activeRegion) {
+              activeRegion = filteredSpots[0].region;
+            }
+          } else {
+            activeCountry = selectedHemisphere === 'sur' ? 'Nueva Zelanda' : 'Noruega';
+          }
+        }
+
         const activeRegionInfo = getRegionImage({
-          country: selectedCountry !== 'todos' ? selectedCountry : (selectedHemisphere === 'sur' ? 'Chile' : 'Noruega'),
-          region: searchQuery || (selectedHemisphere === 'sur' ? 'Tierra del Fuego' : 'Troms'),
+          country: activeCountry,
+          region: activeRegion,
           category: selectedHemisphere === 'sur' ? 'Aurora Austral' : 'Aurora Boreal',
           hemisphere: selectedHemisphere !== 'todos' ? selectedHemisphere : undefined,
           isAurora: true,

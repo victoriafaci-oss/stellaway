@@ -1224,7 +1224,7 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año (especialmente Primavera y Verano austral)',
     officialUrl: 'https://darksky.org/places/gabriela-mistral-dark-sky-sanctuary/',
-    imageUrl: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/regions/latam_chile_frayjorge_default.jpg',
     featured: true
   },
   {
@@ -1254,8 +1254,97 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/regions/chile_atacama_paranal_default.jpg',
     featured: true
+  },
+  {
+    id: 'ds-chile-paranal',
+    name: 'Desierto de Atacama & Cerro Paranal (VLT)',
+    category: 'International Dark Sky Sanctuary',
+    categoryLabel: 'Santuario Internacional de Cielo Oscuro',
+    country: 'Chile',
+    continent: 'América del Sur',
+    region: 'Región de Antofagasta',
+    bortleClass: 1,
+    sqm: 22.00,
+    designationYear: 2021,
+    areaKm2: 7200,
+    latitude: -24.6272,
+    longitude: -70.4042,
+    description: 'En el corazón del desierto hiperárido de Atacama, el Cerro Paranal alberga el Very Large Telescope (VLT) de la ESO. Su atmósfera es una de las más secas e inmóviles de la Tierra con una visión inigualable del centro galáctico.',
+    highlights: [
+      'Sede de los telescopios de 8.2 metros del Very Large Telescope (VLT)',
+      'Cero humedad atmosférica y ausencia de turbulencia de aire',
+      'Cielo de clase Bortle 1 con SQM en el límite físico de 22.00'
+    ],
+    keyObservingSites: [
+      'Plataforma del Telescopio VLT (Cerro Paranal)',
+      'Residencia de Astrónomos ESO',
+      'Valle de la Luna y Quebradas de Antofagasta'
+    ],
+    bestSeason: 'Todo el año',
+    officialUrl: 'https://darksky.org',
+    imageUrl: '/images/regions/chile_atacama_paranal_default.jpg',
+    featured: true
+  },
+  {
+    id: 'ds-chile-frayjorge',
+    name: 'Parque Nacional Bosque Fray Jorge',
+    category: 'International Dark Sky Reserve',
+    categoryLabel: 'Reserva Internacional de Cielo Oscuro',
+    country: 'Chile',
+    continent: 'América del Sur',
+    region: 'Región de Coquimbo',
+    bortleClass: 1,
+    sqm: 21.95,
+    designationYear: 2013,
+    areaKm2: 995,
+    latitude: -30.6667,
+    longitude: -71.6667,
+    description: 'Primera Reserva Starlight y de Cielo Oscuro de Sudamérica. Ubicado en la confluencia entre el desierto costero y un bosque relicto valdiviano, ofrece una oscuridad estelar pristina protegida de las luces urbanas.',
+    highlights: [
+      'Primera Reserva astronómica certificada de Sudamérica',
+      'Fenómeno único de bosque relicto bajo cielos de máxima pureza',
+      'Miradores oceánicos y senderos nocturnos guiados'
+    ],
+    keyObservingSites: [
+      'Sendero de Interpretación El Bosque Relicto',
+      'Mirador Oceánico Altos de Talinay',
+      'Centro de Información Ambiental'
+    ],
+    bestSeason: 'Octubre a Mayo',
+    officialUrl: 'https://darksky.org',
+    imageUrl: '/images/regions/latam_chile_frayjorge_default.jpg',
+    featured: true
+  },
+  {
+    id: 'ds-chile-llanoschalles',
+    name: 'Parque Nacional Llanos de Challes',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Chile',
+    continent: 'América del Sur',
+    region: 'Región de Atacama',
+    bortleClass: 1,
+    sqm: 21.97,
+    designationYear: 2022,
+    areaKm2: 457,
+    latitude: -28.1667,
+    longitude: -71.0500,
+    description: 'Enclave costero de Atacama famoso por el desierto florido y sus noches de pureza Bortle 1. Libre de polución lumínica, permite una visión nítida de las Nubes de Magallanes y la Vía Láctea austral.',
+    highlights: [
+      'Cielo oscuro absoluto en la costa del desierto de Atacama',
+      'Zona de acampada con baja luminancia en Playa Blanca',
+      'Observación de cielo profundo y astrofotografía de gran campo'
+    ],
+    keyObservingSites: [
+      'Campamento Playa Blanca',
+      'Sendero Centenario',
+      'Quebrada de Llanos de Challes'
+    ],
+    bestSeason: 'Septiembre a Abril',
+    officialUrl: 'https://darksky.org',
+    imageUrl: '/images/regions/latam_chile_llanoschalles_default.jpg'
   },
   {
     id: 'ds-el-leoncito',
@@ -1284,7 +1373,67 @@ export const DARKSKY_ZONES: DarkSkyZone[] = [
     ],
     bestSeason: 'Todo el año',
     officialUrl: 'https://darksky.org',
-    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'
+    imageUrl: '/images/regions/latam_argentina_villavicencio_default.jpg',
+    featured: true
+  },
+  {
+    id: 'ds-argentina-villavicencio',
+    name: 'Reserva Natural Villavicencio (Mendoza)',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Argentina',
+    continent: 'América del Sur',
+    region: 'Mendoza (Precordillera de los Andes)',
+    bortleClass: 1,
+    sqm: 21.85,
+    designationYear: 2023,
+    areaKm2: 720,
+    latitude: -32.5292,
+    longitude: -69.0189,
+    description: 'Protege más de 70.000 hectáreas de precordillera andina en Mendoza. Gracias a la barrera natural de las montañas y su plan de gestión de luminarias, ofrece un cielo diáfano de clase Bortle 1-2 ideal para el astroturismo y la ciencia.',
+    highlights: [
+      'Cielos limpios de precordillera andina con más de 290 noches claras',
+      'Actividades periódicas de astroturismo y cata de vinos bajo las estrellas',
+      'Protección de flora y fauna nativa bajo cielos oscuros certificados'
+    ],
+    keyObservingSites: [
+      'Mirador del Caracol de Villavicencio',
+      'Hotel Termas y Jardines Históricos',
+      'Cruz de Paramillos (3.000 msnm)'
+    ],
+    bestSeason: 'Octubre a Mayo',
+    officialUrl: 'https://darksky.org',
+    imageUrl: '/images/regions/latam_argentina_villavicencio_default.jpg',
+    featured: true
+  },
+  {
+    id: 'ds-argentina-tierradelfuego',
+    name: 'Cielos Australes de Tierra del Fuego & Ushuaia',
+    category: 'International Dark Sky Park',
+    categoryLabel: 'Parque Internacional de Cielo Oscuro',
+    country: 'Argentina',
+    continent: 'América del Sur',
+    region: 'Tierra del Fuego y Antártida',
+    bortleClass: 1,
+    sqm: 21.92,
+    designationYear: 2022,
+    areaKm2: 1200,
+    latitude: -54.8019,
+    longitude: -68.3030,
+    description: 'En el extremo meridional del continente americano, donde las noches de invierno se extienden hasta 17 horas de oscuridad ininterrumpida. Enclave privilegiado para avistar auroras australes y constelaciones polares del sur.',
+    highlights: [
+      'Punto privilegiado para la observación de auroras australes en invierno',
+      'Noches polares extensas con aire gélido sin turbulencias atmosféricas',
+      'Horizontes australes limpios sobre el Canal Beagle y la cordillera fueguina'
+    ],
+    keyObservingSites: [
+      'Valle de Tierra Mayor y Las Cotorras',
+      'Parque Nacional Tierra del Fuego (Bahía Lapataia)',
+      'Paso Garibaldi y Lago Escondido'
+    ],
+    bestSeason: 'Mayo a Septiembre (invierno austral)',
+    officialUrl: 'https://darksky.org',
+    imageUrl: '/images/regions/aurora_austral_argentina_tierradelfuego_default.jpg'
   },
 
   // ══════════════════════════════════════════════════════════════

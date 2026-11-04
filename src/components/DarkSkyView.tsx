@@ -8,6 +8,33 @@ interface DarkSkyViewProps {
   onGoHome?: () => void;
 }
 
+const LEGENDARY_ENCLAVES_BY_COUNTRY: Record<string, string[]> = {
+  Chile: ['Atacama', 'Paranal', 'Valle del Elqui', 'Fray Jorge', 'Llanos de Challes', 'Cerro Tololo'],
+  Argentina: ['El Leoncito', 'Villavicencio', 'Barreal Blanco', 'CASLEO', 'Tierra del Fuego', 'Mendoza'],
+  España: ['Aiguamolls', 'Sierra Morena', 'Sierra Nevada', 'Gredos', 'Montsec', 'La Palma', 'Alto Turia'],
+  Portugal: ['Alqueva', 'Aldeia das Ruivas', 'Vale do Tua', 'Monsaraz'],
+  'Estados Unidos': ['Grand Canyon', 'Death Valley', 'Cherry Springs', 'Arches', 'Bryce Canyon', 'Glacier'],
+  Canadá: ['Jasper', 'Wood Buffalo', 'Mont-Mégantic', 'Trout Point'],
+  México: ['Sierra de San Pedro Mártir', 'Espíritu Santo', 'Baja California'],
+  Colombia: ['Desierto de la Tatacoa', 'Villa de Leyva'],
+  Brasil: ['Parque Estadual do Desengano', 'Río de Janeiro'],
+  'Reino Unido': ['Northumberland', 'Galloway Forest', 'Eryri (Snowdonia)', 'Exmoor'],
+  Alemania: ['Westhavelland', 'Rhön', 'Eifel'],
+  Austria: ['Eisenwurzen', 'Attersee-Traunsee'],
+  Irlanda: ['Kerry International Dark Sky', 'Mayo Dark Sky Park'],
+  Francia: ['Pic du Midi', 'Cévennes', 'Alpes Azur Mercantour'],
+  'Nueva Zelanda': ['Aoraki Mackenzie', 'Great Barrier Island', 'Stewart Island'],
+  Australia: ['Warrumbungle', 'River Murray', 'Cradle Mountain'],
+  Japón: ['Bisei Town', 'Iriomote-Ishigaki', 'Kozushima Island'],
+  China: ['Huanglong', 'Xichong', 'Wali'],
+  Taiwán: ['Hehuan Mountain', 'Taroko'],
+  India: ['Hanle Dark Sky Reserve', 'Ladakh'],
+  'Corea del Sur': ['Yeongyang Firefly Eco Park'],
+  Namibia: ['NamibRand Nature Reserve'],
+  Jordania: ['Wadi Rum Desert Reserve'],
+  global: ['Atacama', 'El Leoncito', 'Aiguamolls', 'Alqueva', 'Grand Canyon', 'Pic du Midi', 'Aoraki', 'NamibRand']
+};
+
 export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) => {
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
@@ -331,29 +358,67 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
         </div>
 
         {/* Quick Tag Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
-          <span className="text-white/60 text-[11px] font-semibold">Enclaves Legendarios:</span>
-          {['Aiguamolls', 'Atacama', 'Grand Canyon', 'Alqueva', 'Pic du Midi', 'Aoraki', 'Death Valley', 'NamibRand'].map(
-            (tag) => (
-              <button
-                key={tag}
-                onClick={() => {
-                  setSearchQuery(tag);
-                  setSelectedContinent('todos');
-                  setSelectedCountry('todos');
-                  setSelectedCategory('todos');
-                }}
-                className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold transition-all cursor-pointer border ${
-                  searchQuery.toLowerCase().includes(tag.toLowerCase())
-                    ? 'bg-cyan-400 text-black border-cyan-400 font-extrabold shadow-sm'
-                    : 'bg-white/10 hover:bg-white/20 text-white/90 border-white/15'
-                }`}
-              >
-                🌌 {tag}
-              </button>
-            )
-          )}
-        </div>
+        {(() => {
+          const activeEnclaveCountry = (() => {
+            if (selectedCountry !== 'todos') {
+              const found = Object.keys(LEGENDARY_ENCLAVES_BY_COUNTRY).find(
+                (c) => c.toLowerCase() === selectedCountry.toLowerCase()
+              );
+              if (found) return found;
+            }
+            const q = searchQuery.toLowerCase();
+            for (const c of Object.keys(LEGENDARY_ENCLAVES_BY_COUNTRY)) {
+              if (c !== 'global' && q.includes(c.toLowerCase())) return c;
+            }
+            if (q.includes('chile') || q.includes('atacama') || q.includes('paranal') || q.includes('elqui') || q.includes('challes') || q.includes('fray')) return 'Chile';
+            if (q.includes('argentina') || q.includes('leoncito') || q.includes('villavicencio') || q.includes('mendoza') || q.includes('barreal')) return 'Argentina';
+            if (q.includes('españa') || q.includes('spain') || q.includes('aiguamolls') || q.includes('andaluc')) return 'España';
+            if (q.includes('portugal') || q.includes('alqueva')) return 'Portugal';
+            if (q.includes('eeuu') || q.includes('usa') || q.includes('canyon') || q.includes('death valley')) return 'Estados Unidos';
+            if (q.includes('canada') || q.includes('jasper') || q.includes('wood buffalo')) return 'Canadá';
+            if (q.includes('mexico') || q.includes('san pedro martir')) return 'México';
+            if (q.includes('colombia') || q.includes('tatacoa')) return 'Colombia';
+            if (q.includes('brasil') || q.includes('desengano')) return 'Brasil';
+            if (q.includes('reino unido') || q.includes('uk') || q.includes('england') || q.includes('scotland') || q.includes('wales')) return 'Reino Unido';
+            if (q.includes('alemania') || q.includes('germany') || q.includes('westhavelland')) return 'Alemania';
+            if (q.includes('austria') || q.includes('eisenwurzen')) return 'Austria';
+            if (q.includes('irlanda') || q.includes('kerry')) return 'Irlanda';
+            if (q.includes('japon') || q.includes('japan') || q.includes('bisei')) return 'Japón';
+            if (q.includes('china') || q.includes('huanglong')) return 'China';
+            if (q.includes('taiwan') || q.includes('hehuan')) return 'Taiwán';
+            if (q.includes('india') || q.includes('hanle')) return 'India';
+            if (q.includes('corea') || q.includes('korea') || q.includes('yeongyang')) return 'Corea del Sur';
+            if (q.includes('namibia') || q.includes('namibrand')) return 'Namibia';
+            if (q.includes('jordania') || q.includes('wadi rum')) return 'Jordania';
+            if (selectedContinent === 'América del Sur') return 'Chile';
+            return 'global';
+          })();
+
+          const currentEnclaves = LEGENDARY_ENCLAVES_BY_COUNTRY[activeEnclaveCountry] || LEGENDARY_ENCLAVES_BY_COUNTRY.global;
+
+          return (
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+              <span className="text-white/60 text-[11px] font-semibold">
+                Enclaves Legendarios{activeEnclaveCountry !== 'global' ? ` (${activeEnclaveCountry})` : ''}:
+              </span>
+              {currentEnclaves.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => {
+                    setSearchQuery(tag);
+                  }}
+                  className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold transition-all cursor-pointer border ${
+                    searchQuery.toLowerCase().includes(tag.toLowerCase())
+                      ? 'bg-cyan-400 text-black border-cyan-400 font-extrabold shadow-sm'
+                      : 'bg-white/10 hover:bg-white/20 text-white/90 border-white/15'
+                  }`}
+                >
+                  🌌 {tag}
+                </button>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       {/* INTERACTIVE WORLD MAP VIEW */}
@@ -446,9 +511,56 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
 
       {/* Territorial / Regional Hero Banner for DarkSky */}
       {(() => {
+        let activeCountry: string | undefined = selectedCountry !== 'todos' ? selectedCountry : undefined;
+        let activeRegion: string | undefined = searchQuery || undefined;
+
+        if (!activeCountry && searchQuery) {
+          const q = searchQuery.toLowerCase();
+          for (const c of Object.keys(LEGENDARY_ENCLAVES_BY_COUNTRY)) {
+            if (c !== 'global' && q.includes(c.toLowerCase())) {
+              activeCountry = c;
+              break;
+            }
+          }
+          if (!activeCountry) {
+            if (q.includes('chile') || q.includes('atacama') || q.includes('paranal') || q.includes('elqui') || q.includes('challes') || q.includes('fray')) activeCountry = 'Chile';
+            else if (q.includes('argentina') || q.includes('leoncito') || q.includes('villavicencio') || q.includes('mendoza') || q.includes('barreal')) activeCountry = 'Argentina';
+            else if (q.includes('españa') || q.includes('spain') || q.includes('aiguamolls') || q.includes('andaluc')) activeCountry = 'España';
+            else if (q.includes('portugal') || q.includes('alqueva')) activeCountry = 'Portugal';
+            else if (q.includes('eeuu') || q.includes('usa') || q.includes('canyon')) activeCountry = 'Estados Unidos';
+            else if (q.includes('canada') || q.includes('jasper')) activeCountry = 'Canadá';
+            else if (q.includes('mexico') || q.includes('san pedro martir')) activeCountry = 'México';
+            else if (q.includes('colombia') || q.includes('tatacoa')) activeCountry = 'Colombia';
+            else if (q.includes('brasil') || q.includes('desengano')) activeCountry = 'Brasil';
+            else if (q.includes('reino unido') || q.includes('uk')) activeCountry = 'Reino Unido';
+            else if (q.includes('alemania') || q.includes('germany')) activeCountry = 'Alemania';
+            else if (q.includes('austria')) activeCountry = 'Austria';
+            else if (q.includes('irlanda')) activeCountry = 'Irlanda';
+            else if (q.includes('japon')) activeCountry = 'Japón';
+            else if (q.includes('china')) activeCountry = 'China';
+            else if (q.includes('taiwan')) activeCountry = 'Taiwán';
+            else if (q.includes('india')) activeCountry = 'India';
+            else if (q.includes('corea')) activeCountry = 'Corea del Sur';
+            else if (q.includes('namibia')) activeCountry = 'Namibia';
+            else if (q.includes('jordania')) activeCountry = 'Jordania';
+            else if (filteredZones.length > 0) activeCountry = filteredZones[0].country;
+          }
+        }
+
+        if (!activeCountry) {
+          if (filteredZones.length > 0) {
+            activeCountry = filteredZones[0].country;
+            if (!activeRegion) {
+              activeRegion = filteredZones[0].region;
+            }
+          } else {
+            activeCountry = 'Chile';
+          }
+        }
+
         const activeRegionInfo = getRegionImage({
-          country: selectedCountry !== 'todos' ? selectedCountry : 'Estados Unidos',
-          region: searchQuery || (selectedContinent !== 'todos' ? selectedContinent : 'California'),
+          country: activeCountry,
+          region: activeRegion,
           category: 'DarkSky',
         });
         if (!activeRegionInfo) return null;

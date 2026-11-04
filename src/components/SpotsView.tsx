@@ -573,44 +573,85 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
         </div>
 
         {/* Popular Tags */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
-          <span className="text-white/60 text-[11px] font-semibold">{t('quickSearch', 'Búsqueda rápida:')}</span>
-          {[
-            'Zaragoza, España',
-            'España, Galicia',
-            'Zaragoza',
-            'Galicia',
-            'Sierra de Vicort',
-            'Comarca del Aranda',
-            'Ariza',
-            'Pena Trevinca',
-            'Islas Cíes',
-            'Muras',
-            'Costa da Morte',
-            'Teruel',
-            'Castellón',
-            'La Palma',
-            'Atacama'
-          ].map((tag) => (
-            <button
-              key={tag}
-              onClick={() => {
-                setSearchQuery(tag);
-                setSelectedCountry('todos');
-                setSelectedProvince('todas');
-                setSelectedType('todos');
-                setActiveSubTab('name');
-              }}
-              className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold transition-all cursor-pointer border ${
-                searchQuery.toLowerCase().includes(tag.toLowerCase())
-                  ? 'bg-[#FEE685] text-black border-[#FEE685] font-extrabold shadow-sm'
-                  : 'bg-white/10 hover:bg-white/20 text-white/90 border-white/15'
-              }`}
-            >
-              🔍 {tag}
-            </button>
-          ))}
-        </div>
+        {(() => {
+          const currentContext = (() => {
+            if (selectedCountry !== 'todos' && selectedCountry !== 'España') return selectedCountry;
+            if (selectedProvince !== 'todas') return selectedProvince;
+            const q = searchQuery.toLowerCase();
+            if (q.includes('chile') || q.includes('atacama') || q.includes('paranal')) return 'Chile';
+            if (q.includes('argentina') || q.includes('leoncito') || q.includes('villavicencio')) return 'Argentina';
+            if (q.includes('portugal') || q.includes('alqueva')) return 'Portugal';
+            if (q.includes('andorra') || q.includes('sorteny')) return 'Andorra';
+            if (q.includes('aragon') || q.includes('zaragoza') || q.includes('teruel') || q.includes('vicort')) return 'Aragón';
+            if (q.includes('galicia') || q.includes('trevinca') || q.includes('cies')) return 'Galicia';
+            if (q.includes('canarias') || q.includes('palma') || q.includes('teide') || q.includes('tenerife')) return 'Canarias';
+            if (q.includes('andaluc') || q.includes('gorafe') || q.includes('morena')) return 'Andalucía';
+            if (q.includes('catal') || q.includes('montsec') || q.includes('aiguamolls')) return 'Cataluña';
+            if (q.includes('extremadura') || q.includes('monfrague')) return 'Extremadura';
+            if (q.includes('cuenca') || q.includes('mancha')) return 'Castilla-La Mancha';
+            if (q.includes('gredos') || q.includes('leon')) return 'Castilla y León';
+            if (q.includes('valenc') || q.includes('turia') || q.includes('culla')) return 'Comunidad Valenciana';
+            if (selectedCountry === 'España') return 'España';
+            return 'todos';
+          })();
+
+          const tagsMap: Record<string, string[]> = {
+            Chile: ['Desierto de Atacama', 'Cerro Paranal', 'Bosque Fray Jorge', 'Llanos de Challes', 'Antofagasta'],
+            Argentina: ['El Leoncito', 'Reserva Villavicencio', 'Barreal Blanco', 'Mendoza', 'Tierra del Fuego'],
+            Portugal: ['Dark Sky Alqueva', 'Aldeia das Ruivas', 'Vale do Tua', 'Monsaraz', 'Cumeada'],
+            Andorra: ['Vall de Sorteny', 'Comapedrosa', 'Ordino'],
+            'EE.UU.': ['Observatorio Mauna Kea', 'Hawái'],
+            Aragón: ['Zaragoza', 'Sierra de Vicort', 'Comarca del Aranda', 'Gúdar-Javalambre', 'Teruel', 'Aliaga'],
+            Galicia: ['Pena Trevinca', 'Islas Cíes', 'Muras', 'Costa da Morte', 'A Veiga'],
+            Canarias: ['La Palma', 'Roque de los Muchachos', 'Teide (Tenerife)', 'Fuerteventura'],
+            Andalucía: ['Gorafe', 'Sierra Sur de Jaén', 'Sierra Morena', 'Sierra Nevada', 'Cazorla'],
+            Cataluña: ['Montsec', 'Aiguamolls de l’Empordà', 'Prades', 'Aigüestortes'],
+            Extremadura: ['Monfragüe', 'Alqueva Badajoz', 'Tajo Internacional'],
+            'Castilla-La Mancha': ['Serranía de Cuenca', 'Sierra del Segura', 'Valle de Alcudia'],
+            'Castilla y León': ['Sierra de Gredos', 'Muriel Viejo', 'Las Hurdes', 'Babia'],
+            'Comunidad Valenciana': ['Alto Turia', 'Culla', 'Tírig', 'Aras de los Olmos'],
+            'Islas Baleares': ['Menorca Starlight', 'Santa Galdana', 'Fornells'],
+            'La Rioja': ['Valle del Leza', 'Jubera', 'Cidacos'],
+            Navarra: ['Roncal', 'Selva de Irati', 'Bardenas Reales'],
+            global: [
+              'Zaragoza, España',
+              'Galicia',
+              'Sierra de Vicort',
+              'La Palma',
+              'Montsec',
+              'Atacama (Chile)',
+              'El Leoncito (Argentina)',
+              'Alqueva (Portugal)'
+            ]
+          };
+
+          const tags = tagsMap[currentContext] || tagsMap.global;
+
+          return (
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+              <span className="text-white/60 text-[11px] font-semibold">
+                {t('quickSearch', 'Búsqueda rápida')}{currentContext !== 'todos' ? ` (${currentContext})` : ''}:
+              </span>
+              {tags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => {
+                    const cleanTag = tag.replace(/\s*\([^)]*\)/g, '').trim();
+                    setSearchQuery(cleanTag);
+                    setActiveSubTab('name');
+                  }}
+                  className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold transition-all cursor-pointer border ${
+                    searchQuery.toLowerCase().includes(tag.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim())
+                      ? 'bg-[#FEE685] text-black border-[#FEE685] font-extrabold shadow-sm'
+                      : 'bg-white/10 hover:bg-white/20 text-white/90 border-white/15'
+                  }`}
+                >
+                  🔍 {tag}
+                </button>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Navigation Sub-Tabs */}
@@ -722,9 +763,41 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             <>
               {/* Territorial / Regional Hero Banner */}
               {(() => {
+                let activeCountry = selectedCountry !== 'todos' ? selectedCountry : undefined;
+                let activeRegion = selectedProvince !== 'todas' ? selectedProvince : searchQuery || undefined;
+
+                if (!activeCountry && searchQuery) {
+                  const q = searchQuery.toLowerCase();
+                  if (q.includes('chile') || q.includes('atacama') || q.includes('paranal') || q.includes('fray jorge')) {
+                    activeCountry = 'Chile';
+                  } else if (q.includes('argentina') || q.includes('leoncito') || q.includes('villavicencio') || q.includes('mendoza') || q.includes('ushuaia')) {
+                    activeCountry = 'Argentina';
+                  } else if (q.includes('portugal') || q.includes('alqueva') || q.includes('ruivas') || q.includes('tua')) {
+                    activeCountry = 'Portugal';
+                  } else if (q.includes('andorra') || q.includes('sorteny') || q.includes('ordino')) {
+                    activeCountry = 'Andorra';
+                  } else if (q.includes('mauna kea') || q.includes('hawai') || q.includes('eeuu') || q.includes('estados unidos')) {
+                    activeCountry = 'EE.UU.';
+                  } else if (filteredSpots.length > 0 && filteredSpots[0].country) {
+                    activeCountry = filteredSpots[0].country;
+                  }
+                }
+
+                if (!activeCountry) {
+                  if (filteredSpots.length > 0 && filteredSpots[0].country) {
+                    activeCountry = filteredSpots[0].country;
+                  } else {
+                    activeCountry = 'España';
+                  }
+                }
+
+                if (!activeRegion && filteredSpots.length > 0) {
+                  activeRegion = filteredSpots[0].region;
+                }
+
                 const activeRegionInfo = getRegionImage({
-                  country: selectedCountry !== 'todos' ? selectedCountry : 'España',
-                  region: selectedProvince !== 'todas' ? selectedProvince : searchQuery || 'Andalucía',
+                  country: activeCountry,
+                  region: activeRegion,
                 });
                 if (!activeRegionInfo) return null;
                 return (

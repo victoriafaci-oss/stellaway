@@ -899,21 +899,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </p>
 
             {/* Filter Category Tabs (Modern Pill Switcher) */}
-            <div className="flex flex-wrap items-center justify-center gap-2.5 mt-8 p-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl max-w-2xl mx-auto">
+            <div className="flex flex-wrap items-center justify-center gap-2.5 mt-8 p-1.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl max-w-3xl mx-auto">
               <button
                 type="button"
-                onClick={() => setSelectedCertifiedCat('all')}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
-                  selectedCertifiedCat === 'all'
-                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-lg shadow-amber-500/25'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {t('landingFilterAll', 'Todos los Enclaves')}
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedCertifiedCat('starlight')}
+                onClick={() => setSelectedCertifiedCat((prev) => (prev === 'starlight' ? 'all' : 'starlight'))}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                   selectedCertifiedCat === 'starlight'
                     ? 'bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/25'
@@ -924,7 +913,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => setSelectedCertifiedCat('darksky')}
+                onClick={() => setSelectedCertifiedCat((prev) => (prev === 'darksky' ? 'all' : 'darksky'))}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                   selectedCertifiedCat === 'darksky'
                     ? 'bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25'
@@ -935,7 +924,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => setSelectedCertifiedCat('auroras')}
+                onClick={() => setSelectedCertifiedCat((prev) => (prev === 'auroras' ? 'all' : 'auroras'))}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                   selectedCertifiedCat === 'auroras'
                     ? 'bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25'
@@ -946,7 +935,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => setSelectedCertifiedCat('astroturismo')}
+                onClick={() => setSelectedCertifiedCat((prev) => (prev === 'astroturismo' ? 'all' : 'astroturismo'))}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                   selectedCertifiedCat === 'astroturismo'
                     ? 'bg-purple-400 text-slate-950 shadow-lg shadow-purple-500/25'
