@@ -722,12 +722,49 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </span>
         </h1>
 
-        <p
-          className="text-lg md:text-xl mb-10 max-w-2xl leading-relaxed"
-          style={{ color: 'rgba(255,255,255,0.65)' }}
+        {/* Cuadro destacado de los 3 Grandes Localizadores & Funciones */}
+        <div
+          className={`mb-10 max-w-2xl w-full mx-auto p-5 sm:p-7 rounded-2xl sm:rounded-3xl border transition-all duration-300 flex flex-col items-center text-center space-y-3.5 shadow-2xl ${
+            isNightVision
+              ? 'bg-[#1e0505]/85 border-red-500/50 shadow-[0_0_30px_rgba(255,59,48,0.35)]'
+              : 'bg-[#150B27]/80 backdrop-blur-xl border-[#FEE685]/35 shadow-[0_12px_40px_rgba(0,0,0,0.6),0_0_25px_rgba(254,230,133,0.12)]'
+          }`}
         >
-          {t('landingHeroDesc', 'Los 3 grandes localizadores: Zonas Starlight, DarkSky International y Atlas de Auroras Boreales & Australes, mapas Bortle, astrofotografía recomendada y el mayor evento celeste del siglo — el Eclipse Total Solar 2027 — todo en una sola app.')}
-        </p>
+          {/* 1. Primero se vea: Los 3 grandes localizadores: */}
+          <div className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FEE685]/15 border border-[#FEE685]/40 text-[#FEE685] text-xs sm:text-sm font-black uppercase tracking-wider">
+            <span className="material-symbols-outlined text-base text-amber-300">travel_explore</span>
+            <span>{t('landingHeroLocatorsTitle', 'Los 3 grandes localizadores:')}</span>
+          </div>
+
+          {/* 2. Debajo que ponga: Zonas Starlight - DarkSky International */}
+          <div className="text-base sm:text-xl font-extrabold text-white tracking-tight flex items-center justify-center gap-2 flex-wrap">
+            <span className="text-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,0.4)]">Zonas Starlight</span>
+            <span className="text-white/40 font-normal">—</span>
+            <span className="text-sky-300 drop-shadow-[0_0_10px_rgba(56,189,248,0.4)]">DarkSky International</span>
+          </div>
+
+          {/* 3. Debajo: Auroras Boreales & Australes */}
+          <div className="text-base sm:text-xl font-extrabold text-emerald-300 tracking-tight flex items-center justify-center gap-2">
+            <span className="material-symbols-outlined text-base sm:text-lg text-emerald-400">auto_awesome</span>
+            <span className="drop-shadow-[0_0_10px_rgba(52,211,153,0.4)]">
+              {t('landingHeroLocatorsAuroras', 'Auroras Boreales & Australes')}
+            </span>
+          </div>
+
+          {/* 4. Debajo el resto (Mapas Bortle, meteorología astronómica, etc.) */}
+          <p className="text-xs sm:text-sm md:text-base text-white/75 font-medium max-w-lg leading-relaxed pt-0.5">
+            {t('landingHeroLocatorsRest', 'Mapas Bortle de contaminación lumínica, meteorología astronómica, astrofotografía y guía celeste')}
+          </p>
+
+          {/* Separador fino y elegante */}
+          <div className="w-32 h-[1px] bg-gradient-to-r from-transparent via-[#FEE685]/40 to-transparent my-1" />
+
+          {/* 5. Y al final: Eclipse Total Solar 2027 todo en una sola app */}
+          <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 via-orange-500/25 to-amber-500/20 border border-amber-400/40 text-amber-200 text-sm sm:text-base font-black tracking-wide shadow-md">
+            <span className="material-symbols-outlined text-base sm:text-lg text-amber-400">wb_sunny</span>
+            <span>{t('landingHeroLocatorsEclipse', 'Eclipse Total Solar 2027 · Todo en una sola app')}</span>
+          </div>
+        </div>
 
         {/* CTA 1: Primary Hero Button */}
         <div className="flex flex-col sm:flex-row gap-4 mb-16">

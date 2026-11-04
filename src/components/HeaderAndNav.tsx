@@ -107,55 +107,6 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
               </button>
             </li>
 
-            <li>
-              <button
-                onClick={() => handleNavClick('spots')}
-                className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
-                  activeTab === 'spots'
-                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
-                    : 'text-white/80 hover:bg-white/10 font-semibold'
-                }`}
-              >
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'spots' ? "'FILL' 1" : "'FILL' 0" }}>
-                  near_me
-                </span>
-                <span>{t('spots', 'Encuentra Zonas Starlight')}</span>
-              </button>
-            </li>
-
-            <li>
-              <button
-                onClick={() => handleNavClick('darksky')}
-                className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
-                  activeTab === 'darksky'
-                    ? 'bg-gradient-to-r from-[#38BDF8] to-[#0284C7] text-white font-extrabold border border-[#7DD3FC] shadow-lg shadow-black/30'
-                    : 'text-white/80 hover:bg-white/10 font-semibold'
-                }`}
-                id="nav-link-darksky-mobile"
-              >
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'darksky' ? "'FILL' 1" : "'FILL' 0" }}>
-                  public
-                </span>
-                <span>{t('darksky', 'Zonas DarkSky')}</span>
-              </button>
-            </li>
-
-            <li>
-              <button
-                onClick={() => handleNavClick('auroras')}
-                className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
-                  activeTab === 'auroras'
-                    ? 'bg-gradient-to-r from-[#38BDF8] to-[#0284C7] text-white font-extrabold border border-[#7DD3FC] shadow-lg shadow-black/30'
-                    : 'text-white/80 hover:bg-white/10 font-semibold'
-                }`}
-                id="nav-link-auroras-mobile"
-              >
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'auroras' ? "'FILL' 1" : "'FILL' 0" }}>
-                  auto_awesome
-                </span>
-                <span>{t('auroras', 'Auroras Boreales & Australes')}</span>
-              </button>
-            </li>
 
             <li>
               <button
