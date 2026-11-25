@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { ModalType, ActiveTab } from '../types';
 import { useLanguage } from '../context/LanguageContext';
-import { SupportedLanguage } from '../data/translations';
+import { useAuth } from '../context/AuthContext';
 import { WORLD_DIAL_CODES } from '../data/countryDialCodes';
 import { SubscriptionCancellationModal } from './SubscriptionCancellationModal';
+import { withStripeLocale } from '../lib/i18nHelpers';
+import {
+  watchLivePosition,
+  formatCoordinatesDMS,
+  buildGoogleMapsPinUrl,
+  LiveCoordinates,
+  GeolocationErrorCode,
+} from '../lib/locationService';
 
 interface ModalsContainerProps {
   modalType: ModalType;
@@ -23,35 +31,56 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
   setNightVision,
 }) => {
   const { language, setLanguage, languageOptions, t } = useLanguage();
+  const { user, userLogs } = useAuth();
+  const currentLang = languageOptions.find((l) => l.code === language) || languageOptions[0];
   const [settingsTab, setSettingsTab] = useState<'perfil' | 'tarifas' | 'pagos' | 'idiomas'>('tarifas');
   const [selectedPlan, setSelectedPlan] = useState<'free2days' | 'mensual' | 'anual'>('free2days');
-  const [tempLanguage, setTempLanguage] = useState<SupportedLanguage>(language);
+  const [tempLanguage, setTempLanguage] = useState<typeof language>(language);
   const [langSuccessMsg, setLangSuccessMsg] = useState<string | null>(null);
-  const [showAddCard, setShowAddCard] = useState<boolean>(false);
-  const [sosActive, setSosActive] = useState<boolean>(false);
+  const [sosCoords, setSosCoords] = useState<LiveCoordinates | null>(null);
+  const [sosGpsError, setSosGpsError] = useState<GeolocationErrorCode | null>(null);
+  const [sosLocating, setSosLocating] = useState<boolean>(false);
+  const [sosRetryKey, setSosRetryKey] = useState<number>(0);
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
+  const [copiedCoords, setCopiedCoords] = useState<boolean>(false);
 
   useEffect(() => {
     setTempLanguage(language);
   }, [language, modalType]);
 
-  const handleConfirmLanguage = (targetLang?: SupportedLanguage) => {
+  // Real-time GPS tracking while SOS Emergencies modal is open
+  useEffect(() => {
+    if (modalType !== 'emergencias') return;
+    setSosLocating(true);
+    setSosGpsError(null);
+
+    const stopWatching = watchLivePosition(
+      (coords) => {
+        setSosCoords(coords);
+        setSosGpsError(null);
+        setSosLocating(false);
+      },
+      (errCode) => {
+        setSosGpsError(errCode);
+        setSosLocating(false);
+      }
+    );
+
+    return () => {
+      stopWatching();
+    };
+  }, [modalType, sosRetryKey]);
+
+  const handleConfirmLanguage = (targetLang?: typeof language) => {
     const langToApply = targetLang || tempLanguage;
     setLanguage(langToApply);
     setTempLanguage(langToApply);
     const foundOpt = languageOptions.find((o) => o.code === langToApply);
-    setLangSuccessMsg(`¡Idioma cambiado a ${foundOpt?.name || langToApply} correctamente!`);
+    setLangSuccessMsg(`${t('langChangedPrefix', '¡Idioma cambiado a')} ${foundOpt?.name || langToApply} ${t('langChangedSuffix', 'correctamente!')}`);
     setTimeout(() => {
       setLangSuccessMsg(null);
     }, 3000);
   };
-
-
-  // New card form state
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardHolder, setCardHolder] = useState('');
-  const [addCardSuccess, setAddCardSuccess] = useState(false);
 
   // Phone verification state for free trial (2 Días Gratis)
   const [modalCountryCode, setModalCountryCode] = useState('+34');
@@ -91,9 +120,9 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               </div>
               <div className="truncate">
                 <h2 className="text-base sm:text-lg font-black text-[#030712] font-['Plus_Jakarta_Sans'] truncate">
-                  Ajustes & Configuración
+                  {t('mcSettingsTitle', 'Ajustes & Configuración')}
                 </h2>
-                <p className="text-[11px] text-[#082F49] font-black truncate">Perfil, suscripciones y métodos de pago</p>
+                <p className="text-[11px] text-[#082F49] font-black truncate">{t('mcSettingsSubtitle', 'Perfil, suscripciones y métodos de pago')}</p>
               </div>
             </div>
 
@@ -102,25 +131,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <button
                 onClick={closeModal}
                 className="px-2.5 py-1.5 bg-white hover:bg-[#F0F9FF] text-[#030712] border border-[#38BDF8] rounded-xl text-xs font-black flex items-center gap-1 cursor-pointer shadow-xs"
-                title="Atrás (Volver)"
+                title={t('mcBackBtn', 'Atrás')}
               >
                 <span className="material-symbols-outlined text-sm">undo</span>
-                <span className="hidden xs:inline">Atrás</span>
+                <span className="hidden xs:inline">{t('mcBackBtn', 'Atrás')}</span>
               </button>
 
               <button
                 onClick={handleGoHome}
                 className="px-2.5 py-1.5 bg-[#0369A1] hover:bg-[#0284C7] text-white rounded-xl text-xs font-black flex items-center gap-1 cursor-pointer shadow-md"
-                title="Ir a Inicio"
+                title={t('mcHomeBtn', 'Inicio')}
               >
                 <span className="material-symbols-outlined text-sm">home</span>
-                <span className="hidden xs:inline">Inicio</span>
+                <span className="hidden xs:inline">{t('mcHomeBtn', 'Inicio')}</span>
               </button>
 
               <button
                 onClick={closeModal}
                 className="p-1.5 rounded-xl bg-white hover:bg-[#F0F9FF] text-[#030712] hover:text-black border border-[#38BDF8] transition-all cursor-pointer shadow-xs"
-                title="Cerrar"
+                title={t('mcCloseBtn', 'Cerrar')}
               >
                 <span className="material-symbols-outlined text-base font-bold">close</span>
               </button>
@@ -136,7 +165,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               }`}
             >
               <span className="material-symbols-outlined text-base">stars</span>
-              Tarifas & Suscripción
+              {t('mcTabTariffs', 'Tarifas & Suscripción')}
               {settingsTab === 'tarifas' && (
                 <div className="absolute bottom-0 inset-x-0 h-0.5 bg-[#0284C7] rounded-t-full shadow-[0_0_6px_#0284C7]" />
               )}
@@ -149,7 +178,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               }`}
             >
               <span className="material-symbols-outlined text-base">account_circle</span>
-              Perfil
+              {t('mcTabProfile', 'Perfil')}
               {settingsTab === 'perfil' && (
                 <div className="absolute bottom-0 inset-x-0 h-0.5 bg-[#24153F] rounded-t-full shadow-[0_0_6px_#24153F]" />
               )}
@@ -162,7 +191,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               }`}
             >
               <span className="material-symbols-outlined text-base">language</span>
-              Idiomas
+              {t('mcTabLangs', 'Idiomas')}
               {settingsTab === 'idiomas' && (
                 <div className="absolute bottom-0 inset-x-0 h-0.5 bg-[#24153F] rounded-t-full shadow-[0_0_6px_#24153F]" />
               )}
@@ -175,7 +204,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               }`}
             >
               <span className="material-symbols-outlined text-base">credit_card</span>
-              Métodos de pago
+              {t('mcTabCards', 'Métodos de pago')}
               {settingsTab === 'pagos' && (
                 <div className="absolute bottom-0 inset-x-0 h-0.5 bg-[#24153F] rounded-t-full shadow-[0_0_6px_#24153F]" />
               )}
@@ -189,10 +218,10 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <div className="space-y-3">
                 <div className="p-3 bg-[#082F49]/80 rounded-2xl border border-[#38BDF8]/40 text-xs text-white">
                   <span className="text-[10px] font-black uppercase tracking-wider text-[#38BDF8] block mb-0.5 font-['JetBrains_Mono']">
-                    Planes & Tarifas StellaWay Astroturismo
+                    {t('mcTariffsBannerTitle', 'Planes & Tarifas StellaWay Astroturismo')}
                   </span>
                   <p className="text-[#BAE6FD] font-medium">
-                    Elige tu suscripción para acceso ilimitado a telemetría, mapas Bortle 1-9 satelitales y cobertura del Eclipse 2026.
+                    {t('mcTariffsIntro', 'Elige tu suscripción para acceso ilimitado a enclaves Starlight, DarkSky, previsión meteorológica real y cobertura del Eclipse 2026–2027.')}
                   </p>
                 </div>
 
@@ -213,28 +242,28 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <span className="px-2.5 py-0.5 bg-sky-100 text-sky-900 border border-sky-300 rounded-full text-[10px] font-black uppercase tracking-wider">
-                            Prueba Gratuita
+                            {t('mcFreeTrialPill', 'Prueba Gratuita')}
                           </span>
                           {selectedPlan === 'free2days' && (
                             <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-[10px] font-black">
-                              ✓ Seleccionado
+                              {t('mcSelectedPill', '✓ Seleccionado')}
                             </span>
                           )}
                         </div>
                         <h4 className="text-sm font-black text-[#082F49] font-['Plus_Jakarta_Sans']">
-                          48 Horas Gratis (Acceso Total Ilimitado)
+                          {t('mcPlan48Title', '48 Horas Gratis (Acceso Total Ilimitado)')}
                         </h4>
                         <p className="text-xs text-[#334155] mt-1 leading-relaxed font-medium">
-                          Acceso total a todas las herramientas durante 48 horas sin coste.
+                          {t('mcPlan48Desc', 'Acceso total a todas las herramientas durante 48 horas sin coste.')}
                         </p>
                         <span className="inline-block mt-1.5 text-[10px] font-black text-amber-900 bg-amber-100 px-2.5 py-1 rounded-md border border-amber-300">
-                          📱 Verificación única por número de teléfono móvil (1 prueba por dispositivo).
+                          {t('mcTrialDeviceTag', '📱 Verificación única por número de teléfono móvil (1 prueba por dispositivo).')}
                         </span>
                       </div>
 
                       <div className="text-right shrink-0">
                         <span className="text-lg font-black text-[#0284C7] font-['JetBrains_Mono']">0 €</span>
-                        <span className="text-[10px] text-[#64748B] font-bold block">48 horas</span>
+                        <span className="text-[10px] text-[#64748B] font-bold block">{t('mcPlanFreeHours', '48 horas')}</span>
                       </div>
                     </div>
                   </div>
@@ -255,25 +284,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <span className="px-2.5 py-0.5 bg-[#0284C7] text-white rounded-full text-[10px] font-black uppercase tracking-wider">
-                            Plan Mensual
+                            {t('mcPlanMonthlyBadge', 'Plan Mensual')}
                           </span>
                           {selectedPlan === 'mensual' && (
                             <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-[10px] font-black">
-                              ✓ Seleccionado
+                              {t('mcSelectedPill', '✓ Seleccionado')}
                             </span>
                           )}
                         </div>
                         <h4 className="text-sm font-black text-[#082F49] font-['Plus_Jakarta_Sans']">
-                          Cuota Mensual Starlight Pro
+                          {t('mcPlanMonthlyTitle', 'Cuota Mensual Starlight Pro')}
                         </h4>
                         <p className="text-xs text-[#334155] mt-1 leading-relaxed font-medium">
-                          Acceso ilimitado continuo con Stripe o PayPal. Cancelación en cualquier momento.
+                          {t('mcPlanMonthlyDesc', 'Acceso ilimitado continuo con Stripe o PayPal. Cancelación en cualquier momento.')}
                         </p>
                       </div>
 
                       <div className="text-right shrink-0">
-                        <span className="text-lg font-black text-[#0284C7] font-['JetBrains_Mono']">3,99 €</span>
-                        <span className="text-[10px] text-[#64748B] font-bold block">/ mes</span>
+                        <span className="text-lg font-black text-[#0284C7] font-['JetBrains_Mono']">{t('mcPlanMonthlyPrice', '3,99 €')}</span>
+                        <span className="text-[10px] text-[#64748B] font-bold block">{t('mcPerMonth', '/ mes')}</span>
                       </div>
                     </div>
                   </div>
@@ -294,25 +323,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <span className="px-2.5 py-0.5 bg-amber-200 text-amber-900 border border-amber-300 rounded-full text-[10px] font-black uppercase tracking-wider">
-                            ⭐ Recomendado (Ahorro 58%)
+                            {t('mcRecommendedSave', '⭐ Recomendado (Ahorro 58%)')}
                           </span>
                           {selectedPlan === 'anual' && (
                             <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-[10px] font-black">
-                              ✓ Seleccionado
+                              {t('mcSelectedPill', '✓ Seleccionado')}
                             </span>
                           )}
                         </div>
                         <h4 className="text-sm font-black text-[#082F49] font-['Plus_Jakarta_Sans']">
-                          Cuota Anual Starlight Pass
+                          {t('mcPlanAnnualTitle', 'Cuota Anual Starlight Pass')}
                         </h4>
                         <p className="text-xs text-[#334155] mt-1 leading-relaxed font-medium">
-                          12 meses de cobertura completa para el Gran Eclipse Total 2026 y lluvias estelares.
+                          {t('mcPlanAnnualDesc', '12 meses de cobertura completa para el Gran Eclipse Total y lluvias estelares.')}
                         </p>
                       </div>
 
                       <div className="text-right shrink-0">
-                        <span className="text-lg font-black text-[#0284C7] font-['JetBrains_Mono']">19,99 €</span>
-                        <span className="text-[10px] text-[#64748B] font-bold block">/ año</span>
+                        <span className="text-lg font-black text-[#0284C7] font-['JetBrains_Mono']">{t('mcPlanAnnualPrice', '19,99 €')}</span>
+                        <span className="text-[10px] text-[#64748B] font-bold block">{t('mcPerYear', '/ año')}</span>
                       </div>
                     </div>
                   </div>
@@ -324,12 +353,12 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-[#0284C7] text-lg">smartphone</span>
                       <h5 className="text-xs font-black text-[#082F49] uppercase tracking-wider">
-                        Verificación por Número de Teléfono (48 Horas Gratis)
+                        {t('mcVerifyPhoneBoxTitle', 'Verificación por Número de Teléfono (48 Horas Gratis)')}
                       </h5>
                     </div>
 
                     <p className="text-xs text-[#334155] leading-relaxed font-medium">
-                      Para garantizar 1 sola prueba de 48 horas por persona y dispositivo, introduce tu número de teléfono móvil para recibir un código SMS gratuito.
+                      {t('mcVerifyPhoneBoxDesc', 'Para garantizar 1 sola prueba de 48 horas por persona y dispositivo, introduce tu número de teléfono móvil para recibir un código SMS gratuito.')}
                     </p>
 
                     {registeredTrialPhone ? (
@@ -337,11 +366,11 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-emerald-700 text-lg">verified</span>
                           <div>
-                            <span className="font-black text-[#082F49] block">Prueba de 48 Horas Activa</span>
-                            <span className="text-[11px] text-emerald-900 font-['JetBrains_Mono'] font-bold">Teléfono: {registeredTrialPhone}</span>
+                            <span className="font-black text-[#082F49] block">{t('mcTrialActiveTitle', 'Prueba de 48 Horas Activa')}</span>
+                            <span className="text-[11px] text-emerald-900 font-['JetBrains_Mono'] font-bold">{t('mcPhonePrefix', 'Teléfono:')} {registeredTrialPhone}</span>
                           </div>
                         </div>
-                        <span className="px-2.5 py-1 bg-emerald-600 text-white font-black text-[10px] rounded-full uppercase">Acceso Total</span>
+                        <span className="px-2.5 py-1 bg-emerald-600 text-white font-black text-[10px] rounded-full uppercase">{t('mcFullAccessPill', 'Acceso Total')}</span>
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -352,7 +381,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                               setTrialErrorMsg('');
                               const cleanDigits = phoneInput.trim().replace(/\s+/g, '');
                               if (cleanDigits.length < 6) {
-                                setTrialErrorMsg('Ingresa un número de teléfono móvil válido.');
+                                setTrialErrorMsg(t('mcSettingsErrPhone', 'Ingresa un número de teléfono móvil válido.'));
                                 return;
                               }
                               const cleanPhone = `${modalCountryCode}${cleanDigits}`;
@@ -361,7 +390,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                               const deviceUsed = localStorage.getItem('stellaway_device_trial_used');
 
                               if (usedPhones.includes(cleanPhone) || deviceUsed === 'true') {
-                                setTrialErrorMsg(`⚠️ El teléfono (${cleanPhone}) o este dispositivo ya ha disfrutado de los 2 Días Gratis. Para continuar con acceso ilimitado, selecciona el Plan Mensual (3,99 €) o Anual (19,99 €).`);
+                                setTrialErrorMsg(t('mcErrUsedDevice', '⚠️ Este teléfono o dispositivo ya ha disfrutado de los 2 Días Gratis. Selecciona el Plan Mensual (3,99 €) o Anual (19,99 €).'));
                                 return;
                               }
 
@@ -371,7 +400,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                           >
                             <div>
                               <label className="text-[11px] font-black text-[#082F49] block mb-1">
-                                Número de Teléfono Móvil
+                                {t('mcPlan48PhoneLabel', 'Número de Teléfono Móvil')}
                               </label>
                               <div className="flex gap-2">
                                 <select
@@ -379,35 +408,35 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                                   onChange={(e) => setModalCountryCode(e.target.value)}
                                   className="px-2 py-2 bg-[#F0F9FF] border border-[#38BDF8] rounded-xl text-[#082F49] text-xs font-bold focus:outline-none focus:border-[#0284C7] max-w-[135px] sm:max-w-[160px] cursor-pointer"
                                 >
-                                  <optgroup label="🌟 Hispanohablantes">
+                                  <optgroup label={t('welcomeOptgroupHispanic', '🌟 Hispanohablantes')}>
                                     {WORLD_DIAL_CODES.filter((c) => c.region === 'hispanic').map((c) => (
                                       <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
                                         {c.flag} {c.code} {c.name}
                                       </option>
                                     ))}
                                   </optgroup>
-                                  <optgroup label="🌎 América">
+                                  <optgroup label={t('welcomeOptgroupAmericas', '🌎 América')}>
                                     {WORLD_DIAL_CODES.filter((c) => c.region === 'americas').map((c) => (
                                       <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
                                         {c.flag} {c.code} {c.name}
                                       </option>
                                     ))}
                                   </optgroup>
-                                  <optgroup label="🇪🇺 Europa">
+                                  <optgroup label={t('welcomeOptgroupEurope', '🇪🇺 Europa')}>
                                     {WORLD_DIAL_CODES.filter((c) => c.region === 'europe').map((c) => (
                                       <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
                                         {c.flag} {c.code} {c.name}
                                       </option>
                                     ))}
                                   </optgroup>
-                                  <optgroup label="🌏 Asia y Oceanía">
+                                  <optgroup label={t('welcomeOptgroupAsiaOceania', '🌏 Asia y Oceanía')}>
                                     {WORLD_DIAL_CODES.filter((c) => c.region === 'asia_oceania').map((c) => (
                                       <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
                                         {c.flag} {c.code} {c.name}
                                       </option>
                                     ))}
                                   </optgroup>
-                                  <optgroup label="🌍 África">
+                                  <optgroup label={t('welcomeOptgroupAfrica', '🌍 África')}>
                                     {WORLD_DIAL_CODES.filter((c) => c.region === 'africa').map((c) => (
                                       <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
                                         {c.flag} {c.code} {c.name}
@@ -423,14 +452,14 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                                     setPhoneInput(e.target.value);
                                     setTrialErrorMsg('');
                                   }}
-                                  placeholder="612 345 678"
+                                  placeholder={t('mcPlan48PhonePlaceholder', '612 345 678')}
                                   className="flex-1 px-3 py-2 bg-[#F0F9FF] border border-[#38BDF8] rounded-xl text-[#082F49] text-xs placeholder-[#64748B] focus:outline-none focus:border-[#0284C7] font-bold"
                                 />
                                 <button
                                   type="submit"
                                   className="px-4 py-2 bg-[#0284C7] hover:bg-[#0369A1] text-white font-black rounded-xl text-xs uppercase cursor-pointer transition-all shrink-0 shadow-md"
                                 >
-                                  Enviar SMS
+                                  {t('mcPlan48BtnSend', 'Enviar SMS')}
                                 </button>
                               </div>
                             </div>
@@ -450,6 +479,13 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                               localStorage.setItem('stellaway_trial_phone', cleanPhone);
                               localStorage.setItem('stellaway_trial_expires', String(Date.now() + 172800000));
                               localStorage.setItem('stellaway_subscription_active', 'true');
+                              localStorage.setItem('stellaway_active_plan', 'free2days');
+
+                              fetch('/api/verify-trial-phone', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ phone: cleanPhone, code: smsCodeInput, language }),
+                              }).catch(() => {});
 
                               setRegisteredTrialPhone(cleanPhone);
                               setSmsSentStep(false);
@@ -459,10 +495,10 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                           >
                             <p className="text-xs text-emerald-800 font-bold flex items-center gap-1">
                               <span className="material-symbols-outlined text-sm">sms</span>
-                              Código de verificación SMS enviado a {modalCountryCode} {phoneInput}.
+                              {t('mcPlan48SmsSent', 'Código de verificación SMS enviado a')} {modalCountryCode} {phoneInput}.
                             </p>
                             <div>
-                              <label className="text-[10px] text-[#082F49] font-bold block mb-0.5">Código SMS (Ej: 1234)</label>
+                              <label className="text-[10px] text-[#082F49] font-bold block mb-0.5">{t('mcSmsLabelHint', 'Código SMS (Ej: 1234)')}</label>
                               <div className="flex gap-2">
                                 <input
                                   type="text"
@@ -476,7 +512,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                                   type="submit"
                                   className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-lg text-xs uppercase cursor-pointer transition-all shrink-0 shadow-md"
                                 >
-                                  Activar 48 Horas Gratis
+                                  {t('mcPlan48BtnVerify', 'Activar 48 Horas Gratis')}
                                 </button>
                               </div>
                             </div>
@@ -499,15 +535,15 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-rose-400 text-xl">cancel</span>
                       <h5 className="text-xs font-black text-white uppercase tracking-wider">
-                        Dar de baja la suscripción o prueba gratuita
+                        {t('mcCancelBoxTitle', 'Dar de baja la suscripción o prueba gratuita')}
                       </h5>
                     </div>
                     <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/40 text-[9px] font-black uppercase">
-                      Baja Inmediata Stripe
+                      {t('mcCancelImmediateBadge', 'Baja Inmediata Stripe')}
                     </span>
                   </div>
                   <p className="text-[11px] text-[#BAE6FD] leading-relaxed">
-                    Conforme a la normativa legal de protección a consumidores y usuarios, puedes tramitar la baja o cancelación de la renovación en cualquier momento. La baja se comunica a la pasarela de Stripe para frenar de inmediato cualquier cobro futuro.
+                    {t('mcCancelBoxDesc', 'Conforme a la normativa legal de protección a consumidores y usuarios, puedes tramitar la baja o cancelación de la renovación en cualquier momento. La baja se comunica a Stripe para frenar de inmediato cualquier cobro futuro.')}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-2 pt-1">
                     <button
@@ -516,15 +552,15 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                       className="flex-1 py-3 bg-gradient-to-r from-rose-600 via-rose-500 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all border border-rose-300/60"
                     >
                       <span className="material-symbols-outlined text-base">cancel</span>
-                      <span>Dar de baja la suscripción</span>
+                      <span>{t('mcCancelBoxBtn', 'Dar de baja la suscripción')}</span>
                     </button>
                     <a
-                      href="https://billing.stripe.com/"
+                      href={withStripeLocale('https://billing.stripe.com/', language)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-3 py-3 bg-white/10 hover:bg-white/20 text-[#7DD3FC] hover:text-white font-bold rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-1 border border-white/20 transition-all"
                     >
-                      <span>Portal Stripe</span>
+                      <span>{t('mcStripePortalBtn', 'Portal Stripe')}</span>
                       <span className="material-symbols-outlined text-sm">open_in_new</span>
                     </a>
                   </div>
@@ -539,7 +575,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     className="flex-1 py-3 bg-[#082F49] hover:bg-[#0C4A6E] text-white font-black rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 border border-[#38BDF8]/40 shadow-lg cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-base">open_in_new</span>
-                    <span>Portal de Suscripciones Completo</span>
+                    <span>{t('mcFullPortalBtn', 'Portal de Suscripciones Completo')}</span>
                   </button>
 
                   <button
@@ -547,7 +583,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     className="flex-1 py-3 bg-[#0284C7] hover:bg-[#0369A1] text-white font-black rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-base">credit_card</span>
-                    <span>Pasarela de Pago</span>
+                    <span>{t('mcPaymentGatewayBtn', 'Pasarela de Pago')}</span>
                   </button>
                 </div>
               </div>
@@ -557,18 +593,24 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
             {settingsTab === 'perfil' && (
               <div className="space-y-4">
                 <div className="flex items-center gap-3 bg-white/70 p-3 sm:p-4 rounded-2xl border border-[#E6CA65]">
-                  <div className="w-12 h-12 rounded-2xl bg-[#24153F] text-[#FEE685] flex items-center justify-center text-lg font-extrabold shadow-md shrink-0">
-                    AS
+                  <div className="w-12 h-12 rounded-2xl bg-[#24153F] text-[#FEE685] flex items-center justify-center text-lg font-extrabold shadow-md shrink-0 overflow-hidden">
+                    {user?.photoURL ? (
+                      <img src={user.photoURL} alt={user.displayName || 'Usuario'} className="w-full h-full object-cover" />
+                    ) : (
+                      <span>{(user?.displayName || 'SW').slice(0, 2).toUpperCase()}</span>
+                    )}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <span className="px-2.5 py-0.5 rounded-full bg-[#24153F] text-[#FEE685] text-[9px] font-extrabold uppercase tracking-wider block w-fit">
-                      Observador Experto
+                      {user ? t('profileFirebaseSync', 'Sincronizado en Nube Firebase') : t('profileObserverLocal', 'Modo Observador Local')}
                     </span>
                     <h3 className="text-sm font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans'] mt-0.5 truncate">
-                      Astrónomo Starlight
+                      {user?.displayName || t('profileObserverLocal', 'Modo Observador Local')}
                     </h3>
-                    <p className="text-[11px] text-[#594A70] font-bold truncate">astronomo.starlight@stellaway.org</p>
+                    <p className="text-[11px] text-[#594A70] font-bold truncate">
+                      {user?.email || t('profileDefaultLoc', 'Cuenta local sin sesión Google')}
+                    </p>
                   </div>
 
                   <button
@@ -578,19 +620,23 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     }}
                     className="px-3 py-1.5 bg-[#24153F] text-[#FFF8D6] rounded-xl text-[11px] font-extrabold hover:bg-black transition-all cursor-pointer shrink-0"
                   >
-                    Ver Perfil
+                    {t('mcViewProfileBtn', 'Ver Perfil')}
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   <div className="bg-white/70 p-3.5 rounded-2xl border border-[#E6CA65]">
-                    <span className="text-[#594A70] block font-['JetBrains_Mono'] uppercase text-[10px] font-bold">Ubicación Preferida</span>
-                    <span className="text-xs font-extrabold text-[#120D1C] mt-0.5 block truncate">Castellón / Penyagolosa</span>
+                    <span className="text-[#594A70] block font-['JetBrains_Mono'] uppercase text-[10px] font-bold">{t('mcSavedLogsLabel', 'Registros en Diario')}</span>
+                    <span className="text-xs font-extrabold text-[#24153F] mt-0.5 block">
+                      {userLogs.length} {t('profileSessionsUnit', 'observaciones')}
+                    </span>
                   </div>
 
                   <div className="bg-white/70 p-3.5 rounded-2xl border border-[#E6CA65]">
-                    <span className="text-[#594A70] block font-['JetBrains_Mono'] uppercase text-[10px] font-bold">Registros Guardados</span>
-                    <span className="text-xs font-extrabold text-[#24153F] mt-0.5 block">18 Sesiones</span>
+                    <span className="text-[#594A70] block font-['JetBrains_Mono'] uppercase text-[10px] font-bold">{t('mcSelectedActiveSub', 'Estado de Acceso')}</span>
+                    <span className="text-xs font-extrabold text-[#120D1C] mt-0.5 block truncate">
+                      {registeredTrialPhone ? `${t('mcTrialActiveTitle', 'Prueba 48h')}: ${registeredTrialPhone}` : t('mcFullAccessReady', 'Configurado en Ajustes')}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -603,25 +649,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                 <div className="bg-white/80 p-4 rounded-2xl border-2 border-[#D4AF37] flex items-center justify-between gap-2 shadow-sm">
                   <div>
                     <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#24153F] font-['JetBrains_Mono'] block">
-                      SUSCRIPCIÓN SELECCIONADA / ACTIVA
+                      {t('mcSelectedActiveSub', 'SUSCRIPCIÓN SELECCIONADA / ACTIVA')}
                     </span>
                     <h4 className="text-sm font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans']">
                       {selectedPlan === 'free2days'
-                        ? '2 Días Gratis (Acceso Total Ilimitado)'
+                        ? t('mcPlan48hUnlimited', '2 Días Gratis (Acceso Total Ilimitado)')
                         : selectedPlan === 'mensual'
-                        ? 'Plan Mensual Starlight Pro (3,99 € / mes)'
-                        : 'Plan Anual Starlight Pass (19,99 € / año)'}
+                        ? t('mcPlanMonthlyProFull', 'Plan Mensual Starlight Pro (3,99 € / mes)')
+                        : t('mcPlanAnnualPassFull', 'Plan Anual Starlight Pass (19,99 € / año)')}
                     </h4>
                     <p className="text-[11px] text-[#594A70] font-bold">
                       {selectedPlan === 'free2days'
                         ? registeredTrialPhone
-                          ? `Verificado por teléfono: ${registeredTrialPhone} (48h de acceso ilimitado)`
-                          : 'Requiere verificación por número de móvil (1 uso por usuario/dispositivo)'
-                        : 'Telemetría en tiempo real, mapas HD y acceso ilimitado sin restricciones'}
+                          ? `${t('mcPhoneVerifiedDesc', 'Verificado por teléfono (48h de acceso ilimitado):')} ${registeredTrialPhone}`
+                          : t('mcPhoneReqDesc', 'Requiere verificación por número de móvil (1 uso por usuario/dispositivo)')
+                        : t('mcPaidPlanDesc', 'Telemetría en tiempo real, mapas HD y acceso ilimitado sin restricciones')}
                     </p>
                   </div>
                   <span className="px-2.5 py-1 bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] font-extrabold rounded-full shrink-0">
-                    Activa
+                    {t('mcActiveStatus', 'Activa')}
                   </span>
                 </div>
 
@@ -632,7 +678,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     className="text-xs font-bold text-rose-600 hover:text-rose-800 flex items-center gap-1.5 underline cursor-pointer py-1"
                   >
                     <span className="material-symbols-outlined text-sm">cancel</span>
-                    <span>Dar de baja o cancelar renovación de la suscripción</span>
+                    <span>{t('mcCancelBoxBtn', 'Dar de baja la suscripción')}</span>
                   </button>
                 </div>
 
@@ -640,25 +686,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                 <div className="bg-[#F0F9FF] p-4 rounded-2xl border border-[#38BDF8]/50 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-black uppercase tracking-wider text-[#0284C7] font-['JetBrains_Mono']">
-                      Pasarela Oficial Stripe StellaWay
+                      {t('mcStripeLinksHeader', 'Pasarela Oficial Stripe StellaWay')}
                     </span>
                     <span className="px-2 py-0.5 bg-emerald-100 text-emerald-900 border border-emerald-300 text-[10px] font-black rounded-full">
-                      ✓ Enlaces Verificados
+                      {t('mcVerifiedLinksBadge', '✓ Enlaces Verificados')}
                     </span>
                   </div>
                   <p className="text-xs text-[#082F49] font-medium">
-                    Puedes activar tu prueba o abonar tu suscripción mediante los enlaces oficiales seguros de Stripe de StellaWay:
+                    {t('mcStripeLinksDesc', 'Puedes activar tu prueba o abonar tu suscripción mediante los enlaces oficiales seguros de Stripe de StellaWay:')}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <a
-                      href="https://buy.stripe.com/dRmcN7a3J5YTdZpcoV1ZS06"
+                      href={withStripeLocale('https://buy.stripe.com/dRmcN7a3J5YTdZpcoV1ZS06', language)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-3 bg-white border border-[#38BDF8] rounded-xl flex items-center justify-between hover:border-[#0284C7] transition-all group"
                     >
                       <div>
-                        <span className="font-black text-xs text-[#082F49] block">Prueba 48h (0,00 €)</span>
-                        <span className="text-[10px] text-emerald-600 font-bold">Registro Gratuito</span>
+                        <span className="font-black text-xs text-[#082F49] block">{t('mcStripeTrialCardTitle', 'Prueba 48h (0,00 €)')}</span>
+                        <span className="text-[10px] text-emerald-600 font-bold">{t('mcStripeTrialCardSub', 'Registro Gratuito')}</span>
                       </div>
                       <span className="material-symbols-outlined text-[#0284C7] group-hover:translate-x-0.5 transition-transform text-base">
                         open_in_new
@@ -666,14 +712,14 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     </a>
 
                     <a
-                      href="https://buy.stripe.com/8x28wR0t9drldZp9cJ1ZS04"
+                      href={withStripeLocale('https://buy.stripe.com/8x28wR0t9drldZp9cJ1ZS04', language)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-3 bg-white border border-[#38BDF8] rounded-xl flex items-center justify-between hover:border-[#0284C7] transition-all group"
                     >
                       <div>
-                        <span className="font-black text-xs text-[#082F49] block">Plan Mensual (3,99 €)</span>
-                        <span className="text-[10px] text-[#64748B]">Enlace Directo Stripe</span>
+                        <span className="font-black text-xs text-[#082F49] block">{t('mcStripeMonthlyCardTitle', 'Plan Mensual (3,99 €)')}</span>
+                        <span className="text-[10px] text-[#64748B]">{t('mcStripeMonthlyCardSub', 'Enlace Directo Stripe')}</span>
                       </div>
                       <span className="material-symbols-outlined text-[#0284C7] group-hover:translate-x-0.5 transition-transform text-base">
                         open_in_new
@@ -681,14 +727,14 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     </a>
 
                     <a
-                      href="https://buy.stripe.com/8x24gBgs7bjd3kL0Gd1ZS05"
+                      href={withStripeLocale('https://buy.stripe.com/8x24gBgs7bjd3kL0Gd1ZS05', language)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-3 bg-white border border-[#38BDF8] rounded-xl flex items-center justify-between hover:border-[#0284C7] transition-all group"
                     >
                       <div>
-                        <span className="font-black text-xs text-[#082F49] block">Plan Anual (19,99 €)</span>
-                        <span className="text-[10px] text-[#64748B]">Enlace Directo Stripe</span>
+                        <span className="font-black text-xs text-[#082F49] block">{t('mcStripeAnnualCardTitle', 'Plan Anual (19,99 €)')}</span>
+                        <span className="text-[10px] text-[#64748B]">{t('mcStripeAnnualCardSub', 'Enlace Directo Stripe')}</span>
                       </div>
                       <span className="material-symbols-outlined text-[#0284C7] group-hover:translate-x-0.5 transition-transform text-base">
                         open_in_new
@@ -697,142 +743,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                   </div>
                 </div>
 
-                {/* Saved Payment Methods */}
-                <div>
-                  <h4 className="text-xs font-extrabold text-[#120D1C] mb-2 font-['Plus_Jakarta_Sans']">
-                    Métodos de pago guardados
+                {/* Stripe Customer Billing Portal (Real external management) */}
+                <div className="bg-white/80 p-4 rounded-2xl border border-[#E6CA65] space-y-2.5 text-xs">
+                  <h4 className="font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans'] flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-base text-[#0284C7]">shield_lock</span>
+                    <span>{t('mcSavedMethodsTitle', 'Gestión de tarjetas y facturación en Stripe')}</span>
                   </h4>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between bg-white/70 p-3 rounded-2xl border border-[#E6CA65] text-xs">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-6 rounded bg-blue-600 flex items-center justify-center font-bold text-[10px] text-white tracking-widest">
-                          VISA
-                        </div>
-                        <div>
-                          <span className="font-extrabold text-[#120D1C] block">Visa termina en 4821</span>
-                          <span className="text-[10px] text-[#594A70] font-bold">Caduca 08/2028</span>
-                        </div>
-                      </div>
-                      <span className="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
-                    </div>
-
-                    <div className="flex items-center justify-between bg-white/70 p-3 rounded-2xl border border-[#E6CA65] text-xs">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-6 rounded bg-[#0070BA] flex items-center justify-center font-black text-[10px] text-white">
-                          PP
-                        </div>
-                        <div>
-                          <span className="font-extrabold text-[#120D1C] block">PayPal Express</span>
-                          <span className="text-[10px] text-[#594A70] font-bold">usuario@paypal.com</span>
-                        </div>
-                      </div>
-                      <span className="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
-                    </div>
-
-                    <div className="flex items-center justify-between bg-white/70 p-3 rounded-2xl border border-[#E6CA65] text-xs">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-6 rounded bg-white text-black border border-gray-300 flex items-center justify-center font-bold text-[10px]">
-                          GPay
-                        </div>
-                        <div>
-                          <span className="font-extrabold text-[#120D1C] block">Google Pay</span>
-                          <span className="text-[10px] text-[#594A70] font-bold">Conectado</span>
-                        </div>
-                      </div>
-                      <span className="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
-                    </div>
-                  </div>
+                  <p className="text-[11px] text-[#334155] leading-relaxed">
+                    {t('mcStripeBillingPortalDesc', 'Tus tarjetas, Apple Pay, Google Pay y facturas se gestionan directamente en los servidores cifrados de Stripe, sin almacenar datos bancarios en esta aplicación.')}
+                  </p>
+                  <a
+                    href={withStripeLocale('https://billing.stripe.com/', language)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-black text-xs uppercase tracking-wider transition-all shadow-sm"
+                  >
+                    <span>{t('mcStripePortalBtn', 'Abrir Portal Stripe')}</span>
+                    <span className="material-symbols-outlined text-sm">open_in_new</span>
+                  </a>
                 </div>
-
-                {/* Add New Card Form Toggle */}
-                {!showAddCard ? (
-                  <button
-                    onClick={() => setShowAddCard(true)}
-                    className="w-full py-2.5 border-2 border-dashed border-[#D4AF37] hover:border-[#24153F] text-[#24153F] rounded-2xl font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 hover:bg-white transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-base">add_card</span>
-                    Añadir Nuevo Método de Pago
-                  </button>
-                ) : (
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      setAddCardSuccess(true);
-                      setTimeout(() => {
-                        setAddCardSuccess(false);
-                        setShowAddCard(false);
-                      }, 1800);
-                    }}
-                    className="bg-white/80 p-3.5 rounded-2xl border-2 border-[#D4AF37] space-y-2.5"
-                  >
-                    <h5 className="text-[11px] font-extrabold text-[#24153F] uppercase tracking-wider">
-                      Añadir Tarjeta de Crédito / Débito
-                    </h5>
-
-                    <div>
-                      <label className="text-[10px] text-[#594A70] font-bold block mb-0.5">Titular de la tarjeta</label>
-                      <input
-                        type="text"
-                        required
-                        value={cardHolder}
-                        onChange={(e) => setCardHolder(e.target.value)}
-                        placeholder="Ej. Nombre Apellido"
-                        className="w-full px-3 py-2 bg-white border border-[#E6CA65] rounded-xl text-[#120D1C] text-xs focus:outline-none focus:border-[#24153F] font-bold"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[10px] text-[#594A70] font-bold block mb-0.5">Número de tarjeta</label>
-                        <input
-                          type="text"
-                          required
-                          value={cardNumber}
-                          onChange={(e) => setCardNumber(e.target.value)}
-                          placeholder="4500 **** **** 1234"
-                          className="w-full px-3 py-2 bg-white border border-[#E6CA65] rounded-xl text-[#120D1C] text-xs focus:outline-none focus:border-[#24153F] font-bold"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-[10px] text-[#594A70] font-bold block mb-0.5">Expiración (MM/AA)</label>
-                        <input
-                          type="text"
-                          required
-                          value={cardExpiry}
-                          onChange={(e) => setCardExpiry(e.target.value)}
-                          placeholder="08/28"
-                          className="w-full px-3 py-2 bg-white border border-[#E6CA65] rounded-xl text-[#120D1C] text-xs focus:outline-none focus:border-[#24153F] font-bold"
-                        />
-                      </div>
-                    </div>
-
-                    {addCardSuccess && (
-                      <p className="text-[11px] text-emerald-800 font-bold flex items-center gap-1">
-                        <span className="material-symbols-outlined text-sm">check_circle</span>
-                        ¡Guardado correctamente!
-                      </p>
-                    )}
-
-                    <div className="flex justify-end gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => setShowAddCard(false)}
-                        className="px-3 py-1.5 bg-white/70 hover:bg-white text-[#120D1C] border border-[#E6CA65] rounded-xl text-xs font-bold"
-                      >
-                        Cancelar
-                      </button>
-
-                      <button
-                        type="submit"
-                        className="px-4 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold rounded-xl text-xs"
-                      >
-                        Guardar
-                      </button>
-                    </div>
-                  </form>
-                )}
               </div>
             )}
 
@@ -840,7 +769,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
             {settingsTab === 'idiomas' && (
               <div className="space-y-4">
                 <p className="text-xs text-[#120D1C] font-['Plus_Jakarta_Sans'] font-medium">
-                  Selecciona el idioma de la aplicación StellaWay Astroturismo:
+                  {t('mcLangSelectIntro', 'Selecciona el idioma de la aplicación StellaWay Astroturismo:')}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -893,9 +822,9 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               </div>
               <div className="truncate">
                 <h2 className="text-base sm:text-lg font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans'] truncate">
-                  Menú StellaWay
+                  {t('mcQuickMenuTitle', 'Menú StellaWay')}
                 </h2>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">Accesos directos de navegación</p>
+                <p className="text-[11px] text-[#594A70] font-bold truncate">{t('mcQuickMenuSubtitle', 'Accesos directos de navegación')}</p>
               </div>
             </div>
 
@@ -904,25 +833,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <button
                 onClick={closeModal}
                 className="px-2.5 py-1.5 bg-white/70 hover:bg-white text-[#120D1C] border border-[#E6CA65] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer"
-                title="Atrás (Volver)"
+                title={t('mcBackBtn', 'Atrás')}
               >
                 <span className="material-symbols-outlined text-sm">undo</span>
-                <span className="hidden xs:inline">Atrás</span>
+                <span className="hidden xs:inline">{t('mcBackBtn', 'Atrás')}</span>
               </button>
 
               <button
                 onClick={handleGoHome}
                 className="px-2.5 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer shadow-md"
-                title="Ir a Inicio"
+                title={t('mcHomeBtn', 'Inicio')}
               >
                 <span className="material-symbols-outlined text-sm">home</span>
-                <span className="hidden xs:inline">Inicio</span>
+                <span className="hidden xs:inline">{t('mcHomeBtn', 'Inicio')}</span>
               </button>
 
               <button
                 onClick={closeModal}
                 className="p-1.5 rounded-xl bg-white/70 hover:bg-white text-[#24153F] hover:text-black border border-[#E6CA65] transition-all cursor-pointer"
-                title="Cerrar"
+                title={t('mcCloseBtn', 'Cerrar')}
               >
                 <span className="material-symbols-outlined text-base">close</span>
               </button>
@@ -945,19 +874,19 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="text-xs sm:text-sm font-black text-[#082F49] group-hover:text-[#0284C7] transition-colors font-['Plus_Jakarta_Sans'] truncate">
-                    Stella IA (Asistente Estelar)
+                    {t('mcQuickAiTitle', 'Stella IA (Asistente Estelar)')}
                   </h3>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-black uppercase tracking-wider">
-                    Online
+                    {t('mcQuickAiBadge', 'Online')}
                   </span>
                 </div>
-                <p className="text-[11px] text-[#0369A1] font-bold truncate">Consultas astronómicas, telescopios y eclipse 2027</p>
+                <p className="text-[11px] text-[#0369A1] font-bold truncate">{t('mcQuickAiDesc', 'Consultas astronómicas, telescopios y eclipse 2027')}</p>
               </div>
               <span className="material-symbols-outlined text-[#0284C7] text-base shrink-0">arrow_forward</span>
             </button>
 
 
-            {/* Modo Luz Roja / Visión Nocturna toggle - Accesible desde Menú en Móvil y Desktop */}
+            {/* Modo Luz Roja / Visión Nocturna toggle */}
             <button
               type="button"
               onClick={() => {
@@ -982,15 +911,15 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-xs sm:text-sm font-black text-white font-['Plus_Jakarta_Sans']">
-                      Modo Luz Roja (Visión Nocturna)
+                      {t('mcQuickRedTitle', 'Modo Luz Roja (Visión Nocturna)')}
                     </h3>
                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
                       nightVision ? 'bg-[#FF3B30] text-white animate-pulse' : 'bg-white/20 text-white/80'
                     }`}>
-                      {nightVision ? 'ACTIVADO' : 'DESACTIVADO'}
+                      {nightVision ? t('mcQuickRedOn', 'ACTIVADO') : t('mcQuickRedOff', 'DESACTIVADO')}
                     </span>
                   </div>
-                  <p className="text-[11px] text-white/70 font-medium">Preserva la visión adaptada a la oscuridad total</p>
+                  <p className="text-[11px] text-white/70 font-medium">{t('mcQuickRedDesc', 'Preserva la visión adaptada a la oscuridad total')}</p>
                 </div>
               </div>
               <div className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center shrink-0 ${
@@ -1015,13 +944,13 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="text-xs sm:text-sm font-black text-amber-950 font-['Plus_Jakarta_Sans'] truncate">
-                    Instalar StellaWay en el Móvil
+                    {t('mcQuickInstallTitle', 'Instalar StellaWay en el Móvil')}
                   </h3>
                   <span className="px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 text-[9px] font-black uppercase tracking-wider">
                     PWA
                   </span>
                 </div>
-                <p className="text-[11px] text-amber-900/80 font-bold truncate">Añadir icono a la pantalla de inicio</p>
+                <p className="text-[11px] text-amber-900/80 font-bold truncate">{t('mcQuickInstallDesc', 'Añadir icono a la pantalla de inicio')}</p>
               </div>
               <span className="material-symbols-outlined text-amber-800 text-base shrink-0">arrow_forward</span>
             </button>
@@ -1038,9 +967,9 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-xs sm:text-sm font-extrabold text-red-950 group-hover:text-red-800 transition-colors font-['Plus_Jakarta_Sans'] truncate">
-                  Emergencias Starlight SOS
+                  {t('mcQuickSosTitle', 'Emergencias Starlight SOS')}
                 </h3>
-                <p className="text-[11px] text-red-900 font-bold truncate">Seguridad nocturna y llamada 112</p>
+                <p className="text-[11px] text-red-900 font-bold truncate">{t('mcQuickSosDesc', 'Seguridad nocturna y llamada 112')}</p>
               </div>
               <span className="material-symbols-outlined text-red-700 text-base shrink-0">arrow_forward</span>
             </button>
@@ -1057,9 +986,9 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-xs sm:text-sm font-extrabold text-[#120D1C] group-hover:text-[#24153F] transition-colors font-['Plus_Jakarta_Sans'] truncate">
-                  Accesorios & Tienda
+                  {t('mcQuickShopTitle', 'Accesorios & Tienda')}
                 </h3>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">Filtros solares ISO 12312-2 y linternas rojas</p>
+                <p className="text-[11px] text-[#594A70] font-bold truncate">{t('mcQuickShopDesc', 'Filtros solares ISO 12312-2 y linternas rojas')}</p>
               </div>
               <span className="material-symbols-outlined text-[#594A70] group-hover:text-[#24153F] text-base shrink-0">arrow_forward</span>
             </button>
@@ -1077,13 +1006,13 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="text-xs sm:text-sm font-extrabold text-[#120D1C] group-hover:text-[#24153F] transition-colors font-['Plus_Jakarta_Sans'] truncate">
-                    {t('languages', 'Idiomas / Languages')}
+                    {t('languages', 'Idiomas')}
                   </h3>
                   <span className="text-[10px] font-extrabold bg-[#24153F] text-[#FFF8D6] px-2 py-0.5 rounded-full border border-[#E6CA65]">
-                    {language === 'es' ? '🇪🇸 Español' : '🇬🇧 English'}
+                    {currentLang.flag} {currentLang.name}
                   </span>
                 </div>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">Cambiar entre Español e English</p>
+                <p className="text-[11px] text-[#594A70] font-bold truncate">{t('mcQuickLangSwitchDesc', 'Cambiar idioma entre Español, English, Français, Português, Italiano y Deutsch')}</p>
               </div>
               <span className="material-symbols-outlined text-[#594A70] group-hover:text-[#24153F] text-base shrink-0">arrow_forward</span>
             </button>
@@ -1100,9 +1029,9 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-xs sm:text-sm font-extrabold text-[#120D1C] group-hover:text-[#24153F] transition-colors font-['Plus_Jakarta_Sans'] truncate">
-                  Ajustes, Tarifas & Perfil
+                  {t('mcQuickSettingsTitle', 'Ajustes, Tarifas & Perfil')}
                 </h3>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">Suscripciones, cuotas y métodos de pago</p>
+                <p className="text-[11px] text-[#594A70] font-bold truncate">{t('mcQuickSettingsDesc', 'Suscripciones, cuotas y métodos de pago')}</p>
               </div>
               <span className="material-symbols-outlined text-[#594A70] group-hover:text-[#24153F] text-base shrink-0">arrow_forward</span>
             </button>
@@ -1113,7 +1042,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
       {/* MODAL 3: HOSTELERÍA STARLIGHT - COMPACT */}
       {modalType === 'hosteleria' && (
         <div className="card-pastel-gold relative w-full max-w-xl border-2 border-[#D4AF37] rounded-3xl p-4 sm:p-6 shadow-2xl z-10 overflow-hidden flex flex-col max-h-[85vh]">
-          {/* Header with Navigation: Atrás (curved arrow) & Inicio (casita) */}
+          {/* Header with Navigation */}
           <div className="flex items-center justify-between pb-3 border-b border-[#E6CA65] mb-3 gap-2 shrink-0">
             <div className="flex items-center gap-2.5 overflow-hidden">
               <div className="w-9 h-9 rounded-2xl bg-[#24153F] text-[#FEE685] flex items-center justify-center font-extrabold shadow-md shrink-0">
@@ -1121,9 +1050,9 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               </div>
               <div className="truncate">
                 <h2 className="text-base sm:text-lg font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans'] truncate">
-                  Hostelería Starlight
+                  {t('mcHosteleriaTitle', 'Hostelería Starlight')}
                 </h2>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">Información y enlaces directos a webs oficiales</p>
+                <p className="text-[11px] text-[#594A70] font-bold truncate">{t('mcHosteleriaSub', 'Información y enlaces directos a webs oficiales')}</p>
               </div>
             </div>
 
@@ -1132,25 +1061,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <button
                 onClick={() => openModal('quickMenu')}
                 className="px-2.5 py-1.5 bg-white/70 hover:bg-white text-[#120D1C] border border-[#E6CA65] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer"
-                title="Atrás (Volver)"
+                title={t('mcBackBtn', 'Atrás')}
               >
                 <span className="material-symbols-outlined text-sm">undo</span>
-                <span className="hidden xs:inline">Atrás</span>
+                <span className="hidden xs:inline">{t('mcBackBtn', 'Atrás')}</span>
               </button>
 
               <button
                 onClick={handleGoHome}
                 className="px-2.5 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer shadow-md"
-                title="Ir a Inicio"
+                title={t('mcHomeBtn', 'Inicio')}
               >
                 <span className="material-symbols-outlined text-sm">home</span>
-                <span className="hidden xs:inline">Inicio</span>
+                <span className="hidden xs:inline">{t('mcHomeBtn', 'Inicio')}</span>
               </button>
 
               <button
                 onClick={closeModal}
                 className="p-1.5 rounded-xl bg-white/70 hover:bg-white text-[#24153F] hover:text-black border border-[#E6CA65] transition-all cursor-pointer"
-                title="Cerrar"
+                title={t('mcCloseBtn', 'Cerrar')}
               >
                 <span className="material-symbols-outlined text-base">close</span>
               </button>
@@ -1160,7 +1089,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
           {/* Informational Disclaimer Banner */}
           <div className="p-3 rounded-2xl bg-amber-100 border border-amber-300 text-amber-950 text-xs flex items-center gap-2 mb-3 shrink-0 font-medium">
             <span className="material-symbols-outlined text-[#B45309] text-base shrink-0 font-bold">info</span>
-            <span>StellaWay es un portal informativo. Haz clic en <strong>Acceder sitio</strong> para consultar o reservar en la web oficial en tu navegador.</span>
+            <span>{t('mcHosteleriaNotice', 'StellaWay es un portal informativo. Haz clic en Acceder sitio para consultar o reservar en la web oficial en tu navegador.')}</span>
           </div>
 
           <div className="overflow-y-auto space-y-3 pr-1">
@@ -1168,32 +1097,32 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               {
                 title: 'Hotel Rural Penyagolosa Starlight',
                 location: 'Vistabella del Maestrat (Castellón)',
-                desc: 'Mirador privado con telescopio Goto y menú degustación astronómica.',
-                badge: 'Certificado Starlight Gold',
+                desc: t('mcHosteleria1Desc', 'Mirador privado con telescopio Goto y menú degustación astronómica.'),
+                badge: t('mcHosteleria1Badge', 'Certificado Starlight Gold'),
                 stars: '5.0 ★',
                 url: 'https://www.google.com/search?q=Hotel+Rural+Penyagolosa+Vistabella+del+Maestrat',
               },
               {
                 title: 'Parador de Morella',
                 location: 'Morella (Castellón)',
-                desc: 'Alojamiento histórico dentro de las murallas medievales con terrazas.',
-                badge: 'Punto Clave Eclipse',
+                desc: t('mcHosteleria2Desc', 'Alojamiento histórico dentro de las murallas medievales con terrazas.'),
+                badge: t('mcHosteleria2Badge', 'Punto Clave Eclipse'),
                 stars: '4.9 ★',
                 url: 'https://www.parador.es/es/paradores/parador-de-morella',
               },
               {
                 title: 'Masía El Scurral Starlight Lodging',
                 location: 'Culla (Castellón)',
-                desc: 'Cabañas de madera con domo superior transparente.',
-                badge: 'Cabañas Domo Cristal',
+                desc: t('mcHosteleria3Desc', 'Cabañas de madera con domo superior transparente.'),
+                badge: t('mcHosteleria3Badge', 'Cabañas Domo Cristal'),
                 stars: '4.8 ★',
                 url: 'https://www.google.com/search?q=Masia+El+Scurral+Culla',
               },
               {
                 title: 'Posada Sierra de Gúdar',
                 location: 'Teruel - Cielos Negros',
-                desc: 'Alojamiento para astrónomos con almacén de telescopios.',
-                badge: 'Especializado Astrónomos',
+                desc: t('mcHosteleria4Desc', 'Alojamiento para astrónomos con almacén de telescopios.'),
+                badge: t('mcHosteleria4Badge', 'Especializado Astrónomos'),
                 stars: '4.9 ★',
                 url: 'https://www.google.com/search?q=Posada+Sierra+de+Gudar+Teruel',
               },
@@ -1226,7 +1155,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     rel="noopener noreferrer"
                     className="px-3.5 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold rounded-xl text-xs transition-all cursor-pointer flex items-center gap-1.5 shadow-md"
                   >
-                    <span>Acceder sitio</span>
+                    <span>{t('mcHosteleriaVisitBtn', 'Acceder sitio')}</span>
                     <span className="material-symbols-outlined text-sm font-bold">open_in_new</span>
                   </a>
                 </div>
@@ -1239,7 +1168,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
       {/* MODAL 4: EMERGENCIAS STARLIGHT SOS - COMPACT */}
       {modalType === 'emergencias' && (
         <div className="card-pastel-gold relative w-full max-w-lg border-2 border-red-500 rounded-3xl p-4 sm:p-6 shadow-2xl z-10 overflow-hidden flex flex-col max-h-[85vh]">
-          {/* Header with Navigation: Atrás (curved arrow) & Inicio (casita) */}
+          {/* Header with Navigation */}
           <div className="flex items-center justify-between pb-3 border-b border-red-300 mb-3 gap-2 shrink-0">
             <div className="flex items-center gap-2.5 overflow-hidden">
               <div className="w-9 h-9 rounded-2xl bg-red-600 text-white flex items-center justify-center font-extrabold shrink-0 shadow-md shadow-red-600/30">
@@ -1247,9 +1176,9 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               </div>
               <div className="truncate">
                 <h2 className="text-base sm:text-lg font-extrabold text-red-950 font-['Plus_Jakarta_Sans'] truncate">
-                  Emergencias SOS
+                  {t('mcSosTitle', 'Emergencias SOS')}
                 </h2>
-                <p className="text-[11px] text-red-800 font-['JetBrains_Mono'] font-bold truncate">Información y teléfonos oficiales</p>
+                <p className="text-[11px] text-red-800 font-['JetBrains_Mono'] font-bold truncate">{t('mcSosSub', 'Información y teléfonos oficiales')}</p>
               </div>
             </div>
 
@@ -1258,25 +1187,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <button
                 onClick={() => openModal('quickMenu')}
                 className="px-2.5 py-1.5 bg-white/70 hover:bg-white text-[#120D1C] border border-[#E6CA65] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer"
-                title="Atrás (Volver)"
+                title={t('mcBackBtn', 'Atrás')}
               >
                 <span className="material-symbols-outlined text-sm">undo</span>
-                <span className="hidden xs:inline">Atrás</span>
+                <span className="hidden xs:inline">{t('mcBackBtn', 'Atrás')}</span>
               </button>
 
               <button
                 onClick={handleGoHome}
                 className="px-2.5 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer shadow-md"
-                title="Ir a Inicio"
+                title={t('mcHomeBtn', 'Inicio')}
               >
                 <span className="material-symbols-outlined text-sm">home</span>
-                <span className="hidden xs:inline">Inicio</span>
+                <span className="hidden xs:inline">{t('mcHomeBtn', 'Inicio')}</span>
               </button>
 
               <button
                 onClick={closeModal}
                 className="p-1.5 rounded-xl bg-white/70 hover:bg-white text-[#24153F] hover:text-black border border-[#E6CA65] transition-all cursor-pointer"
-                title="Cerrar"
+                title={t('mcCloseBtn', 'Cerrar')}
               >
                 <span className="material-symbols-outlined text-base">close</span>
               </button>
@@ -1286,48 +1215,99 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
           {/* Disclaimer Banner */}
           <div className="p-3 rounded-2xl bg-red-100 border border-red-300 text-red-950 text-xs flex items-center gap-2 mb-3 shrink-0 font-medium">
             <span className="material-symbols-outlined text-red-600 text-base shrink-0 font-bold">warning</span>
-            <span>StellaWay es un portal informativo y no presta servicio de rescate o asistencia propia. Contacta con organismos oficiales.</span>
+            <span>{t('mcSosDisclaimer', 'StellaWay es un portal informativo y no presta servicio de rescate o asistencia propia. Contacta con organismos oficiales.')}</span>
           </div>
 
           <div className="space-y-3 overflow-y-auto pr-1">
-            {/* GPS Coordinates Box */}
-            <div className="bg-white/90 p-3.5 rounded-2xl border-2 border-red-300 flex items-center justify-between gap-2 shadow-sm">
-              <div className="min-w-0">
-                <span className="text-[10px] uppercase font-black text-red-900 font-['JetBrains_Mono'] block">
-                  MIS COORDENADAS GPS
-                </span>
-                <span className="text-xs font-black text-[#120D1C] font-['JetBrains_Mono'] mt-0.5 block truncate">
-                  40° 25' 12" N, 0° 12' 45" W (Castellón)
-                </span>
+            {/* Real-Time GPS Coordinates Box */}
+            <div className="bg-white/95 p-3.5 rounded-2xl border-2 border-red-300 space-y-2.5 shadow-sm">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] uppercase font-black text-red-900 font-['JetBrains_Mono']">
+                      {t('mcSosCoordsLabel', 'MIS COORDENADAS GPS')}
+                    </span>
+                    {sosCoords && (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[9px] font-black uppercase">
+                        ● GPS{sosCoords.accuracyMeters ? ` ±${sosCoords.accuracyMeters}m` : ''}
+                      </span>
+                    )}
+                  </div>
+
+                  {sosCoords ? (
+                    <div className="mt-1 space-y-0.5">
+                      <span className="text-xs sm:text-sm font-black text-[#120D1C] font-['JetBrains_Mono'] block">
+                        {formatCoordinatesDMS(sosCoords.lat, sosCoords.lng)}
+                      </span>
+                      <span className="text-[11px] font-bold text-slate-600 font-['JetBrains_Mono'] block">
+                        {sosCoords.lat.toFixed(6)}, {sosCoords.lng.toFixed(6)}
+                      </span>
+                    </div>
+                  ) : sosLocating ? (
+                    <span className="text-xs font-bold text-slate-700 mt-1 block">
+                      {t('spotsGpsObtaining', 'Obteniendo coordenadas GPS de tu dispositivo...')}
+                    </span>
+                  ) : (
+                    <span className="text-xs font-bold text-red-700 mt-1 block">
+                      {sosGpsError === 'denied'
+                        ? t('gpsErrDenied', 'Permiso GPS denegado. Activa la ubicación en tu navegador/móvil para obtener tus coordenadas reales.')
+                        : sosGpsError === 'unsupported'
+                        ? t('gpsErrUnsupported', 'Tu navegador no soporta geolocalización GPS.')
+                        : t('gpsErrUnavailable', 'No se pudo obtener señal GPS todavía. Comprueba la ubicación del dispositivo.')}
+                    </span>
+                  )}
+                </div>
+
+                {sosCoords ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const dms = formatCoordinatesDMS(sosCoords.lat, sosCoords.lng);
+                      const text = `${dms} (${sosCoords.lat.toFixed(6)}, ${sosCoords.lng.toFixed(6)})`;
+                      if (navigator.clipboard?.writeText) {
+                        navigator.clipboard.writeText(text).catch(() => {});
+                      }
+                      setCopiedCoords(true);
+                      setTimeout(() => setCopiedCoords(false), 2500);
+                    }}
+                    className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer shrink-0 shadow-md"
+                  >
+                    {copiedCoords ? t('mcSosCopiedBtn', '¡Copiadas!') : t('mcSosCopyBtn', 'Copiar')}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setSosRetryKey((k) => k + 1)}
+                    disabled={sosLocating}
+                    className="px-3 py-1.5 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer shrink-0 shadow-md"
+                  >
+                    {t('gpsRetryBtn', 'Activar GPS')}
+                  </button>
+                )}
               </div>
-              <button
-                onClick={() => alert('Coordenadas copiadas al portapapeles.')}
-                className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer shrink-0 shadow-md"
-              >
-                Copiar
-              </button>
+
+              {sosCoords && (
+                <a
+                  href={buildGoogleMapsPinUrl(sosCoords.lat, sosCoords.lng)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-[#120D1C] border border-slate-300 rounded-xl text-[11px] font-extrabold flex items-center justify-center gap-1.5 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm text-red-600">location_on</span>
+                  <span>{t('gpsOpenMyLocationMaps', 'Ver mi ubicación exacta en Google Maps')}</span>
+                  <span className="material-symbols-outlined text-xs">open_in_new</span>
+                </a>
+              )}
             </div>
 
-            {/* Direct Link: Emergencias territoriales de ubicación exacta */}
-            <a
-              href="https://www.google.com/search?q=servicios+emergencias+112+comunidades+autonomas+espana"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full py-3 px-3.5 bg-white/80 hover:bg-white text-[#24153F] border border-[#E6CA65] font-extrabold rounded-2xl flex items-center justify-center gap-2 text-xs font-['Plus_Jakarta_Sans'] transition-all shadow-sm text-center"
-            >
-              <span className="material-symbols-outlined text-base text-[#24153F]">travel_explore</span>
-              <span>Acceder a emergencias territoriales de ubicación exacta</span>
-              <span className="material-symbols-outlined text-sm font-bold">open_in_new</span>
-            </a>
-
-            {/* Direct Official Numbers */}
+            {/* Direct Official Numbers: Only 112 and 062 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <a
                 href="tel:112"
                 className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 text-xs font-['Plus_Jakarta_Sans'] uppercase tracking-wider"
               >
                 <span className="material-symbols-outlined text-lg">call</span>
-                112 Emergencias España
+                {t('mcSosCall112', '112 Emergencias España / UE')}
               </a>
 
               <a
@@ -1335,32 +1315,19 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                 className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-700/30 text-xs font-['Plus_Jakarta_Sans'] uppercase tracking-wider"
               >
                 <span className="material-symbols-outlined text-lg">local_police</span>
-                062 Guardia Civil
+                {t('mcSosCall062', '062 Guardia Civil')}
               </a>
             </div>
-
-            {/* Flash screen SOS signal */}
-            <button
-              onClick={() => setSosActive(!sosActive)}
-              className={`w-full py-3 rounded-2xl border-2 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                sosActive
-                  ? 'bg-red-600 text-white border-white animate-pulse shadow-lg'
-                  : 'bg-white/80 text-red-950 border-red-300 hover:bg-white'
-              }`}
-            >
-              <span className="material-symbols-outlined text-base">light_mode</span>
-              {sosActive ? 'DETENER LUZ PARPADEANTE SOS' : 'ACTIVAR DESTELLO ROJO SOS'}
-            </button>
 
             {/* First Aid tips */}
             <div className="bg-white/70 p-3.5 rounded-2xl border border-[#E6CA65] text-xs text-[#2B2538] space-y-1 font-medium">
               <h4 className="font-extrabold text-[#120D1C] flex items-center gap-1.5 text-xs">
                 <span className="material-symbols-outlined text-base text-red-600">medical_services</span>
-                Guía de Seguridad Nocturna:
+                {t('mcSosGuideTitle', 'Guía de Seguridad Nocturna:')}
               </h4>
-              <p>• Permanece cerca de tu vehículo o zona balizada en el mirador.</p>
-              <p>• En caso de hipotermia o viento extremo, mantén tu manta térmica.</p>
-              <p>• Facilita tus coordenadas GPS exactas al llamar al 112.</p>
+              <p>{t('mcSosTip1', '• Permanece cerca de tu vehículo o zona balizada en el mirador.')}</p>
+              <p>{t('mcSosTip2', '• En caso de hipotermia o viento extremo, mantén tu manta térmica.')}</p>
+              <p>{t('mcSosTip3', '• Facilita tus coordenadas GPS exactas al llamar al 112.')}</p>
             </div>
           </div>
         </div>
@@ -1369,7 +1336,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
       {/* MODAL 5: ACCESORIOS & EQUIPAMIENTO - COMPACT */}
       {modalType === 'accesorios' && (
         <div className="card-pastel-gold relative w-full max-w-xl border-2 border-[#D4AF37] rounded-3xl p-4 sm:p-6 shadow-2xl z-10 overflow-hidden flex flex-col max-h-[85vh]">
-          {/* Header with Navigation: Atrás (curved arrow) & Inicio (casita) */}
+          {/* Header with Navigation */}
           <div className="flex items-center justify-between pb-3 border-b border-[#E6CA65] mb-4 gap-2 shrink-0">
             <div className="flex items-center gap-2.5 overflow-hidden">
               <div className="w-9 h-9 rounded-2xl bg-[#24153F] text-[#FEE685] flex items-center justify-center font-extrabold shadow-md shrink-0">
@@ -1377,9 +1344,9 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               </div>
               <div className="truncate">
                 <h2 className="text-base sm:text-lg font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans'] truncate">
-                  Accesorios Starlight
+                  {t('mcAccTitle', 'Accesorios Starlight')}
                 </h2>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">Equipamiento homologado Eclipse 2026</p>
+                <p className="text-[11px] text-[#594A70] font-bold truncate">{t('mcAccSub', 'Equipamiento homologado Eclipse 2026–2027')}</p>
               </div>
             </div>
 
@@ -1388,25 +1355,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <button
                 onClick={() => openModal('quickMenu')}
                 className="px-2.5 py-1.5 bg-white/70 hover:bg-white text-[#120D1C] border border-[#E6CA65] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer"
-                title="Atrás (Volver)"
+                title={t('mcBackBtn', 'Atrás')}
               >
                 <span className="material-symbols-outlined text-sm">undo</span>
-                <span className="hidden xs:inline">Atrás</span>
+                <span className="hidden xs:inline">{t('mcBackBtn', 'Atrás')}</span>
               </button>
 
               <button
                 onClick={handleGoHome}
                 className="px-2.5 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer shadow-md"
-                title="Ir a Inicio"
+                title={t('mcHomeBtn', 'Inicio')}
               >
                 <span className="material-symbols-outlined text-sm">home</span>
-                <span className="hidden xs:inline">Inicio</span>
+                <span className="hidden xs:inline">{t('mcHomeBtn', 'Inicio')}</span>
               </button>
 
               <button
                 onClick={closeModal}
                 className="p-1.5 rounded-xl bg-white/70 hover:bg-white text-[#24153F] hover:text-black border border-[#E6CA65] transition-all cursor-pointer"
-                title="Cerrar"
+                title={t('mcCloseBtn', 'Cerrar')}
               >
                 <span className="material-symbols-outlined text-base">close</span>
               </button>
@@ -1416,28 +1383,28 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
           <div className="overflow-y-auto space-y-2.5 pr-1">
             {[
               {
-                title: 'Gafas Filtro Solar ISO 12312-2 (Pack 4u)',
-                price: '12.90 €',
-                desc: 'Observación segura de las fases parciales del Eclipse Solar 2026.',
+                title: t('mcAcc1Title', 'Gafas Filtro Solar ISO 12312-2 (Pack 4u)'),
+                desc: t('mcAcc1Desc', 'Observación segura de las fases parciales del Eclipse Solar 2026–2027.'),
                 icon: 'visibility',
+                searchQuery: 'gafas eclipse solar ISO 12312-2 homologadas',
               },
               {
-                title: 'Linterna LED de Luz Roja Regulable astronómica',
-                price: '19.50 €',
-                desc: 'Preserva 100% tu visión nocturna en el campo de observación.',
+                title: t('mcAcc2Title', 'Linterna LED de Luz Roja Regulable astronómica'),
+                desc: t('mcAcc2Desc', 'Preserva 100% tu visión nocturna en el campo de observación.'),
                 icon: 'highlight',
+                searchQuery: 'linterna astronomica luz roja regulable',
               },
               {
-                title: 'Adaptador Smartphone para Telescopio',
-                price: '24.90 €',
-                desc: 'Captura fotos de la Luna y planetas alineando la cámara.',
+                title: t('mcAcc3Title', 'Adaptador Smartphone para Telescopio'),
+                desc: t('mcAcc3Desc', 'Captura fotos de la Luna y planetas alineando la cámara.'),
                 icon: 'photo_camera',
+                searchQuery: 'adaptador smartphone telescopio universal',
               },
               {
-                title: 'Ocular Baader Hyperion 13mm Gran Campo 68°',
-                price: '145.00 €',
-                desc: 'Nitidez cristalina para espacio profundo y la corona solar.',
+                title: t('mcAcc4Title', 'Ocular Baader Hyperion 13mm Gran Campo 68°'),
+                desc: t('mcAcc4Desc', 'Nitidez cristalina para espacio profundo y la corona solar.'),
                 icon: 'auto_awesome',
+                searchQuery: 'ocular Baader Hyperion 13mm 68',
               },
             ].map((prod, idx) => (
               <div key={idx} className="bg-white/80 rounded-2xl p-3.5 border border-[#E6CA65] flex items-center justify-between gap-3 shadow-sm hover:border-[#24153F] transition-all">
@@ -1452,15 +1419,15 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                 </div>
 
                 <div className="text-right shrink-0">
-                  <span className="text-xs sm:text-sm font-black text-[#24153F] block font-['JetBrains_Mono'] mb-1">
-                    {prod.price}
-                  </span>
-                  <button
-                    onClick={() => alert(`Artículo "${prod.title}" añadido al carrito de compras.`)}
-                    className="px-3 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold rounded-xl text-xs transition-all cursor-pointer shadow-md"
+                  <a
+                    href={`https://www.google.com/search?q=${encodeURIComponent(prod.searchQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold rounded-xl text-xs transition-all cursor-pointer shadow-md inline-flex items-center gap-1"
                   >
-                    Comprar
-                  </button>
+                    <span>{t('mcAccSearchBtn', 'Buscar')}</span>
+                    <span className="material-symbols-outlined text-xs">open_in_new</span>
+                  </a>
                 </div>
               </div>
             ))}
@@ -1471,7 +1438,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
       {/* MODAL IDIOMAS */}
       {modalType === 'languages' && (
         <div className="card-pastel-gold relative w-full max-w-xl border-2 border-[#D4AF37] rounded-3xl p-4 sm:p-6 shadow-2xl z-10 overflow-hidden flex flex-col max-h-[85vh]">
-          {/* Header with Navigation: Atrás (curved arrow) & Inicio (casita) */}
+          {/* Header with Navigation */}
           <div className="flex items-center justify-between pb-3 border-b border-[#E6CA65] mb-4 gap-2 shrink-0">
             <div className="flex items-center gap-2.5 overflow-hidden">
               <div className="w-9 h-9 rounded-2xl bg-[#24153F] text-[#FEE685] flex items-center justify-center font-extrabold shadow-md shrink-0">
@@ -1490,25 +1457,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <button
                 onClick={() => openModal('quickMenu')}
                 className="px-2.5 py-1.5 bg-white/70 hover:bg-white text-[#120D1C] border border-[#E6CA65] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer"
-                title="Volver al Menú"
+                title={t('mcBackBtn', 'Atrás')}
               >
                 <span className="material-symbols-outlined text-sm">undo</span>
-                <span className="hidden xs:inline">Atrás</span>
+                <span className="hidden xs:inline">{t('mcBackBtn', 'Atrás')}</span>
               </button>
 
               <button
                 onClick={handleGoHome}
                 className="px-2.5 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer shadow-md"
-                title="Ir a Inicio"
+                title={t('mcHomeBtn', 'Inicio')}
               >
                 <span className="material-symbols-outlined text-sm">home</span>
-                <span className="hidden xs:inline">Inicio</span>
+                <span className="hidden xs:inline">{t('mcHomeBtn', 'Inicio')}</span>
               </button>
 
               <button
                 onClick={closeModal}
                 className="p-1.5 rounded-xl bg-white/70 hover:bg-white text-[#24153F] hover:text-black border border-[#E6CA65] transition-all cursor-pointer"
-                title="Cerrar"
+                title={t('mcCloseBtn', 'Cerrar')}
               >
                 <span className="material-symbols-outlined text-base">close</span>
               </button>
@@ -1518,7 +1485,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
           {/* Modal Body Content */}
           <div className="overflow-y-auto flex-1 pr-1 space-y-4">
             <p className="text-xs text-[#120D1C] font-['Plus_Jakarta_Sans'] font-medium">
-              Selecciona tu idioma preferido (se aplicará al instante en toda la aplicación):
+              {t('mcLangModalIntro', 'Selecciona tu idioma preferido (se aplicará al instante en toda la aplicación, pasarela de pago, buscadores e IA):')}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1561,7 +1528,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                 className="w-full py-3 bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg cursor-pointer active:scale-95 transition-all"
               >
                 <span className="material-symbols-outlined text-base">done_all</span>
-                <span>Guardar y Volver</span>
+                <span>{t('mcLangSaveReturnBtn', 'Guardar y Volver')}</span>
               </button>
             </div>
           </div>

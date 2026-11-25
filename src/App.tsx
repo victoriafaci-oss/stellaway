@@ -13,12 +13,15 @@ import { AssistantView } from './components/AssistantView';
 import { ProfileView } from './components/ProfileView';
 import { WelcomePaywallView } from './components/WelcomePaywallView';
 import { StarrySkyBackground } from './components/StarrySkyBackground';
-import { LandingPage } from './components/LandingPage';
+import { LandingPageV2 } from './components/LandingPageV2';
 import { InstallPromptModal } from './components/InstallPromptModal';
 import { OfflineBanner } from './components/OfflineBanner';
+import { useLanguage } from './context/LanguageContext';
+import { getLocalizedPlanName } from './lib/i18nHelpers';
 
 export default function App() {
-  // Check synchronously on initial load to avoid any flash of the landing page
+  const { language } = useLanguage();
+  // Show landing page by default unless returning from a Stripe payment
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -30,12 +33,6 @@ export default function App() {
         urlParams.has('session_id');
 
       if (isSuccessPayment) {
-        return 'dashboard';
-      }
-
-      const isSubscribed = localStorage.getItem('stellaway_subscription_active') === 'true';
-      const trialExpires = localStorage.getItem('stellaway_trial_expires');
-      if (isSubscribed || (trialExpires && Number(trialExpires) > Date.now())) {
         return 'dashboard';
       }
     }
@@ -69,7 +66,13 @@ export default function App() {
   const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<any>(null);
   const [showInstallModal, setShowInstallModal] = useState<boolean>(false);
   const [isAfterPayment, setIsAfterPayment] = useState<boolean>(false);
-  const [activePlanName, setActivePlanName] = useState<string>('Pro');
+  const [activePlanId, setActivePlanId] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('stellaway_active_plan');
+    }
+    return null;
+  });
+  const activePlanName = activePlanId ? getLocalizedPlanName(activePlanId, language) : undefined;
 
   useEffect(() => {
     // Listen for PWA install prompt event
@@ -120,17 +123,17 @@ export default function App() {
           // Strict 48h access
           const expiresAt = Date.now() + 48 * 3600 * 1000;
           localStorage.setItem('stellaway_trial_expires', expiresAt.toString());
-          localStorage.setItem('stellaway_trial_phone', 'Verificado por Stripe (48h)');
+          localStorage.setItem('stellaway_trial_phone', 'Stripe (48h)');
           localStorage.removeItem('stellaway_subscription_active'); // Not lifetime/infinite
-          setActivePlanName('Prueba 48 Horas');
+          setActivePlanId('free2days');
         } else {
           localStorage.setItem('stellaway_subscription_active', 'true');
           if (planParam === 'mensual') {
-            setActivePlanName('Plan Mensual Pro');
+            setActivePlanId('mensual');
           } else if (planParam === 'promocion' || planParam === 'promo') {
-            setActivePlanName('Promoción Especial');
+            setActivePlanId('promocion');
           } else {
-            setActivePlanName('Plan Anual Pass');
+            setActivePlanId('anual');
           }
         }
         
@@ -145,17 +148,8 @@ export default function App() {
       }
     }
 
-    // Check if user is returning with active subscription
-    const isSubscribed = localStorage.getItem('stellaway_subscription_active');
-    const trialExpires = localStorage.getItem('stellaway_trial_expires');
-    if (isSubscribed === 'true' || (trialExpires && Number(trialExpires) > Date.now())) {
-      // Returning active users go directly to dashboard
-      setActiveTab('dashboard');
-      setTabHistory(['dashboard']);
-    }
-
     const handleCancelled = () => {
-      setActivePlanName(null);
+      setActivePlanId(null);
     };
     window.addEventListener('stellaway-subscription-cancelled', handleCancelled);
 
@@ -233,14 +227,14 @@ export default function App() {
   // Landing page renders standalone (no nav/topbar)
   if (activeTab === 'landing') {
     return (
-      <LandingPage
+      <LandingPageV2
         nightVision={nightVision}
         setNightVision={setNightVision}
         onEnterApp={() => {
           const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
           const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
           const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
-          
+
           if (isSubscribed || isTrialValid) {
             setActiveTab('dashboard');
             setTabHistory(['dashboard']);

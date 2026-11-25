@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface InstallPromptModalProps {
   isOpen: boolean;
@@ -15,22 +16,16 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
   isAfterPayment = false,
   planName = 'Pro',
 }) => {
+  const { t } = useLanguage();
   const [isIOS, setIsIOS] = useState<boolean>(false);
-  const [isStandalone, setIsStandalone] = useState<boolean>(false);
-  const [installSuccess, setInstallSuccess] = useState<boolean>(false);
   const [manualGuideOpen, setManualGuideOpen] = useState<boolean>(false);
+  const [installSuccess, setInstallSuccess] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const ua = window.navigator.userAgent;
       const isIosDevice = /iPhone|iPad|iPod/i.test(ua);
       setIsIOS(isIosDevice);
-
-      // Check if already running standalone
-      const isInStandalone =
-        window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone === true;
-      setIsStandalone(isInStandalone);
     }
   }, []);
 
@@ -67,7 +62,7 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-          title="Cerrar"
+          title={t('landingLegalCloseBtn', 'Cerrar')}
         >
           <span className="material-symbols-outlined text-lg">close</span>
         </button>
@@ -132,15 +127,18 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
           {isAfterPayment && (
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-black uppercase tracking-wider mb-2">
               <span className="material-symbols-outlined text-sm">verified</span>
-              <span>¡Acceso {planName} Activado!</span>
+              <span>{planName} · {t('installPlanActivated', '¡Acceso Activado!')}</span>
             </div>
           )}
 
           <h3 className="font-['Cinzel',serif] text-xl sm:text-2xl font-black text-white tracking-wide">
-            Instalar StellaWay en tu Móvil
+            {t('installTitleMain', 'Instalar StellaWay en tu Móvil')}
           </h3>
           <p className="text-xs sm:text-sm text-white/75 mt-1 leading-relaxed max-w-sm mx-auto">
-            Añade el icono con la estrella dorada a la pantalla de tu teléfono para entrar con 1 solo toque, a pantalla completa y sin barras de navegación.
+            {t(
+              'installSubtitle',
+              'Añade el icono con la estrella dorada a la pantalla de tu teléfono para entrar con 1 solo toque, a pantalla completa y sin barras de navegación.'
+            )}
           </p>
         </div>
 
@@ -169,7 +167,9 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
                 </svg>
               </div>
               <span className="font-extrabold tracking-wide">
-                {isIOS ? 'Poner Icono en Mi Teléfono' : 'Instalar Icono en Pantalla'}
+                {isIOS
+                  ? t('installButtonNativeIos', 'Poner Icono en Mi Teléfono')
+                  : t('installButtonNative', 'Instalar Icono en Pantalla')}
               </span>
             </button>
           </div>
@@ -178,7 +178,7 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
         {installSuccess && (
           <div className="mb-4 p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-400 text-emerald-200 text-center text-xs font-bold flex items-center justify-center gap-2">
             <span className="material-symbols-outlined text-emerald-400">check_circle</span>
-            <span>¡Icono de StellaWay añadido a tu pantalla!</span>
+            <span>{t('installSuccessBanner', '¡Icono de StellaWay añadido a tu pantalla!')}</span>
           </div>
         )}
 
@@ -189,29 +189,29 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
               <>
                 <div className="text-[11px] font-bold text-[#F0DEAA] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-sm">phone_iphone</span>
-                  <span>En iPhone / iPad (Safari):</span>
+                  <span>{t('installIosTitle', 'En iPhone / iPad (Safari):')}</span>
                 </div>
                 <ol className="space-y-2 text-xs text-white/85">
                   <li className="flex items-start gap-2.5">
                     <span className="w-5 h-5 rounded-full bg-[#F0DEAA]/25 text-[#F0DEAA] font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
                     <span>
-                      Toca el botón <strong>Compartir</strong> en la barra inferior de Safari{' '}
+                      {t('installIosStep1', 'Toca el botón Compartir en la barra inferior de Safari')}{' '}
                       <span className="inline-block px-1.5 py-0.5 rounded bg-white/15 text-white font-mono text-[10px]">
-                        <span className="material-symbols-outlined text-xs align-middle">ios_share</span> Compartir
+                        <span className="material-symbols-outlined text-xs align-middle">ios_share</span> {t('installShareBtnText', 'Compartir')}
                       </span>
                     </span>
                   </li>
                   <li className="flex items-start gap-2.5">
                     <span className="w-5 h-5 rounded-full bg-[#F0DEAA]/25 text-[#F0DEAA] font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
                     <span>
-                      Baja un poco en el menú y pulsa <strong>«Añadir a la pantalla de inicio»</strong>{' '}
+                      {t('installIosStep2', 'Baja un poco en el menú y pulsa «Añadir a la pantalla de inicio»')}{' '}
                       <span className="inline-block px-1.5 py-0.5 rounded bg-white/15 text-white font-mono text-[10px]">➕</span>
                     </span>
                   </li>
                   <li className="flex items-start gap-2.5">
                     <span className="w-5 h-5 rounded-full bg-[#F0DEAA]/25 text-[#F0DEAA] font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
                     <span>
-                      Pulsa <strong>«Añadir»</strong> (arriba a la derecha). Verás la estrella dorada en tu pantalla.
+                      {t('installIosStep3', 'Pulsa «Añadir» (arriba a la derecha). Verás la estrella dorada en tu pantalla.')}
                     </span>
                   </li>
                 </ol>
@@ -220,26 +220,20 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
               <>
                 <div className="text-[11px] font-bold text-[#38BDF8] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-sm">phone_android</span>
-                  <span>En tu teléfono (Chrome o navegador):</span>
+                  <span>{t('installAndroidTitle', 'En tu teléfono (Chrome o navegador):')}</span>
                 </div>
                 <ol className="space-y-2 text-xs text-white/85">
                   <li className="flex items-start gap-2.5">
                     <span className="w-5 h-5 rounded-full bg-[#38BDF8]/25 text-[#38BDF8] font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">1</span>
-                    <span>
-                      Toca los <strong>tres puntos ⋮</strong> arriba a la derecha en el navegador.
-                    </span>
+                    <span>{t('installAndroidStep1', 'Toca los tres puntos ⋮ arriba a la derecha en el navegador.')}</span>
                   </li>
                   <li className="flex items-start gap-2.5">
                     <span className="w-5 h-5 rounded-full bg-[#38BDF8]/25 text-[#38BDF8] font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">2</span>
-                    <span>
-                      Selecciona <strong>«Instalar aplicación»</strong> o <strong>«Añadir a pantalla de inicio»</strong>.
-                    </span>
+                    <span>{t('installAndroidStep2', 'Selecciona «Instalar aplicación» o «Añadir a pantalla de inicio».')}</span>
                   </li>
                   <li className="flex items-start gap-2.5">
                     <span className="w-5 h-5 rounded-full bg-[#38BDF8]/25 text-[#38BDF8] font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">3</span>
-                    <span>
-                      Confirma pulsando <strong>«Instalar»</strong>. ¡Aparecerá el icono de la estrella dorada!
-                    </span>
+                    <span>{t('installAndroidStep3', 'Confirma pulsando «Instalar». ¡Aparecerá el icono de la estrella dorada!')}</span>
                   </li>
                 </ol>
               </>
@@ -252,12 +246,12 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
           onClick={onClose}
           className="w-full py-3 px-4 rounded-2xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 border border-white/20 cursor-pointer"
         >
-          <span>Continuar a StellaWay</span>
+          <span>{t('installStartBtn', 'Continuar a StellaWay')}</span>
           <span className="material-symbols-outlined text-base">arrow_forward</span>
         </button>
 
         <p className="text-[10px] text-white/40 text-center mt-3">
-          Puedes volver a abrir este instalador en cualquier momento desde el menú lateral o desde tu Perfil.
+          {t('installFooterHint', 'Puedes volver a abrir este instalador en cualquier momento desde el menú lateral o desde tu Perfil.')}
         </p>
       </div>
     </div>

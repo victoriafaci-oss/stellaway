@@ -1,6 +1,7 @@
 import type { Handler } from "@netlify/functions";
 import { GoogleGenAI } from "@google/genai";
 import { generateAstronomicalAnswer } from "../../src/lib/astronomyKnowledge";
+import { normalizeLanguage, SupportedLanguage } from "../../src/lib/i18nHelpers";
 
 const getAiClient = () => {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -21,42 +22,47 @@ export const handler: Handler = async (event, _context) => {
   }
 
   try {
-    const { message, conversationHistory = [], language = "es" } = JSON.parse(
-      event.body || "{}"
-    );
+    const body = JSON.parse(event.body || "{}");
+    const lang = normalizeLanguage(body?.language);
+    const { message, conversationHistory = [] } = body;
 
-    if (!message) {
+    if (!message || typeof message !== "string" || !message.trim()) {
       return {
         statusCode: 400,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ error: "Mensaje requerido" }),
+        body: JSON.stringify({ error: "Message required" }),
       };
     }
+
+    const langNames: Record<SupportedLanguage, string> = {
+      es: "Spanish (Español)",
+      en: "English",
+      fr: "French (Français)",
+      pt: "Portuguese (Português)",
+      it: "Italian (Italiano)",
+      de: "German (Deutsch)",
+    };
 
     const ai = getAiClient();
     if (ai) {
       try {
-        const isEnglish = language === "en";
-        const systemInstruction = isEnglish
-          ? `You are "Stella", the expert astronomy and stargazing AI assistant from StellaWay, an app dedicated to astronomical observation, astrophotography, and tracking the Great Total Solar Eclipse of August 12, 2026 in Spain (Castellón, Iberian Peninsula, and Mediterranean Arc).
-Respond clearly, enthusiastically, and accurately in English. Provide expert advice on telescopes, astrophotography gear, Bortle scale dark sky spots, deep sky objects, and the 2026 Total Solar Eclipse.`
-          : `Eres "Stella", el asistente virtual experto de StellaWay, una aplicación dedicada a la observación astronómica, astrofotografía y el seguimiento del Gran Eclipse Solar Total del 12 de agosto de 2026 en Castellón y el Arco Mediterráneo.
-Responde de forma clara, apasionada, precisa e inspiradora en español. Ofrece recomendaciones de telescopios, equipo, lugares con baja contaminación lumínica (Escala Bortle), objetos de cielo profundo (Messier, Caldwell), técnicas de astrofotografía y detalles del Gran Eclipse Solar 2026.`;
+        const systemInstruction = `You are "Stella", the expert astronomy and stargazing AI assistant from StellaWay (Starlight reserves, DarkSky sanctuaries, polar auroras & Solar Eclipses 2026–2027).
+CRITICAL: Always reply in ${langNames[lang]} matching the user's selected language (${lang}). Give accurate, clear, and practical guidance on telescopes, astrophotography, Bortle 1–9 skies, and eclipses.`;
 
+        const safeHistory = Array.isArray(conversationHistory) ? conversationHistory : [];
         const contents = [
-          ...conversationHistory.map((item: { role: string; content: string }) => ({
+          ...safeHistory.map((item: { role: string; content: string }) => ({
             role: item.role === "user" ? "user" : "model",
-            parts: [{ text: item.content }],
+            parts: [{ text: String(item.content || "") }],
           })),
           { role: "user", parts: [{ text: message }] },
         ];
 
         const response = await ai.models.generateContent({
-          model: "gemini-3.8-flash",
+          model: "gemini-4-hydrogen",
           contents,
           config: {
             systemInstruction,
-            temperature: 0.7,
           },
         });
 
@@ -65,7 +71,7 @@ Responde de forma clara, apasionada, precisa e inspiradora en español. Ofrece r
           return {
             statusCode: 200,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ reply }),
+            body: JSON.stringify({ reply, language: lang }),
           };
         }
       } catch (apiError) {
@@ -73,12 +79,11 @@ Responde de forma clara, apasionada, precisa e inspiradora en español. Ofrece r
       }
     }
 
-    // Intelligent Astronomical Knowledge Engine
-    const fallback = generateAstronomicalAnswer(message, language);
+    const fallback = generateAstronomicalAnswer(message, lang);
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reply: fallback }),
+      body: JSON.stringify({ reply: fallback, language: lang }),
     };
   } catch (error) {
     console.error("Error in AI Assistant handler:", error);
@@ -86,8 +91,7 @@ Responde de forma clara, apasionada, precisa e inspiradora en español. Ofrece r
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reply: safeReply }),
+      body: JSON.stringify({ reply: safeReply, language: "es" }),
     };
   }
 };
-

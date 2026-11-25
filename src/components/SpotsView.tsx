@@ -1,9 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { STARLIGHT_SPOTS } from '../data/stellaData';
 import { StarlightSpot } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { useOfflineStorage } from '../lib/offlineStorage';
 import { getRegionImage } from '../lib/regionImages';
+import {
+  watchLivePosition,
+  buildGoogleMapsDirectionsUrl,
+  buildGoogleMapsPinUrl,
+  formatCoordinatesDMS,
+  LiveCoordinates,
+} from '../lib/locationService';
+import {
+  translateCountry,
+  translateProvinceLabel,
+  translateBortleText,
+  translateRegionInfo,
+  matchesMultilingualSearch,
+} from '../lib/locationI18n';
 
 interface SpotsViewProps {
   onGoBack?: () => void;
@@ -12,7 +26,7 @@ interface SpotsViewProps {
 }
 
 export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavigateToDarkSky }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const {
     savedSpots,
     isSpotSaved,
@@ -20,11 +34,10 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
     saveSpot,
     removeSpot,
     stats,
-    clearAllOfflineData,
-    isOnline
   } = useOfflineStorage();
   const [activeSubTab, setActiveSubTab] = useState<'name' | 'coords' | 'nearby' | 'offline'>('name');
-  const [savedBatchMessage, setSavedBatchMessage] = useState<string | null>(null);
+  const [savedBatchCount, setSavedBatchCount] = useState<number | null>(null);
+  const [confirmClearBackpack, setConfirmClearBackpack] = useState<boolean>(false);
   const [mapMode, setMapMode] = useState<'certified' | 'free_location'>('certified');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCountry, setSelectedCountry] = useState<string>('todos');
@@ -41,40 +54,72 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
       .trim();
   };
 
-  // Free Location Map state (Extra Coordenadas)
-  const [customCoords, setCustomCoords] = useState<{ lat: number; lng: number }>({ lat: 40.22, lng: -0.35 });
-  const [customBortle, setCustomBortle] = useState<number>(2);
-  const [customSQM, setCustomSQM] = useState<number>(21.75);
+  // Manual exact coordinates input for direct Google Maps launch
+  const [customCoords, setCustomCoords] = useState<{ lat: string; lng: string }>({ lat: '40.2241', lng: '-0.3524' });
 
-  // User Geolocation state for Nearby Places
-  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [geoStatus, setGeoStatus] = useState<string>('Haz clic en el botón para detectar tu ubicación GPS');
+  // User Real-Time Geolocation state
+  const [userCoords, setUserCoords] = useState<LiveCoordinates | null>(null);
+  const [geoStatusKey, setGeoStatusKey] = useState<'default' | 'obtaining' | 'detected' | 'denied' | 'unavailable' | 'unsupported'>('default');
   const [isLocating, setIsLocating] = useState<boolean>(false);
+  const stopWatchRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (stopWatchRef.current) {
+        stopWatchRef.current();
+      }
+    };
+  }, []);
+
+  const geoStatusText = (() => {
+    switch (geoStatusKey) {
+      case 'obtaining':
+        return t('spotsGpsObtaining');
+      case 'detected':
+        return userCoords
+          ? `${t('spotsGpsDetectedPrefix')} ${userCoords.lat.toFixed(5)}°, ${userCoords.lng.toFixed(5)}°${
+              userCoords.accuracyMeters ? ` (±${userCoords.accuracyMeters} m)` : ''
+            }`
+          : t('spotsGpsPromptDefault');
+      case 'denied':
+        return t('gpsErrDenied', 'Permiso GPS denegado. Activa la ubicación en tu navegador/móvil para obtener tus coordenadas reales.');
+      case 'unavailable':
+        return t('gpsErrUnavailable', 'No se pudo obtener señal GPS todavía. Comprueba la ubicación del dispositivo.');
+      case 'unsupported':
+        return t('spotsGpsNoSupport');
+      default:
+        return t('spotsGpsPromptDefault');
+    }
+  })();
 
   // Get list of unique countries in dataset
   const availableCountries = ['todos', ...Array.from(new Set(STARLIGHT_SPOTS.map((s) => s.country || 'España')))];
 
   // Spanish provinces / autonomous communities with certified Starlight destinations
-  const spanishProvinces = [
-    { value: 'todas', label: 'Todas las Provincias / Comunidades' },
-    { value: 'zaragoza', label: 'Zaragoza (3 Certificados Starlight + Moncayo)' },
-    { value: 'teruel', label: 'Teruel (Javalambre, Albarracín, Galáctica)' },
-    { value: 'huesca', label: 'Huesca (Ordesa y Monte Perdido)' },
-    { value: 'castellon', label: 'Castellón (Penyagolosa, Culla, Peñíscola)' },
-    { value: 'valencia', label: 'Valencia (Alto Turia / Aras de los Olmos)' },
-    { value: 'galicia', label: 'Galicia (7 Destinos: Trevinca, Cíes, Muras, Costa da Morte...)' },
-    { value: 'andalucia', label: 'Andalucía (Sierra Morena, Pedroches, Cazorla, Torcal, Calar Alto, Nevada)' },
-    { value: 'castilla-la mancha', label: 'Castilla-La Mancha (Cuenca, Sierra del Segura/Nerpio, Alcudia, Cabañeros)' },
-    { value: 'castilla y leon', label: 'Castilla y León (Babia/León, Gredos, Soria, Sierra de Francia)' },
-    { value: 'canarias', label: 'Canarias (La Palma, Teide, Fuerteventura, Gran Canaria)' },
-    { value: 'baleares', label: 'Islas Baleares (Menorca Reserva y Destino Starlight)' },
-    { value: 'extremadura', label: 'Extremadura (Monfragüe, Gata, Hurdes, Tajo Internacional, Alqueva)' },
-    { value: 'navarra', label: 'Navarra (Valle de Roncal Pirenaico)' },
-    { value: 'la rioja', label: 'La Rioja (Valles del Leza, Jubera, Cidacos y Alhama)' },
-    { value: 'cataluna', label: 'Cataluña (Aigüestortes, Montsec Lleida, Prades y Montsant)' },
-    { value: 'pais vasco', label: 'País Vasco (Valderejo, Izki, Santa Catalina)' },
-    { value: 'asturias', label: 'Asturias / Cantabria (Picos de Europa)' }
+  const spanishProvinceKeys = [
+    'todas',
+    'zaragoza',
+    'teruel',
+    'huesca',
+    'castellon',
+    'valencia',
+    'galicia',
+    'andalucia',
+    'castilla-la mancha',
+    'castilla y leon',
+    'canarias',
+    'baleares',
+    'extremadura',
+    'navarra',
+    'la rioja',
+    'cataluna',
+    'pais vasco',
+    'asturias',
   ];
+  const spanishProvinces = spanishProvinceKeys.map((val) => ({
+    value: val,
+    label: translateProvinceLabel(val, language),
+  }));
 
   // Filter spots dynamically with multi-token matching, country & province support
   const filteredSpots = STARLIGHT_SPOTS.filter((spot) => {
@@ -191,31 +236,18 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
     if (selectedType === 'certified' && !spot.certified) return false;
     if (selectedType === 'optimal_free' && spot.certified) return false;
 
-    // 4. Search query filter: Multi-token search with accent tolerance
+    // 4. Search query filter: Multilingual multi-token search with accent tolerance
     if (!searchQuery.trim()) return true;
 
-    // Split search query by spaces, commas, semicolons, slashes, or hyphens into individual words
-    const tokens = searchQuery
-      .split(/[\s,;/\-]+/)
-      .map(normalizeSearchText)
-      .filter((t) => t.length > 0);
-
-    if (tokens.length === 0) return true;
-
-    // Build comprehensive searchable index for this spot
-    const searchableString = normalizeSearchText(
-      [
-        spot.name,
-        spot.region,
-        spot.country || 'España',
-        spot.description,
-        ...(spot.facilities || []),
-        ...(spot.subAreas || []),
-      ].join(' ')
-    );
-
-    // Every token must match somewhere in this spot's data!
-    return tokens.every((token) => searchableString.includes(token));
+    return matchesMultilingualSearch(searchQuery, [
+      spot.name,
+      spot.region,
+      spot.country || 'España',
+      translateCountry(spot.country || 'España', language),
+      spot.description,
+      ...(spot.facilities || []),
+      ...(spot.subAreas || []),
+    ]);
   });
 
   // Compute distance in km
@@ -234,52 +266,31 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
   };
 
   const handleDetectLocation = () => {
-    setIsLocating(true);
-    setGeoStatus('Obteniendo coordenadas GPS en tiempo real...');
-
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          setUserCoords({ lat, lng });
-          setGeoStatus(`Ubicación detectada con éxito: ${lat.toFixed(4)}°, ${lng.toFixed(4)}°`);
-          setIsLocating(false);
-        },
-        (error) => {
-          console.warn('Geolocation error or denied, using default:', error);
-          const defaultLat = 39.9864;
-          const defaultLng = -0.0513;
-          setUserCoords({ lat: defaultLat, lng: defaultLng });
-          setGeoStatus('Ubicación predeterminada (Castellón Centro) cargada.');
-          setIsLocating(false);
-        },
-        { timeout: 8000 }
-      );
-    } else {
-      setUserCoords({ lat: 39.9864, lng: -0.0513 });
-      setGeoStatus('Navegador no soporta GPS. Usando posición predeterminada.');
-      setIsLocating(false);
+    if (stopWatchRef.current) {
+      stopWatchRef.current();
+      stopWatchRef.current = null;
     }
-  };
 
-  const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    setIsLocating(true);
+    setGeoStatusKey('obtaining');
 
-    const normX = x / rect.width;
-    const normY = y / rect.height;
-
-    const newLat = parseFloat((43 - normY * 7).toFixed(4));
-    const newLng = parseFloat((-9 + normX * 12).toFixed(4));
-
-    const estimatedBortle = Math.max(1, Math.min(8, Math.floor(Math.random() * 4) + 2));
-    const estimatedSQM = parseFloat((22.0 - estimatedBortle * 0.45).toFixed(2));
-
-    setCustomCoords({ lat: newLat, lng: newLng });
-    setCustomBortle(estimatedBortle);
-    setCustomSQM(estimatedSQM);
+    stopWatchRef.current = watchLivePosition(
+      (coords) => {
+        setUserCoords(coords);
+        setGeoStatusKey('detected');
+        setIsLocating(false);
+      },
+      (errCode) => {
+        setIsLocating(false);
+        if (errCode === 'denied') {
+          setGeoStatusKey('denied');
+        } else if (errCode === 'unsupported') {
+          setGeoStatusKey('unsupported');
+        } else {
+          setGeoStatusKey('unavailable');
+        }
+      }
+    );
   };
 
   return (
@@ -288,13 +299,13 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
       <header className="py-4 md:py-6 max-w-4xl">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-wider mb-3 shadow-sm">
           <span className="material-symbols-outlined text-sm">stars</span>
-          <span>Fundación Starlight • Destinos & Reservas Certificadas</span>
+          <span>{t('spotsHeaderBadge')}</span>
         </div>
         <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-3 font-['Plus_Jakarta_Sans'] tracking-tight">
-          Zonas & Destinos Starlight
+          {t('spotsHeaderTitle')}
         </h1>
         <p className="text-base text-[#e1e3e4]/80 leading-relaxed font-['Plus_Jakarta_Sans']">
-          Localiza y explora reservas y destinos turísticos certificados por la Fundación Starlight, con auditoría científica de cielo oscuro, coordenadas GPS con enlace a Google Maps, valores SQM y guías de observación.
+          {t('spotsHeaderDesc')}
         </p>
       </header>
 
@@ -304,11 +315,11 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           <div className="flex items-center gap-2 text-[#FFD700]">
             <span className="material-symbols-outlined text-2xl">search</span>
             <h2 className="text-base sm:text-lg font-extrabold font-['Plus_Jakarta_Sans']">
-              Buscador Global de Localizaciones Estelares
+              {t('spotsSearchHeader')}
             </h2>
           </div>
           <span className="text-[10px] sm:text-xs bg-[#FFD700]/20 text-[#FFD700] px-3 py-1 rounded-full font-bold border border-[#FFD700]/30 uppercase tracking-wider font-['JetBrains_Mono']">
-            {filteredSpots.length} / {STARLIGHT_SPOTS.length} Lugares
+            {filteredSpots.length} / {STARLIGHT_SPOTS.length} {t('spotsCountUnit')}
           </span>
         </div>
 
@@ -324,7 +335,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
               setSearchQuery(e.target.value);
               if (activeSubTab !== 'name') setActiveSubTab('name');
             }}
-            placeholder="Buscar por país, provincia o municipio (ej. 'Zaragoza, España', 'España, Galicia', 'Ariza', 'Cíes')..."
+            placeholder={t('spotsSearchPlaceholder')}
             className="w-full bg-black/40 text-white placeholder-white/40 pl-11 pr-10 py-3 rounded-2xl border border-white/20 focus:border-[#FFD700] focus:outline-none focus:ring-2 focus:ring-[#FFD700]/40 text-sm sm:text-base font-['Plus_Jakarta_Sans'] transition-all shadow-inner"
             id="input-search-location-name"
           />
@@ -332,7 +343,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             <button
               onClick={() => setSearchQuery('')}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors"
-              title="Limpiar búsqueda"
+              title={t('spotsClearSearch')}
             >
               <span className="material-symbols-outlined text-lg">close</span>
             </button>
@@ -345,27 +356,27 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             <div className="flex items-center gap-2 text-amber-200">
               <span className="material-symbols-outlined text-sm">download_for_offline</span>
               <span>
-                ¿Vas a visitar esta zona? Puedes guardar estos <strong>{filteredSpots.length}</strong> miradores en tu teléfono (~{(filteredSpots.length * 1.5).toFixed(1)} KB).
+                <strong>{t('spotsBatchPrompt1')}</strong> {t('spotsBatchPrompt2')} ({filteredSpots.length} · ~{(filteredSpots.length * 1.5).toFixed(1)} KB).
               </span>
             </div>
             <button
               onClick={() => {
                 filteredSpots.forEach((s) => saveSpot(s));
-                setSavedBatchMessage(`¡Guardados ${filteredSpots.length} miradores en tu teléfono para usar sin cobertura!`);
-                setTimeout(() => setSavedBatchMessage(null), 4000);
+                setSavedBatchCount(filteredSpots.length);
+                setTimeout(() => setSavedBatchCount(null), 4000);
               }}
               className="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-all shadow-sm shrink-0"
             >
               <span className="material-symbols-outlined text-sm">bookmark_add</span>
-              Guardar estos {filteredSpots.length} offline
+              {t('spotsBatchBtn')} ({filteredSpots.length})
             </button>
           </div>
         )}
 
-        {savedBatchMessage && (
+        {savedBatchCount !== null && (
           <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400 text-emerald-200 text-xs flex items-center gap-2 animate-fadeIn">
             <span className="material-symbols-outlined text-base">check_circle</span>
-            <span className="font-bold">{savedBatchMessage}</span>
+            <span className="font-bold">{savedBatchCount} {t('spotsBatchSavedToast')}</span>
           </div>
         )}
 
@@ -389,7 +400,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
               <option value="todos">{t('allCountries', 'Todos los Países')}</option>
               {availableCountries.filter((c) => c !== 'todos').map((country) => (
                 <option key={country} value={country}>
-                  {country}
+                  {translateCountry(country, language)}
                 </option>
               ))}
             </select>
@@ -398,7 +409,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           {/* Province / Region Selector (Spain & General) */}
           <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/10">
             <span className="text-xs text-[#FFD700] font-bold shrink-0 font-['JetBrains_Mono']">
-              Región:
+              {t('spotsRegionFilter')}
             </span>
             <select
               value={selectedProvince}
@@ -434,47 +445,36 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
         </div>
 
         {/* Informative Starlight Banner for Zaragoza */}
-        {(normalizeSearchText(searchQuery).includes('zaragoza') || selectedProvince === 'zaragoza') && (
+        {(normalizeSearchText(searchQuery).includes('zaragoza') || normalizeSearchText(searchQuery).includes('saragossa') || normalizeSearchText(searchQuery).includes('saragosse') || selectedProvince === 'zaragoza') && (
           <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-400/40 text-amber-100 text-xs sm:text-sm flex items-start gap-3 shadow-lg animate-fadeIn">
             <span className="material-symbols-outlined text-amber-300 text-2xl shrink-0 mt-0.5">verified</span>
             <div className="space-y-1">
               <div className="font-extrabold text-white flex flex-wrap items-center gap-2">
-                <span>Zaragoza (Aragón): 3 Territorios Certificados Starlight</span>
+                <span>{t('spotsZaragozaBannerTitle')}</span>
                 <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-mono text-[10px] font-bold uppercase tracking-wider border border-amber-400/30">
                   Fundación Starlight
                 </span>
               </div>
               <p className="text-amber-100/90 leading-relaxed text-xs">
-                En la provincia de Zaragoza existen 3 zonas certificadas oficialmente por la Fundación Starlight: 
-                <strong className="text-amber-200"> 1. Comarca del Aranda</strong> (Destino Turístico Starlight desde 2022), 
-                <strong className="text-amber-200"> 2. Sierra de Vicort</strong> (Destino Turístico Starlight desde julio 2025) y 
-                <strong className="text-amber-200"> 3. Ariza</strong> (Municipio Starlight desde 2026), complementadas por los puntos de alta montaña de 
-                <strong className="text-amber-200"> Moncayo & Lituénigo</strong> y <strong className="text-amber-200">Campo de Daroca & Laguna de Gallocanta</strong>.
+                {t('spotsZaragozaBannerDesc')}
               </p>
             </div>
           </div>
         )}
 
         {/* Informative Starlight Banner for Galicia */}
-        {(normalizeSearchText(searchQuery).includes('galicia') || selectedProvince === 'galicia') && (
+        {(normalizeSearchText(searchQuery).includes('galicia') || normalizeSearchText(searchQuery).includes('galice') || normalizeSearchText(searchQuery).includes('galiza') || normalizeSearchText(searchQuery).includes('galizia') || selectedProvince === 'galicia') && (
           <div className="p-4 rounded-2xl bg-sky-500/15 border border-sky-400/40 text-sky-100 text-xs sm:text-sm flex items-start gap-3 shadow-lg animate-fadeIn">
             <span className="material-symbols-outlined text-sky-300 text-2xl shrink-0 mt-0.5">verified</span>
             <div className="space-y-1">
               <div className="font-extrabold text-white flex flex-wrap items-center gap-2">
-                <span>Galicia: 7 Espacios Certificados Starlight</span>
+                <span>{t('spotsGaliciaBannerTitle')}</span>
                 <span className="px-2 py-0.5 rounded-full bg-sky-400/20 text-sky-300 font-mono text-[10px] font-bold uppercase tracking-wider border border-sky-400/30">
                   Fundación Starlight
                 </span>
               </div>
               <p className="text-sky-100/90 leading-relaxed text-xs">
-                Galicia cuenta con 7 espacios certificados oficialmente por la Fundación Starlight: 
-                <strong className="text-sky-200"> 1. Pena Trevinca - A Veiga</strong> (Ourense), 
-                <strong className="text-sky-200"> 2. Parque Nacional das Illas Atlánticas (Cíes y Ons)</strong>, 
-                <strong className="text-sky-200"> 3. Muras - Serra do Xistral</strong> (Lugo), 
-                <strong className="text-sky-200"> 4. Costa da Morte</strong> (A Coruña), 
-                <strong className="text-sky-200"> 5. Mariñas Coruñesas e Terras do Mandeo</strong>, 
-                <strong className="text-sky-200"> 6. Lalín</strong> (Municipio Starlight) y 
-                <strong className="text-sky-200"> 7. Ancares Lucenses</strong> (Lugo).
+                {t('spotsGaliciaBannerDesc')}
               </p>
             </div>
           </div>
@@ -500,7 +500,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             </div>
             <div>
               <span className="block text-xs font-extrabold uppercase text-[#FFD700] tracking-wider font-['JetBrains_Mono']">
-                Modalidad 1
+                {t('spotsModality1Badge')}
               </span>
               <span className="block text-sm font-bold font-['Plus_Jakarta_Sans']">
                 {t('modality1Title', 'Zonas Certificadas Starlight')}
@@ -527,17 +527,17 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="block text-xs font-extrabold uppercase text-cyan-300 tracking-wider font-['JetBrains_Mono']">
-                  Mundial (IDA)
+                  {t('spotsModality2GlobalBadge')}
                 </span>
                 <span className="px-1.5 py-0.2 rounded bg-cyan-400/20 text-cyan-200 text-[9px] font-bold">
-                  Global
+                  {t('spotsModality2GlobalPill')}
                 </span>
               </div>
               <span className="block text-sm font-bold font-['Plus_Jakarta_Sans'] group-hover:text-cyan-200 transition-colors">
-                Zonas & Lugares DarkSky
+                {t('spotsModality2DarkSkyTitle')}
               </span>
               <span className="block text-[11px] text-cyan-100/70">
-                Santuarios y Reservas en todo el mundo →
+                {t('spotsModality2DarkSkyDesc')}
               </span>
             </div>
           </button>
@@ -560,7 +560,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             </div>
             <div>
               <span className="block text-xs font-extrabold uppercase text-emerald-400 tracking-wider font-['JetBrains_Mono']">
-                Modalidad 2
+                {t('spotsOptimalBadge')}
               </span>
               <span className="block text-sm font-bold font-['Plus_Jakarta_Sans']">
                 {t('modality2Title', 'Localización Libre (Puntos Accesibles)')}
@@ -577,16 +577,16 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           const currentContext = (() => {
             if (selectedCountry !== 'todos' && selectedCountry !== 'España') return selectedCountry;
             if (selectedProvince !== 'todas') return selectedProvince;
-            const q = searchQuery.toLowerCase();
-            if (q.includes('chile') || q.includes('atacama') || q.includes('paranal')) return 'Chile';
-            if (q.includes('argentina') || q.includes('leoncito') || q.includes('villavicencio')) return 'Argentina';
-            if (q.includes('portugal') || q.includes('alqueva')) return 'Portugal';
-            if (q.includes('andorra') || q.includes('sorteny')) return 'Andorra';
-            if (q.includes('aragon') || q.includes('zaragoza') || q.includes('teruel') || q.includes('vicort')) return 'Aragón';
-            if (q.includes('galicia') || q.includes('trevinca') || q.includes('cies')) return 'Galicia';
-            if (q.includes('canarias') || q.includes('palma') || q.includes('teide') || q.includes('tenerife')) return 'Canarias';
-            if (q.includes('andaluc') || q.includes('gorafe') || q.includes('morena')) return 'Andalucía';
-            if (q.includes('catal') || q.includes('montsec') || q.includes('aiguamolls')) return 'Cataluña';
+            const q = normalizeSearchText(searchQuery);
+            if (q.includes('chile') || q.includes('chili') || q.includes('cile') || q.includes('atacama') || q.includes('paranal')) return 'Chile';
+            if (q.includes('argentina') || q.includes('argentine') || q.includes('argentinien') || q.includes('leoncito') || q.includes('villavicencio')) return 'Argentina';
+            if (q.includes('portugal') || q.includes('portogallo') || q.includes('alqueva')) return 'Portugal';
+            if (q.includes('andorra') || q.includes('andorre') || q.includes('sorteny')) return 'Andorra';
+            if (q.includes('aragon') || q.includes('zaragoza') || q.includes('saragossa') || q.includes('saragosse') || q.includes('teruel') || q.includes('vicort')) return 'Aragón';
+            if (q.includes('galicia') || q.includes('galice') || q.includes('galiza') || q.includes('galizia') || q.includes('trevinca') || q.includes('cies')) return 'Galicia';
+            if (q.includes('canarias') || q.includes('canary') || q.includes('canaries') || q.includes('kanaren') || q.includes('palma') || q.includes('teide') || q.includes('tenerife')) return 'Canarias';
+            if (q.includes('andaluc') || q.includes('andalus') || q.includes('andalou') || q.includes('gorafe') || q.includes('morena')) return 'Andalucía';
+            if (q.includes('catal') || q.includes('katalon') || q.includes('montsec') || q.includes('aiguamolls')) return 'Cataluña';
             if (q.includes('extremadura') || q.includes('monfrague')) return 'Extremadura';
             if (q.includes('cuenca') || q.includes('mancha')) return 'Castilla-La Mancha';
             if (q.includes('gredos') || q.includes('leon')) return 'Castilla y León';
@@ -614,7 +614,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             'La Rioja': ['Valle del Leza', 'Jubera', 'Cidacos'],
             Navarra: ['Roncal', 'Selva de Irati', 'Bardenas Reales'],
             global: [
-              'Zaragoza, España',
+              'Zaragoza',
               'Galicia',
               'Sierra de Vicort',
               'La Palma',
@@ -626,11 +626,16 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           };
 
           const tags = tagsMap[currentContext] || tagsMap.global;
+          const localizedContext = currentContext === 'todos'
+            ? ''
+            : translateProvinceLabel(currentContext.toLowerCase(), language) !== currentContext.toLowerCase()
+              ? translateProvinceLabel(currentContext.toLowerCase(), language).split(' (')[0]
+              : translateCountry(currentContext, language);
 
           return (
             <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
               <span className="text-white/60 text-[11px] font-semibold">
-                {t('quickSearch', 'Búsqueda rápida')}{currentContext !== 'todos' ? ` (${currentContext})` : ''}:
+                {t('quickSearch', 'Búsqueda rápida:')}{localizedContext ? ` (${localizedContext})` : ''}
               </span>
               {tags.map((tag) => (
                 <button
@@ -708,7 +713,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           <span className="material-symbols-outlined text-2xl">
             {stats.spotsCount > 0 ? 'backpack' : 'cloud_off'}
           </span>
-          <span>Mochila Offline ({stats.spotsCount})</span>
+          <span>{t('spotsOfflineTitle')} ({stats.spotsCount})</span>
           {stats.spotsCount > 0 && (
             <span className="text-[10px] bg-amber-400/20 text-amber-300 font-mono px-2 py-0.5 rounded-full border border-amber-400/40">
               {stats.approxKB} KB
@@ -725,7 +730,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
         <div className="space-y-6">
           <div className="flex items-center justify-between text-xs text-white/70">
             <span>
-              Mostrando {filteredSpots.length} de {STARLIGHT_SPOTS.length} miradores astronómicos y puntos libres.
+              {t('spotsShowingPrefix')} {filteredSpots.length} {t('spotsShowingMiddle')} {STARLIGHT_SPOTS.length} {t('spotsShowingSuffix')}.
             </span>
             {(searchQuery || selectedCountry !== 'todos' || selectedProvince !== 'todas' || selectedType !== 'todos') && (
               <button
@@ -737,7 +742,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                 }}
                 className="text-[#FFD700] hover:underline font-bold cursor-pointer"
               >
-                Restablecer Filtros
+                {t('spotsResetFilters')}
               </button>
             )}
           </div>
@@ -745,8 +750,8 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           {filteredSpots.length === 0 ? (
             <div className="glass-panel rounded-3xl p-8 text-center border border-white/10 space-y-3">
               <span className="material-symbols-outlined text-4xl text-white/40">search_off</span>
-              <h3 className="text-lg font-bold text-white">No se encontró ningún lugar con los criterios seleccionados</h3>
-              <p className="text-xs text-white/60">Prueba cambiando el país, seleccionando "Todos los Tipos" o limpiando el texto de búsqueda.</p>
+              <h3 className="text-lg font-bold text-white">{t('spotsEmptyTitle')}</h3>
+              <p className="text-xs text-white/60">{t('spotsEmptyDesc')}</p>
               <button
                 onClick={() => {
                   setSearchQuery('');
@@ -756,7 +761,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                 }}
                 className="px-4 py-2 bg-[#FEE685] text-black font-extrabold rounded-xl text-xs cursor-pointer"
               >
-                Ver Todos los Lugares
+                {t('spotsViewAllBtn')}
               </button>
             </div>
           ) : (
@@ -767,16 +772,16 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                 let activeRegion = selectedProvince !== 'todas' ? selectedProvince : searchQuery || undefined;
 
                 if (!activeCountry && searchQuery) {
-                  const q = searchQuery.toLowerCase();
-                  if (q.includes('chile') || q.includes('atacama') || q.includes('paranal') || q.includes('fray jorge')) {
+                  const q = normalizeSearchText(searchQuery);
+                  if (q.includes('chile') || q.includes('chili') || q.includes('cile') || q.includes('atacama') || q.includes('paranal') || q.includes('fray jorge')) {
                     activeCountry = 'Chile';
-                  } else if (q.includes('argentina') || q.includes('leoncito') || q.includes('villavicencio') || q.includes('mendoza') || q.includes('ushuaia')) {
+                  } else if (q.includes('argentina') || q.includes('argentine') || q.includes('argentinien') || q.includes('leoncito') || q.includes('villavicencio') || q.includes('mendoza') || q.includes('ushuaia')) {
                     activeCountry = 'Argentina';
-                  } else if (q.includes('portugal') || q.includes('alqueva') || q.includes('ruivas') || q.includes('tua')) {
+                  } else if (q.includes('portugal') || q.includes('portogallo') || q.includes('alqueva') || q.includes('ruivas') || q.includes('tua')) {
                     activeCountry = 'Portugal';
-                  } else if (q.includes('andorra') || q.includes('sorteny') || q.includes('ordino')) {
+                  } else if (q.includes('andorra') || q.includes('andorre') || q.includes('sorteny') || q.includes('ordino')) {
                     activeCountry = 'Andorra';
-                  } else if (q.includes('mauna kea') || q.includes('hawai') || q.includes('eeuu') || q.includes('estados unidos')) {
+                  } else if (q.includes('mauna kea') || q.includes('hawai') || q.includes('eeuu') || q.includes('usa') || q.includes('united states') || q.includes('estados unidos')) {
                     activeCountry = 'EE.UU.';
                   } else if (filteredSpots.length > 0 && filteredSpots[0].country) {
                     activeCountry = filteredSpots[0].country;
@@ -795,10 +800,11 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                   activeRegion = filteredSpots[0].region;
                 }
 
-                const activeRegionInfo = getRegionImage({
+                const rawRegionInfo = getRegionImage({
                   country: activeCountry,
                   region: activeRegion,
                 });
+                const activeRegionInfo = rawRegionInfo ? translateRegionInfo(rawRegionInfo, language) : null;
                 if (!activeRegionInfo) return null;
                 return (
                   <div className="rounded-3xl overflow-hidden border border-[#38BDF8]/40 shadow-2xl bg-gradient-to-br from-[#0c1a30] via-[#10223f] to-[#071326] mb-8 relative">
@@ -812,7 +818,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                       <div className="absolute inset-0 bg-gradient-to-t from-[#071326] via-[#071326]/50 to-transparent" />
                       <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-amber-400/40 text-[11px] font-extrabold text-amber-300 shadow-lg flex items-center gap-1.5">
                         <span className="material-symbols-outlined text-sm text-amber-300">image</span>
-                        Imagen Representativa: {activeRegionInfo.region || activeRegionInfo.pais}
+                        {t('spotsRepImgLabel')}: {activeRegionInfo.region || activeRegionInfo.pais}
                       </div>
                       <div className="absolute bottom-4 left-4 right-4 space-y-1">
                         <span className="text-xs uppercase font-extrabold text-[#7DD3FC] tracking-wider block font-['JetBrains_Mono']">
@@ -829,10 +835,10 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                     <div className="px-5 py-3 bg-[#082F49]/80 border-t border-[#38BDF8]/30 flex flex-wrap items-center justify-between text-xs text-[#BAE6FD] gap-2">
                       <span className="flex items-center gap-1.5">
                         <span className="material-symbols-outlined text-sm text-[#7DD3FC]">verified</span>
-                        Imagen del territorio / bloque. Los enclaves inferiores presentan su ficha técnica detallada sin fotos redundantes.
+                        {t('spotsTerritoryHint')}
                       </span>
                       <span className="font-['JetBrains_Mono'] font-bold text-[#FEE685] bg-black/50 px-2.5 py-0.5 rounded-lg border border-white/10">
-                        {filteredSpots.length} enclaves catalogados
+                        {filteredSpots.length} {t('spotsCatalogedSuffix')}
                       </span>
                     </div>
                   </div>
@@ -840,7 +846,9 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
               })()}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredSpots.map((spot) => (
+                {filteredSpots.map((spot) => {
+                  const localizedCountry = translateCountry(spot.country || 'España', language);
+                  return (
                   <div
                     key={spot.id}
                     onClick={() => setSelectedSpot(spot)}
@@ -853,11 +861,11 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                           <div className="flex flex-wrap items-center gap-1.5">
                             {spot.certified ? (
                               <span className="bg-[#0284C7] text-white text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow-sm border border-[#BAE6FD]/40">
-                                ⭐ Certificado Starlight
+                                ⭐ {t('spotsCertifiedBadge')}
                               </span>
                             ) : (
                               <span className="bg-[#059669] text-white text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                                🌄 Lugar Óptimo (Punto Libre)
+                                🌄 {t('spotsOptimalBadge')}
                               </span>
                             )}
                             <span className="bg-black/80 text-[#38BDF8] font-['JetBrains_Mono'] text-xs px-2.5 py-0.5 rounded-full font-black border border-[#38BDF8]/40 shadow-sm">
@@ -866,7 +874,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                           </div>
 
                           <span className="bg-black/60 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-white/20">
-                            🌍 {spot.country || 'España'}
+                            🌍 {localizedCountry}
                           </span>
                         </div>
 
@@ -882,11 +890,11 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                         {/* Astronomical Telemetry Grid */}
                         <div className="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-white/10 text-xs font-['JetBrains_Mono']">
                           <div className="bg-black/50 p-2 rounded-xl border border-white/10">
-                            <span className="text-[#7DD3FC] block text-[9px] uppercase font-bold">Altitud</span>
+                            <span className="text-[#7DD3FC] block text-[9px] uppercase font-bold">{t('spotsAltitudeLabel')}</span>
                             <span className="text-white font-black text-sm">{spot.elevationMeters}m</span>
                           </div>
                           <div className="bg-black/50 p-2 rounded-xl border border-white/10">
-                            <span className="text-[#7DD3FC] block text-[9px] uppercase font-bold">SQM Cielo</span>
+                            <span className="text-[#7DD3FC] block text-[9px] uppercase font-bold">{t('spotsSqmLabel')}</span>
                             <span className="text-white font-black text-sm">{spot.sqm}</span>
                           </div>
                           <div className="bg-black/50 p-2 rounded-xl border border-white/10">
@@ -905,11 +913,11 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
 
                       <div className="grid grid-cols-2 gap-3 text-xs font-['JetBrains_Mono'] mb-4 p-3.5 rounded-2xl bg-white/90 border border-[#38BDF8]/60 shadow-sm">
                         <div>
-                          <span className="text-[#082F49] block font-black">Altitud:</span>
-                          <span className="text-[#030712] font-black text-sm">{spot.elevationMeters}m snm</span>
+                          <span className="text-[#082F49] block font-black">{t('spotsElevationFullLabel')}:</span>
+                          <span className="text-[#030712] font-black text-sm">{spot.elevationMeters} {t('spotsElevUnitLabel')}</span>
                         </div>
                         <div>
-                          <span className="text-[#082F49] block font-black">Calidad Cielo (SQM):</span>
+                          <span className="text-[#082F49] block font-black">{t('spotsSqmQualityLabel')}:</span>
                           <span className="text-[#030712] font-black text-sm">{spot.sqm} mag/arcsec²</span>
                         </div>
                       </div>
@@ -917,7 +925,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                       {spot.subAreas && spot.subAreas.length > 0 && (
                         <div className="mb-4">
                           <span className="text-[11px] font-black text-[#082F49] uppercase block mb-1.5 font-['JetBrains_Mono']">
-                            📍 Zonas y Puntos de Interés:
+                            📍 {t('spotsSubAreasLabel')}
                           </span>
                           <div className="flex flex-wrap gap-1.5">
                             {spot.subAreas.map((area, idx) => (
@@ -962,20 +970,21 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                       }`}
                       title={
                         isSpotSaved(spot.id)
-                          ? 'Guardado en tu móvil para usar sin cobertura. Clic para quitar.'
-                          : 'Guardar esta ficha en tu móvil para salidas sin cobertura (~2 KB)'
+                          ? t('spotsOfflineBoxSaved')
+                          : t('spotsOfflineBoxSave')
                       }
                     >
                       <span className="material-symbols-outlined text-base text-amber-300">
                         {isSpotSaved(spot.id) ? 'bookmark_added' : 'bookmark_add'}
                       </span>
                       <span className="hidden sm:inline">
-                        {isSpotSaved(spot.id) ? 'Guardado' : 'Guardar'}
+                        {isSpotSaved(spot.id) ? t('spotsSavedShort') : t('spotsSaveShort')}
                       </span>
                     </button>
                   </div>
                 </div>
-              ))}
+                  );
+                })}
             </div>
           </>
         )}
@@ -995,7 +1004,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
               }`}
             >
               <span className="material-symbols-outlined text-base">verified</span>
-              Todos los Lugares Registrados ({filteredSpots.length})
+              {t('spotsAllRegisteredBtn')} ({filteredSpots.length})
             </button>
 
             <button
@@ -1007,7 +1016,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
               }`}
             >
               <span className="material-symbols-outlined text-base">ads_click</span>
-              Analizar Coordenadas Libres en Mapa
+              {t('spotsAnalyzeFreeBtn')}
             </button>
           </div>
 
@@ -1033,11 +1042,11 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                       <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
                         {spot.certified ? (
                           <span className="bg-[#FFD700] text-black text-[10px] px-2.5 py-1 rounded-full font-extrabold uppercase">
-                            ⭐ Starlight
+                            ⭐ {t('spotsCertifiedBadge')}
                           </span>
                         ) : (
                           <span className="bg-emerald-500 text-black text-[10px] px-2.5 py-1 rounded-full font-extrabold uppercase">
-                            🌄 Libre Óptimo
+                            🌄 {t('spotsOptimalBadge')}
                           </span>
                         )}
                         <span className="bg-black/70 backdrop-blur-md text-[#FFD700] font-['JetBrains_Mono'] text-xs px-2.5 py-1 rounded-full font-bold">
@@ -1047,7 +1056,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
 
                       <div className="absolute bottom-3 left-4 right-4">
                         <span className="text-xs text-[#FFD700] font-bold uppercase tracking-wider">
-                          {spot.region} • {spot.country || 'España'}
+                          {spot.region} • {translateCountry(spot.country || 'España', language)}
                         </span>
                         <h3 className="text-xl font-extrabold text-white font-['Plus_Jakarta_Sans']">
                           {spot.name}
@@ -1062,12 +1071,12 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
 
                       <div className="grid grid-cols-2 gap-3 text-xs font-['JetBrains_Mono'] mb-4 p-3 rounded-xl bg-white/5 border border-white/10">
                         <div>
-                          <span className="text-white/50 block">Coordenadas:</span>
+                          <span className="text-white/50 block">{t('spotsCoordsLabel')}:</span>
                           <span className="text-white font-bold">{spot.latitude.toFixed(2)}°, {spot.longitude.toFixed(2)}°</span>
                         </div>
                         <div>
-                          <span className="text-white/50 block">Elevación:</span>
-                          <span className="text-white font-bold">{spot.elevationMeters}m snm</span>
+                          <span className="text-white/50 block">{t('spotsAltitudeLabel')}:</span>
+                          <span className="text-white font-bold">{spot.elevationMeters} {t('spotsElevUnitLabel')}</span>
                         </div>
                       </div>
                     </div>
@@ -1079,10 +1088,10 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                         e.stopPropagation();
                         setSelectedSpot(spot);
                       }}
-                      className="w-full py-3 rounded-xl bg-white/10 hover:bg-[#FEE685] hover:text-black text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all border border-white/15"
+                      className="w-full py-3 rounded-xl bg-white/10 hover:bg-[#FEE685] hover:text-black text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all border border-white/15 cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-base">map</span>
-                      Ficha y Navegación GPS
+                      {t('spotsSheetGpsBtn')}
                     </button>
                   </div>
                 </div>
@@ -1092,81 +1101,115 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
 
           {mapMode === 'free_location' && (
             <div className="space-y-6">
-              <div className="glass-panel rounded-3xl p-6 md:p-8 border border-white/15">
-                <div className="flex items-center justify-between mb-4">
+              <div className="glass-panel rounded-3xl p-6 md:p-8 border border-white/15 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <h3 className="text-xl font-bold text-white font-['Plus_Jakarta_Sans']">
-                      Mapa Terráqueo Interactivo de Contaminación Lumínica
+                      {t('spotsCoordsDirectTitle', 'Tu GPS en Tiempo Real y Coordenadas en Google Maps')}
                     </h3>
-                    <p className="text-xs text-white/70">
-                      Haz clic en cualquier punto del mapa para analizar coordenadas y calidad de cielo libre.
+                    <p className="text-xs text-white/70 mt-1">
+                      {t('spotsCoordsDirectDesc', 'Obtén tu posición GPS real o introduce unas coordenadas exactas para abrirlas directamente en Google Maps.')}
                     </p>
                   </div>
-                  <span className="text-xs font-['JetBrains_Mono'] px-3 py-1 rounded-full bg-[#FEE685]/20 text-[#FEE685] border border-[#FEE685]/30 font-extrabold">
-                    Modo Libre Ubicación
-                  </span>
+                  <button
+                    type="button"
+                    onClick={handleDetectLocation}
+                    disabled={isLocating}
+                    className="px-5 py-2.5 rounded-xl bg-[#FEE685] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-white transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">
+                      {isLocating ? 'sync' : 'my_location'}
+                    </span>
+                    <span>{isLocating ? t('spotsGpsDetectingBtn') : t('spotsGpsDetectBtn')}</span>
+                  </button>
                 </div>
 
-                <div
-                  onClick={handleMapClick}
-                  className="relative w-full h-96 rounded-2xl overflow-hidden border border-white/20 bg-slate-900 cursor-crosshair group shadow-inner flex items-center justify-center"
-                  style={{
-                    backgroundImage: 'radial-gradient(circle, rgba(124, 77, 255, 0.15) 0%, rgba(18, 11, 46, 0.95) 100%), url("https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80")',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
-                  }}
-                >
-                  <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
-
-                  <div className="relative z-10 flex flex-col items-center animate-bounce">
-                    <div className="px-3 py-1 rounded-lg bg-[#FEE685] text-black font-['JetBrains_Mono'] font-extrabold text-xs shadow-xl border border-white">
-                      📍 Lat: {customCoords.lat}°, Lng: {customCoords.lng}°
-                    </div>
-                    <span className="material-symbols-outlined text-4xl text-[#FEE685] drop-shadow-[0_0_10px_#FEE685]">
-                      location_on
-                    </span>
-                  </div>
-
-                  <div className="absolute bottom-4 left-4 right-4 bg-black/80 backdrop-blur-md p-4 rounded-xl border border-white/15 flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <span className="text-white/80">
-                      👉 <strong>Haz clic en cualquier punto</strong> del mapa para mover la aguja y medir la oscuridad.
-                    </span>
-                    <span className="text-[#FEE685] font-['JetBrains_Mono'] font-extrabold">
-                      Bortle Estimado: Clase {customBortle} | SQM: {customSQM}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-6 p-6 rounded-2xl bg-white/5 border border-white/10 grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Live user GPS readout */}
+                <div className="p-5 rounded-2xl bg-black/40 border border-white/15 flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
-                    <span className="text-xs text-white/50 font-['JetBrains_Mono'] uppercase block">
-                      Coordenadas Seleccionadas
+                    <span className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#7DD3FC] font-bold block">
+                      {t('mcSosCoordsLabel', 'MIS COORDENADAS GPS')}
                     </span>
-                    <span className="text-lg font-bold text-white font-['JetBrains_Mono']">
-                      {customCoords.lat}° N, {customCoords.lng}° E
-                    </span>
+                    {userCoords ? (
+                      <div className="mt-1 space-y-0.5">
+                        <span className="text-base sm:text-lg font-extrabold text-white font-['JetBrains_Mono'] block">
+                          {formatCoordinatesDMS(userCoords.lat, userCoords.lng)}
+                        </span>
+                        <span className="text-xs text-emerald-300 font-['JetBrains_Mono'] block">
+                          {userCoords.lat.toFixed(6)}, {userCoords.lng.toFixed(6)}
+                          {userCoords.accuracyMeters ? ` (±${userCoords.accuracyMeters} m)` : ''}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-white/75 mt-1 block">{geoStatusText}</span>
+                    )}
                   </div>
 
-                  <div>
-                    <span className="text-xs text-white/50 font-['JetBrains_Mono'] uppercase block">
-                      Clase de Oscuridad
-                    </span>
-                    <span className="text-lg font-bold text-[#FEE685] font-['JetBrains_Mono']">
-                      Bortle Clase {customBortle} ({customSQM} mag)
-                    </span>
-                  </div>
-
-                  <div className="flex items-center">
+                  {userCoords && (
                     <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${customCoords.lat},${customCoords.lng}`}
+                      href={buildGoogleMapsPinUrl(userCoords.lat, userCoords.lng)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full py-3 rounded-xl bg-[#FEE685] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-white transition-all flex items-center justify-center gap-2"
+                      className="px-5 py-3 rounded-xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shrink-0"
                     >
-                      <span className="material-symbols-outlined text-base">directions</span>
-                      Abrir Navegación GPS
+                      <span className="material-symbols-outlined text-base">location_on</span>
+                      <span>{t('gpsOpenMyLocationMaps', 'Ver mi ubicación exacta en Google Maps')}</span>
                     </a>
+                  )}
+                </div>
+
+                {/* Direct custom coordinates -> Google Maps */}
+                <div className="p-5 rounded-2xl bg-white/5 border border-white/10 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                  <div>
+                    <label className="text-xs text-white/60 font-['JetBrains_Mono'] uppercase block mb-1.5">
+                      {t('spotsLatLabel', 'Latitud exacta')}
+                    </label>
+                    <input
+                      type="text"
+                      value={customCoords.lat}
+                      onChange={(e) => setCustomCoords((prev) => ({ ...prev, lat: e.target.value }))}
+                      placeholder="40.2241"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/20 text-white font-['JetBrains_Mono'] text-sm focus:outline-none focus:border-[#FEE685]"
+                    />
                   </div>
+
+                  <div>
+                    <label className="text-xs text-white/60 font-['JetBrains_Mono'] uppercase block mb-1.5">
+                      {t('spotsLngLabel', 'Longitud exacta')}
+                    </label>
+                    <input
+                      type="text"
+                      value={customCoords.lng}
+                      onChange={(e) => setCustomCoords((prev) => ({ ...prev, lng: e.target.value }))}
+                      placeholder="-0.3524"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/20 text-white font-['JetBrains_Mono'] text-sm focus:outline-none focus:border-[#FEE685]"
+                    />
+                  </div>
+
+                  {(() => {
+                    const parsedLat = Number(customCoords.lat);
+                    const parsedLng = Number(customCoords.lng);
+                    const valid =
+                      Number.isFinite(parsedLat) &&
+                      Number.isFinite(parsedLng) &&
+                      Math.abs(parsedLat) <= 90 &&
+                      Math.abs(parsedLng) <= 180;
+                    return valid ? (
+                      <a
+                        href={buildGoogleMapsDirectionsUrl(parsedLat, parsedLng, userCoords)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-3 rounded-xl bg-[#FEE685] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-white transition-all flex items-center justify-center gap-2"
+                      >
+                        <span className="material-symbols-outlined text-base">directions</span>
+                        {t('spotsMapOpenNav')}
+                      </a>
+                    ) : (
+                      <span className="text-xs text-rose-300 font-bold py-2.5">
+                        {t('spotsInvalidCoords', 'Introduce coordenadas válidas (Lat -90..90, Lng -180..180)')}
+                      </span>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
@@ -1181,13 +1224,13 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div>
                 <span className="px-3 py-1 rounded-full bg-[#FEE685]/20 text-[#FEE685] border border-[#FEE685]/40 text-xs font-extrabold uppercase tracking-wider mb-2 inline-block font-['JetBrains_Mono']">
-                  Detección GPS en Tiempo Real
+                  {t('spotsGpsBadge')}
                 </span>
                 <h3 className="text-2xl font-bold text-white font-['Plus_Jakarta_Sans'] mb-1">
-                  Encuentra los Sitios Más Cercanos a Ti Ahora
+                  {t('spotsGpsTitle')}
                 </h3>
                 <p className="text-sm text-white/80">
-                  {geoStatus}
+                  {geoStatusText}
                 </p>
               </div>
 
@@ -1200,91 +1243,109 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                 <span className="material-symbols-outlined text-xl">
                   {isLocating ? 'sync' : 'my_location'}
                 </span>
-                {isLocating ? 'Detectando GPS...' : 'Detectar mi Ubicación Actual'}
+                {isLocating ? t('spotsGpsDetectingBtn') : t('spotsGpsDetectBtn')}
               </button>
             </div>
           </div>
 
-          <div>
-            <h3 className="text-xl font-bold text-white mb-4 font-['Plus_Jakarta_Sans']">
-              Todos los Miradores Ordenados por Proximidad ({filteredSpots.length})
-            </h3>
+          {!userCoords ? (
+            <div className="glass-panel rounded-3xl p-8 text-center border border-white/15 space-y-3">
+              <span className="material-symbols-outlined text-4xl text-[#FEE685]">my_location</span>
+              <h3 className="text-lg font-bold text-white">
+                {t('spotsGpsNeedPermTitle', 'Activa tu ubicación GPS en tiempo real')}
+              </h3>
+              <p className="text-xs sm:text-sm text-white/75 max-w-xl mx-auto">
+                {geoStatusText}
+              </p>
+              <button
+                type="button"
+                onClick={handleDetectLocation}
+                disabled={isLocating}
+                className="px-5 py-3 rounded-xl bg-[#FEE685] hover:bg-white text-black font-extrabold text-xs uppercase tracking-wider cursor-pointer inline-flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-base">my_location</span>
+                <span>{isLocating ? t('spotsGpsDetectingBtn') : t('spotsGpsDetectBtn')}</span>
+              </button>
+            </div>
+          ) : (
+            <div>
+              <h3 className="text-xl font-bold text-white mb-4 font-['Plus_Jakarta_Sans']">
+                {t('spotsNearbyHeading')} ({filteredSpots.length})
+              </h3>
 
-            <div className="space-y-4">
-              {[...filteredSpots]
-                .map((spot) => {
-                  const lat = userCoords ? userCoords.lat : 39.9864;
-                  const lng = userCoords ? userCoords.lng : -0.0513;
-                  const distanceKm = calculateDistanceKm(lat, lng, spot.latitude, spot.longitude);
-                  return { spot, distanceKm };
-                })
-                .sort((a, b) => a.distanceKm - b.distanceKm)
-                .map(({ spot, distanceKm }) => {
+              <div className="space-y-4">
+                {[...filteredSpots]
+                  .map((spot) => {
+                    const distanceKm = calculateDistanceKm(userCoords.lat, userCoords.lng, spot.latitude, spot.longitude);
+                    return { spot, distanceKm };
+                  })
+                  .sort((a, b) => a.distanceKm - b.distanceKm)
+                  .map(({ spot, distanceKm }) => {
+                    return (
+                      <div
+                        key={spot.id}
+                        className="card-pastel-gold card-pastel-gold-hover rounded-3xl p-6 shadow-xl transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-[#7DD3FC]/50 backdrop-blur-md"
+                      >
+                        <div className="flex items-center gap-4">
+                          <img
+                            src={spot.imageUrl}
+                            alt={spot.name}
+                            className="w-20 h-20 rounded-2xl object-cover border border-[#38BDF8]/60 shrink-0 shadow-md"
+                          />
 
-                return (
-                  <div
-                    key={spot.id}
-                    className="card-pastel-gold card-pastel-gold-hover rounded-3xl p-6 shadow-xl transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-[#7DD3FC]/50 backdrop-blur-md"
-                  >
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={spot.imageUrl}
-                        alt={spot.name}
-                        className="w-20 h-20 rounded-2xl object-cover border border-[#38BDF8]/60 shrink-0 shadow-md"
-                      />
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                              <span className="px-2.5 py-0.5 rounded-lg bg-[#082F49]/90 text-[#7DD3FC] border border-[#38BDF8]/50 text-[10px] font-extrabold font-['JetBrains_Mono'] uppercase">
+                                {t('spotsAwayPrefix')} {distanceKm} {t('spotsAwaySuffix')}
+                              </span>
+                              {spot.certified ? (
+                                <span className="text-[10px] bg-[#082F49]/90 text-[#FEE685] border border-[#FEE685]/50 px-2 py-0.5 rounded-lg font-extrabold">
+                                  ⭐ {t('spotsCertifiedBadge')}
+                                </span>
+                              ) : (
+                                <span className="text-[10px] bg-[#059669]/90 text-white px-2 py-0.5 rounded-lg font-extrabold">
+                                  🌄 {t('spotsOptimalBadge')}
+                                </span>
+                              )}
+                              <span className="text-xs text-[#BAE6FD] font-['JetBrains_Mono'] font-bold">
+                                Bortle {spot.bortleClass}
+                              </span>
+                            </div>
 
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2 mb-1">
-                          <span className="px-2.5 py-0.5 rounded-lg bg-[#082F49]/90 text-[#7DD3FC] border border-[#38BDF8]/50 text-[10px] font-extrabold font-['JetBrains_Mono'] uppercase">
-                            A {distanceKm} km de ti
-                          </span>
-                          {spot.certified ? (
-                            <span className="text-[10px] bg-[#082F49]/90 text-[#FEE685] border border-[#FEE685]/50 px-2 py-0.5 rounded-lg font-extrabold">
-                              ⭐ Starlight
-                            </span>
-                          ) : (
-                            <span className="text-[10px] bg-[#059669]/90 text-white px-2 py-0.5 rounded-lg font-extrabold">
-                              🌄 Punto Libre
-                            </span>
-                          )}
-                          <span className="text-xs text-[#BAE6FD] font-['JetBrains_Mono'] font-bold">
-                            Bortle {spot.bortleClass}
-                          </span>
+                            <h4 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+                              {spot.name}
+                            </h4>
+
+                            <p className="text-xs text-[#BAE6FD] font-medium line-clamp-1 mt-0.5">
+                              {spot.region} • {translateCountry(spot.country || 'España', language)} • {t('spotsAltitudeLabel')}: {spot.elevationMeters}m
+                            </p>
+                          </div>
                         </div>
 
-                        <h4 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
-                          {spot.name}
-                        </h4>
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                          <a
+                            href={buildGoogleMapsDirectionsUrl(spot.latitude, spot.longitude, userCoords)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 md:flex-none px-5 py-3 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md border border-[#7DD3FC]/50"
+                          >
+                            <span className="material-symbols-outlined text-base">near_me</span>
+                            {t('getDirections', 'Cómo Llegar')} ({distanceKm} km)
+                          </a>
 
-                        <p className="text-xs text-[#BAE6FD] font-medium line-clamp-1 mt-0.5">
-                          {spot.region} • {spot.country || 'España'} • Altitud: {spot.elevationMeters}m
-                        </p>
+                          <button
+                            onClick={() => setSelectedSpot(spot)}
+                            className="px-4 py-3 rounded-2xl bg-[#082F49]/80 hover:bg-[#082F49] text-white font-extrabold text-xs transition-all border border-[#38BDF8]/50 cursor-pointer shadow-sm"
+                          >
+                            {t('spotsSheetBtn')}
+                          </button>
+                        </div>
                       </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 w-full md:w-auto">
-                      <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${spot.latitude},${spot.longitude}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 md:flex-none px-5 py-3 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md border border-[#7DD3FC]/50"
-                      >
-                        <span className="material-symbols-outlined text-base">near_me</span>
-                        {t('getDirections', 'Cómo Llegar')} ({distanceKm} km)
-                      </a>
-
-                      <button
-                        onClick={() => setSelectedSpot(spot)}
-                        className="px-4 py-3 rounded-2xl bg-[#082F49]/80 hover:bg-[#082F49] text-white font-extrabold text-xs transition-all border border-[#38BDF8]/50 cursor-pointer shadow-sm"
-                      >
-                        Ficha
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                    );
+                  })}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -1301,30 +1362,49 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                 <div>
                   <div className="flex items-center gap-2">
                     <h2 className="text-xl md:text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans']">
-                      Mi Mochila Offline (Sin Cobertura)
+                      {t('spotsOfflineTitle')}
                     </h2>
                     <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-mono text-xs font-bold border border-amber-400/30">
-                      {savedSpots.length} guardados
+                      {savedSpots.length} {t('spotsOfflineSavedCount')}
                     </span>
                   </div>
                   <p className="text-xs sm:text-sm text-white/80 mt-1 leading-relaxed">
-                    Fichas y coordenadas seleccionadas por ti. Ocupan apenas <strong className="text-amber-300 font-mono">{(savedSpots.length * 1.5).toFixed(1)} KB</strong> en tu teléfono y están disponibles en plena montaña aunque tu móvil esté en modo avión.
+                    {t('spotsOfflineDesc1')} <strong className="text-amber-300 font-mono">{(savedSpots.length * 1.5).toFixed(1)} KB</strong> — {t('spotsOfflineDesc2')}
                   </p>
                 </div>
               </div>
 
               {savedSpots.length > 0 && (
-                <button
-                  onClick={() => {
-                    if (window.confirm('¿Seguro que deseas vaciar tus miradores guardados de la memoria del teléfono?')) {
-                      savedSpots.forEach((s) => removeSpot(s.id));
-                    }
-                  }}
-                  className="px-3 py-2 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-200 border border-red-500/40 text-xs font-bold transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 self-start sm:self-auto"
-                >
-                  <span className="material-symbols-outlined text-sm">delete_sweep</span>
-                  Vaciar mochila
-                </button>
+                <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                  {!confirmClearBackpack ? (
+                    <button
+                      onClick={() => setConfirmClearBackpack(true)}
+                      className="px-3 py-2 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-200 border border-red-500/40 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                    >
+                      <span className="material-symbols-outlined text-sm">delete_sweep</span>
+                      {t('spotsOfflineClearBtn')}
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => {
+                          savedSpots.forEach((s) => removeSpot(s.id));
+                          setConfirmClearBackpack(false);
+                        }}
+                        className="px-3 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white border border-red-300 text-xs font-extrabold transition-colors cursor-pointer flex items-center gap-1"
+                      >
+                        <span className="material-symbols-outlined text-sm">check</span>
+                        {t('spotsOfflineConfirmClearBtn')}
+                      </button>
+                      <button
+                        onClick={() => setConfirmClearBackpack(false)}
+                        className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        {t('spotsCloseBtn')}
+                      </button>
+                    </>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -1334,16 +1414,16 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
               <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-3xl text-amber-300/80">
                 cloud_off
               </div>
-              <h3 className="text-xl font-bold text-white">Tu mochila offline está vacía</h3>
+              <h3 className="text-xl font-bold text-white">{t('spotsOfflineEmptyTitle')}</h3>
               <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
-                Para no saturar la memoria de tu móvil, solo se guarda lo que tú elijas. Cuando busques una provincia, municipio o mirador, pulsa en <strong className="text-amber-300">«Guardar Offline»</strong> y lo tendrás disponible aquí para tus salidas nocturnas al campo.
+                {t('spotsOfflineEmptyDesc')}
               </p>
               <button
                 onClick={() => setActiveSubTab('name')}
                 className="px-5 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md inline-flex items-center gap-2"
               >
                 <span className="material-symbols-outlined text-base">search</span>
-                Buscar Miradores y Guardar
+                {t('spotsOfflineSearchBtn')}
               </button>
             </div>
           ) : (
@@ -1365,7 +1445,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
 
                       <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
                         <span className="bg-emerald-600 text-white text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1 shadow-md">
-                          ✓ Guardado Offline
+                          ✓ {t('spotsSavedShort')}
                         </span>
                         <span className="bg-black/80 backdrop-blur-md text-[#38BDF8] font-['JetBrains_Mono'] text-xs px-2.5 py-1 rounded-full font-black border border-[#38BDF8]/40">
                           Bortle {spot.bortleClass}
@@ -1374,7 +1454,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
 
                       <div className="absolute bottom-3 left-4 right-4">
                         <span className="text-xs text-[#7DD3FC] font-black uppercase tracking-wider drop-shadow">
-                          {spot.region} • {spot.country || 'España'}
+                          {spot.region} • {translateCountry(spot.country || 'España', language)}
                         </span>
                         <h3 className="text-xl font-black text-white font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                           {spot.name}
@@ -1389,11 +1469,11 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
 
                       <div className="grid grid-cols-2 gap-2 text-xs font-['JetBrains_Mono'] p-2.5 rounded-xl bg-white/90 border border-amber-400/40">
                         <div>
-                          <span className="text-[#082F49] block font-black text-[10px]">Coordenadas GPS:</span>
+                          <span className="text-[#082F49] block font-black text-[10px]">{t('spotsCoordsLabel')}:</span>
                           <span className="text-[#030712] font-black text-xs">{spot.latitude}, {spot.longitude}</span>
                         </div>
                         <div>
-                          <span className="text-[#082F49] block font-black text-[10px]">Altitud / Calidad:</span>
+                          <span className="text-[#082F49] block font-black text-[10px]">{t('spotsAltitudeLabel')} / SQM:</span>
                           <span className="text-[#030712] font-black text-xs">{spot.elevationMeters}m · SQM {spot.sqm}</span>
                         </div>
                       </div>
@@ -1409,7 +1489,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                       className="flex-1 py-3 rounded-2xl bg-[#0369A1] hover:bg-[#0284C7] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-md"
                     >
                       <span className="material-symbols-outlined text-base">visibility</span>
-                      Ver Ficha Offline
+                      {t('spotsViewOfflineBtn')}
                     </button>
                     <button
                       onClick={(e) => {
@@ -1417,10 +1497,10 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                         removeSpot(spot.id);
                       }}
                       className="px-3 py-3 rounded-2xl bg-red-950/40 hover:bg-red-900/60 text-red-200 border border-red-500/40 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1 cursor-pointer transition-all shadow-sm"
-                      title="Eliminar de mi mochila offline"
+                      title={t('spotsRemoveBtn')}
                     >
                       <span className="material-symbols-outlined text-base">delete</span>
-                      <span className="hidden sm:inline">Quitar</span>
+                      <span className="hidden sm:inline">{t('spotsRemoveBtn')}</span>
                     </button>
                   </div>
                 </div>
@@ -1438,15 +1518,15 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs text-[#BAE6FD] font-extrabold uppercase tracking-wider">
-                    {selectedSpot.region} ({selectedSpot.country || 'España'})
+                    {selectedSpot.region} ({translateCountry(selectedSpot.country || 'España', language)})
                   </span>
                   {selectedSpot.certified ? (
                     <span className="px-2.5 py-0.5 bg-[#082F49]/90 text-[#FEE685] border border-[#FEE685]/50 font-extrabold text-[10px] rounded-full uppercase">
-                      ⭐ Certificado Starlight
+                      ⭐ {t('spotsCertifiedBadge')}
                     </span>
                   ) : (
                     <span className="px-2.5 py-0.5 bg-[#059669] text-white font-extrabold text-[10px] rounded-full uppercase">
-                      🌄 Punto Libre Óptimo
+                      🌄 {t('spotsOptimalBadge')}
                     </span>
                   )}
                 </div>
@@ -1455,6 +1535,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
               <button
                 onClick={() => setSelectedSpot(null)}
                 className="text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 cursor-pointer"
+                aria-label={t('spotsCloseBtn')}
               >
                 <span className="material-symbols-outlined font-bold">close</span>
               </button>
@@ -1462,7 +1543,8 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
 
             <div className="space-y-6">
               {(() => {
-                const regImg = getRegionImage(selectedSpot);
+                const rawRegImg = getRegionImage(selectedSpot);
+                const regImg = rawRegImg ? translateRegionInfo(rawRegImg, language) : null;
                 return (
                   <div className="h-60 rounded-2xl overflow-hidden relative border border-[#38BDF8]/60 shadow-lg bg-black">
                     <img
@@ -1473,12 +1555,12 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                     <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-amber-400/40 text-[10px] font-bold text-amber-300">
-                      🌄 Imagen del Territorio: {regImg?.region || selectedSpot.region} ({regImg?.nombre_localizacion_principal})
+                      🌄 {t('spotsModalImgTerritory')}: {regImg?.region || selectedSpot.region} ({regImg?.nombre_localizacion_principal})
                     </div>
                     <div className="absolute bottom-3 left-4 right-4 flex flex-wrap items-center justify-between gap-2">
                       <div className="flex gap-2">
                         <span className="bg-[#0284C7] text-white text-xs font-extrabold px-3 py-1 rounded-full font-['JetBrains_Mono'] shadow-sm">
-                          Bortle Clase {selectedSpot.bortleClass}
+                          Bortle {selectedSpot.bortleClass}
                         </span>
                         <span className="bg-black/80 text-white backdrop-blur-md text-xs font-bold px-3 py-1 rounded-full font-['JetBrains_Mono']">
                           SQM: {selectedSpot.sqm} mag/arcsec²
@@ -1498,22 +1580,22 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-[#082F49]/80 border border-[#38BDF8]/40 text-xs">
                 <div>
-                  <span className="text-[#7DD3FC] block uppercase font-['JetBrains_Mono'] font-bold">Elevación:</span>
-                  <span className="text-white font-extrabold text-sm">{selectedSpot.elevationMeters}m</span>
+                  <span className="text-[#7DD3FC] block uppercase font-['JetBrains_Mono'] font-bold">{t('spotsAltitudeLabel')}:</span>
+                  <span className="text-white font-extrabold text-sm">{selectedSpot.elevationMeters} {t('spotsElevUnitLabel')}</span>
                 </div>
                 <div>
-                  <span className="text-[#7DD3FC] block uppercase font-['JetBrains_Mono'] font-bold">Mejor Época:</span>
+                  <span className="text-[#7DD3FC] block uppercase font-['JetBrains_Mono'] font-bold">{t('spotsBestSeasonLabel')}:</span>
                   <span className="text-white font-extrabold text-sm">{selectedSpot.bestSeason}</span>
                 </div>
                 <div>
-                  <span className="text-[#7DD3FC] block uppercase font-['JetBrains_Mono'] font-bold">Coordenadas:</span>
+                  <span className="text-[#7DD3FC] block uppercase font-['JetBrains_Mono'] font-bold">{t('spotsCoordsLabel')}:</span>
                   <span className="text-white font-extrabold text-sm font-['JetBrains_Mono']">{selectedSpot.latitude}, {selectedSpot.longitude}</span>
                 </div>
               </div>
 
               {selectedSpot.subAreas && selectedSpot.subAreas.length > 0 && (
                 <div>
-                  <h4 className="font-extrabold text-[#7DD3FC] text-sm uppercase tracking-wider mb-2">Puntos de Interés y Accesos:</h4>
+                  <h4 className="font-extrabold text-[#7DD3FC] text-sm uppercase tracking-wider mb-2">{t('spotsPointsInterestLabel')}:</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedSpot.subAreas.map((area, i) => (
                       <span key={i} className="px-3 py-1.5 rounded-xl bg-[#082F49]/90 text-[#E0F2FE] text-xs font-extrabold border border-[#38BDF8]/40 flex items-center gap-1 shadow-sm">
@@ -1525,7 +1607,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
               )}
 
               <div>
-                <h4 className="font-extrabold text-[#7DD3FC] text-sm uppercase tracking-wider mb-2">Servicios en el Punto:</h4>
+                <h4 className="font-extrabold text-[#7DD3FC] text-sm uppercase tracking-wider mb-2">{t('spotsFacilitiesLabel')}:</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedSpot.facilities.map((fac, i) => (
                     <span key={i} className="px-3 py-1.5 rounded-xl bg-[#082F49]/70 text-white text-xs font-medium border border-[#38BDF8]/30 shadow-xs">
@@ -1544,11 +1626,11 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                   <div>
                     <span className="text-xs font-bold text-white block">
                       {isSpotSaved(selectedSpot.id)
-                        ? 'Ficha guardada en tu teléfono para usar sin cobertura'
-                        : 'Guardar esta ficha para tu salida al campo'}
+                        ? t('spotsOfflineBoxSaved')
+                        : t('spotsOfflineBoxSave')}
                     </span>
                     <span className="text-[11px] text-white/70 block">
-                      Ocupa apenas ~1.5 KB. Disponible en mitad del monte aunque no tengas cobertura móvil.
+                      {t('spotsOfflineBoxSub')} (~1.5 KB)
                     </span>
                   </div>
                 </div>
@@ -1563,25 +1645,25 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
                   <span className="material-symbols-outlined text-base">
                     {isSpotSaved(selectedSpot.id) ? 'bookmark_added' : 'bookmark_add'}
                   </span>
-                  <span>{isSpotSaved(selectedSpot.id) ? '✓ Guardado Offline' : 'Guardar Offline (~1.5 KB)'}</span>
+                  <span>{isSpotSaved(selectedSpot.id) ? `✓ ${t('spotsSavedShort')}` : `${t('spotsSaveShort')} (~1.5 KB)`}</span>
                 </button>
               </div>
 
               <div className="pt-4 border-t border-[#38BDF8]/40 flex flex-col sm:flex-row gap-3">
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${selectedSpot.latitude},${selectedSpot.longitude}`}
+                  href={buildGoogleMapsDirectionsUrl(selectedSpot.latitude, selectedSpot.longitude, userCoords)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 py-3.5 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer border border-[#7DD3FC]/50"
                 >
                   <span className="material-symbols-outlined text-lg">near_me</span>
-                  Abrir Ruta en Google Maps
+                  {t('spotsOpenGMapsBtn')}
                 </a>
                 <button
                   onClick={() => setSelectedSpot(null)}
                   className="px-6 py-3.5 rounded-2xl bg-[#082F49]/80 text-white font-extrabold text-xs uppercase tracking-wider hover:bg-[#082F49] transition-all cursor-pointer border border-[#38BDF8]/40"
                 >
-                  Cerrar
+                  {t('spotsCloseBtn')}
                 </button>
               </div>
             </div>
@@ -1591,4 +1673,5 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
     </div>
   );
 };
+
 

@@ -6,25 +6,43 @@ import { useLanguage } from '../context/LanguageContext';
 import { CalendarConfirmModal } from './CalendarConfirmModal';
 import { CalendarEventPayload } from '../lib/calendar';
 import { useOfflineStorage } from '../lib/offlineStorage';
+import {
+  getLocaleTag,
+  translateElement,
+  translateEventCategory,
+  formatCountdownLabel,
+} from '../lib/i18nHelpers';
 
 export const EventsView: React.FC = () => {
   const { user, signIn, syncEventToCalendar } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { savedEvents, isEventSaved, toggleSaveEvent, stats } = useOfflineStorage();
   const [activeSubTab, setActiveSubTab] = useState<'upcoming' | 'energy'>('upcoming');
   const [selectedCategory, setSelectedCategory] = useState<string>('todos');
   const [timeFilter, setTimeFilter] = useState<'active_upcoming' | 'archived_past'>('active_upcoming');
-  const [currentDateString, setCurrentDateString] = useState<string>('2 de Octubre de 2026');
+  const [currentDateString, setCurrentDateString] = useState<string>('2 Oct 2026');
   const [currentTimeString, setCurrentTimeString] = useState<string>('12:14');
 
-  // Real-time live date reference: 2 de Octubre de 2026 (12:14h hora España)
+  // Real-time live date reference: 2 de Octubre de 2026
   const todayISO = '2026-10-02';
 
   useEffect(() => {
+    const localeTag = getLocaleTag(language);
+    try {
+      const formattedDate = new Intl.DateTimeFormat(localeTag, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(new Date(`${todayISO}T12:00:00Z`));
+      setCurrentDateString(formattedDate);
+    } catch {
+      setCurrentDateString(todayISO);
+    }
+
     const updateTime = () => {
       try {
         const now = new Date();
-        const madridTimeStr = now.toLocaleTimeString('es-ES', {
+        const madridTimeStr = now.toLocaleTimeString(localeTag, {
           timeZone: 'Europe/Madrid',
           hour: '2-digit',
           minute: '2-digit',
@@ -42,7 +60,7 @@ export const EventsView: React.FC = () => {
     updateTime();
     const interval = setInterval(updateTime, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [language]);
 
   const [selectedEnergy, setSelectedEnergy] = useState<PlanetaryEnergy | null>(PLANETARY_ENERGIES[0]);
   const [selectedEvent, setSelectedEvent] = useState<CelestialEvent | null>(CELESTIAL_EVENTS[0]);
@@ -62,14 +80,24 @@ export const EventsView: React.FC = () => {
     const today = new Date(`${todayISO}T00:00:00Z`).getTime();
     const eventDate = new Date(`${startDateISO}T00:00:00Z`).getTime();
     const diffDays = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays < 0) return { label: 'Finalizado', isPast: true, days: diffDays };
-    if (diffDays === 0) return { label: '¡HOY!', isPast: false, isToday: true, days: 0 };
-    if (diffDays === 1) return { label: 'Mañana', isPast: false, days: 1 };
-    if (diffDays < 30) return { label: `En ${diffDays} días`, isPast: false, days: diffDays };
-    if (diffDays < 60) return { label: `En ${Math.round(diffDays / 7)} semanas`, isPast: false, days: diffDays };
+
+    if (diffDays < 0) return { label: formatCountdownLabel(diffDays, language), isPast: true, days: diffDays };
+    if (diffDays === 0) return { label: formatCountdownLabel(0, language), isPast: false, isToday: true, days: 0 };
+    if (diffDays === 1) return { label: formatCountdownLabel(1, language), isPast: false, days: 1 };
+    if (diffDays < 30) return { label: formatCountdownLabel(diffDays, language), isPast: false, days: diffDays };
+    if (diffDays < 60) {
+      return {
+        label: `${t('eventsWeeksPrefix')} ${Math.round(diffDays / 7)} ${t('eventsWeeksSuffix')}`,
+        isPast: false,
+        days: diffDays,
+      };
+    }
     const months = Math.round(diffDays / 30.5);
-    return { label: `En ${months} meses (${diffDays} días)`, isPast: false, days: diffDays };
+    return {
+      label: `${t('eventsMonthsPrefix')} ${months} ${t('eventsMonthsMiddle')} ${diffDays} ${t('eventsDaysSuffix')}`,
+      isPast: false,
+      days: diffDays,
+    };
   };
 
   // Split events into upcoming and past
@@ -102,8 +130,8 @@ export const EventsView: React.FC = () => {
 
     const payload: CalendarEventPayload = {
       summary: evt.title,
-      description: `${evt.description}\n\nPico: ${evt.peakTime}\nZona recomendada: ${evt.bestVisibilityZone}\nEquipamiento: ${evt.equipmentNeeded}`,
-      location: evt.bestVisibilityZone || 'Observación Estelar España',
+      description: `${evt.description}\n\n${t('eventsPeakLabel')}: ${evt.peakTime}\n${t('eventsZoneLabel')}: ${evt.bestVisibilityZone}\n${t('eventsEquipLabel')}: ${evt.equipmentNeeded}`,
+      location: evt.bestVisibilityZone || t('calDefaultLocation'),
       startDateTime: startISO,
       endDateTime: endISO,
     };
@@ -151,13 +179,13 @@ export const EventsView: React.FC = () => {
         <div className="mt-4 inline-flex flex-wrap items-center gap-2.5 px-4 py-2 rounded-2xl bg-[#082F49]/70 border border-[#38BDF8]/40 backdrop-blur-md text-xs font-bold text-[#E0F2FE] shadow-lg">
           <span className="w-2.5 h-2.5 rounded-full bg-[#34D399] animate-pulse shadow-[0_0_8px_#34D399]" />
           <span className="font-['JetBrains_Mono'] text-[#7DD3FC] uppercase tracking-wider">
-            Agenda en vivo:
+            {t('eventsLiveAgenda')}:
           </span>
           <span className="text-white font-extrabold">
-            {currentDateString} • {currentTimeString} h (Hora España CEST)
+            {currentDateString} • {currentTimeString} h ({t('eventsSpainTime')} CEST)
           </span>
           <span className="text-[#38BDF8] text-[11px] font-medium hidden sm:inline">
-            | Eventos pasados filtrados automáticamente
+            | {t('eventsPastFiltered')}
           </span>
         </div>
       </header>
@@ -213,10 +241,10 @@ export const EventsView: React.FC = () => {
               <div className="relative z-10">
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                   <span className="px-3.5 py-1 rounded-full bg-[#082F49]/90 text-[#7DD3FC] border border-[#38BDF8]/50 text-xs font-extrabold uppercase tracking-wider shadow-sm backdrop-blur-sm">
-                    Elemento {selectedEnergy.element} • {selectedEnergy.planet}
+                    {t('eventsElementPrefix')} {translateElement(selectedEnergy.element, language)} • {selectedEnergy.planet}
                   </span>
                   <span className="text-xs font-['JetBrains_Mono'] text-[#BAE6FD] font-bold">
-                    Tránsito Astrológico & Astronómico
+                    {t('eventsTransitType')}
                   </span>
                 </div>
 
@@ -232,7 +260,7 @@ export const EventsView: React.FC = () => {
                   <div>
                     <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#7DD3FC] mb-2 flex items-center gap-2">
                       <span className="material-symbols-outlined text-base text-[#38BDF8]">telescope</span>
-                      Detalle Astronómico Real
+                      {t('eventsAstroDetail')}
                     </h3>
                     <p className="text-sm text-white font-medium leading-relaxed">
                       {selectedEnergy.astronomicalDetail}
@@ -242,7 +270,7 @@ export const EventsView: React.FC = () => {
                   <div>
                     <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#7DD3FC] mb-2 flex items-center gap-2">
                       <span className="material-symbols-outlined text-base text-[#38BDF8]">auto_awesome</span>
-                      Consejo de Observación & Enfoque
+                      {t('eventsObserveTip')}
                     </h3>
                     <p className="text-sm text-white font-medium leading-relaxed">
                       {selectedEnergy.stargazingRecommendation}
@@ -256,7 +284,7 @@ export const EventsView: React.FC = () => {
           {/* Grid of Planetary Energies */}
           <div>
             <h3 className="text-xl font-extrabold text-white mb-4 font-['Plus_Jakarta_Sans']">
-              Selecciona un Planeta o Tránsito
+              {t('eventsPickTransit')}
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -311,7 +339,7 @@ export const EventsView: React.FC = () => {
                 id="btn-filter-upcoming"
               >
                 <span className="material-symbols-outlined text-sm">event_available</span>
-                <span>Eventos Próximos ({allUpcomingEvents.length})</span>
+                <span>{t('eventsUpcomingBtn')} ({allUpcomingEvents.length})</span>
               </button>
 
               <button
@@ -324,15 +352,15 @@ export const EventsView: React.FC = () => {
                 id="btn-filter-past"
               >
                 <span className="material-symbols-outlined text-sm">history</span>
-                <span>Historial Pasado ({allPastEvents.length})</span>
+                <span>{t('eventsPastBtn')} ({allPastEvents.length})</span>
               </button>
             </div>
 
             <div className="text-xs font-['JetBrains_Mono'] text-[#7DD3FC] font-bold flex items-center gap-1.5">
               <span className="material-symbols-outlined text-base">update</span>
               {timeFilter === 'active_upcoming'
-                ? 'Mostrando solo eventos astronómicos activos a partir de hoy'
-                : 'Eventos astronómicos ya finalizados'}
+                ? t('eventsActiveFilterHint')
+                : t('eventsPastFilterHint')}
             </div>
           </div>
 
@@ -340,12 +368,12 @@ export const EventsView: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2">
             {[
               { id: 'todos', label: t('categoryAll', 'Todos los Eventos') },
-              { id: 'offline', label: `🎒 Guardados Offline (${stats.eventsCount})` },
+              { id: 'offline', label: `🎒 ${t('eventsOfflineCat')} (${stats.eventsCount})` },
               { id: 'eclipse', label: t('categoryEclipses', 'Eclipses (Solar/Lunar)') },
               { id: 'lluvia_estrellas', label: t('categoryMeteors', 'Lluvias de Estrellas') },
               { id: 'alineacion', label: t('categoryPlanets', 'Alineación de Planetas') },
-              { id: 'visualizacion_planetas', label: 'Visualización de Planetas' },
-              { id: 'fase_lunar', label: 'Fases Lunares' },
+              { id: 'visualizacion_planetas', label: t('eventsPlanetViewCat') },
+              { id: 'fase_lunar', label: t('eventsMoonPhaseCat') },
             ].map((cat) => (
               <button
                 key={cat.id}
@@ -368,7 +396,7 @@ export const EventsView: React.FC = () => {
             {filteredEvents.length === 0 ? (
               <div className="p-8 text-center bg-[#082F49]/60 rounded-3xl border border-[#38BDF8]/30 text-white/70">
                 <span className="material-symbols-outlined text-4xl mb-2 text-[#7DD3FC]">event_busy</span>
-                <p className="font-extrabold text-white text-base">No hay eventos en esta categoría para el filtro seleccionado.</p>
+                <p className="font-extrabold text-white text-base">{t('eventsEmptyCat')}</p>
               </div>
             ) : (
               filteredEvents.map((evt) => {
@@ -395,7 +423,7 @@ export const EventsView: React.FC = () => {
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="px-3 py-0.5 rounded-full bg-[#082F49]/90 text-[#7DD3FC] border border-[#38BDF8]/40 text-[11px] font-extrabold font-['JetBrains_Mono'] uppercase">
-                              {evt.categoryLabel}
+                              {translateEventCategory(evt.categoryLabel, language)}
                             </span>
                             {/* Days remaining badge */}
                             <span
@@ -407,7 +435,7 @@ export const EventsView: React.FC = () => {
                                   : 'bg-[#0284C7] text-white'
                               }`}
                             >
-                              {countdown.isPast ? 'Finalizado' : `⏳ ${countdown.label}`}
+                              {countdown.isPast ? formatCountdownLabel(-1, language) : `⏳ ${countdown.label}`}
                             </span>
                           </div>
                           <h3 className="text-xl md:text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans'] mt-1 tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
@@ -421,7 +449,7 @@ export const EventsView: React.FC = () => {
                           📅 {evt.date}
                         </span>
                         <span className="text-xs text-[#BAE6FD] font-bold">
-                          ⏰ Pico: {evt.peakTime}
+                          ⏰ {t('eventsPeakLabel')}: {evt.peakTime}
                         </span>
                       </div>
                     </div>
@@ -433,12 +461,12 @@ export const EventsView: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-[#38BDF8]/30 text-xs mb-4">
                       <div className="flex items-center gap-2 text-white font-medium">
                         <span className="material-symbols-outlined text-base text-[#7DD3FC]">location_on</span>
-                        <span><strong>Zona óptima:</strong> {evt.bestVisibilityZone}</span>
+                        <span><strong>{t('eventsZoneLabel')}:</strong> {evt.bestVisibilityZone}</span>
                       </div>
 
                       <div className="flex items-center gap-2 text-white font-medium">
                         <span className="material-symbols-outlined text-base text-[#7DD3FC]">visibility</span>
-                        <span><strong>Equipamiento:</strong> {evt.equipmentNeeded}</span>
+                        <span><strong>{t('eventsEquipLabel')}:</strong> {evt.equipmentNeeded}</span>
                       </div>
                     </div>
 
@@ -448,7 +476,7 @@ export const EventsView: React.FC = () => {
                         {countdown.isPast ? (
                           <span className="text-xs font-bold text-[#BAE6FD] flex items-center gap-1.5">
                             <span className="material-symbols-outlined text-base text-gray-400">task_alt</span>
-                            Evento pasado registrado en el histórico estelar
+                            {t('eventsPastRecorded')}
                           </span>
                         ) : syncedEvents[evt.id] ? (
                           <a
@@ -458,7 +486,7 @@ export const EventsView: React.FC = () => {
                             className="px-4 py-2 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-md"
                           >
                             <span className="material-symbols-outlined text-sm">check_circle</span>
-                            En Google Calendar
+                            {t('eventsInGCal')}
                           </a>
                         ) : (
                           <button
@@ -466,7 +494,7 @@ export const EventsView: React.FC = () => {
                             className="px-4 py-2 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-all shadow-md border border-[#7DD3FC]/50"
                           >
                             <span className="material-symbols-outlined text-base">calendar_add_on</span>
-                            Sincronizar Calendar
+                            {t('eventsSyncCalBtn')}
                           </button>
                         )}
 
@@ -477,21 +505,17 @@ export const EventsView: React.FC = () => {
                               ? 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-400/40'
                               : 'bg-[#082F49] hover:bg-[#0c3e60] text-white/90 border border-[#38BDF8]/40'
                           }`}
-                          title={
-                            isEventSaved(evt.id)
-                              ? 'Guardado en tu móvil para consultar sin cobertura. Clic para quitar.'
-                              : 'Guardar evento en tu móvil para salidas sin cobertura (~1.5 KB)'
-                          }
+                          title={isEventSaved(evt.id) ? t('eventsSavedOfflineBtn') : t('eventsSaveOfflineBtn')}
                         >
                           <span className="material-symbols-outlined text-base text-amber-300">
                             {isEventSaved(evt.id) ? 'bookmark_added' : 'bookmark_add'}
                           </span>
-                          <span>{isEventSaved(evt.id) ? 'Guardado Offline' : 'Guardar Offline'}</span>
+                          <span>{isEventSaved(evt.id) ? t('eventsSavedOfflineBtn') : t('eventsSaveOfflineBtn')}</span>
                         </button>
                       </div>
 
                       <span className="text-[11px] text-[#BAE6FD] font-['JetBrains_Mono'] font-bold hidden sm:inline">
-                        Google Workspace & Modo Offline
+                        {t('eventsFooterSyncNote')}
                       </span>
                     </div>
                   </div>

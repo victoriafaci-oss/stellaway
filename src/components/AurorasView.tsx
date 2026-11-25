@@ -1,7 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AURORAS_DATA, AuroraSpot } from '../data/aurorasData';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionImage } from '../lib/regionImages';
+import {
+  watchLivePosition,
+  buildGoogleMapsDirectionsUrl,
+  LiveCoordinates,
+} from '../lib/locationService';
+import {
+  fetchLiveNoaaKpIndex,
+  buildClearOutsideUrl,
+  buildWindyUrl,
+  LiveAuroraKpData,
+} from '../lib/weatherService';
+import {
+  translateCountry,
+  translateAuroraFrequency,
+  translateBortleText,
+  translateRegionInfo,
+  matchesMultilingualSearch,
+} from '../lib/locationI18n';
 
 interface AurorasViewProps {
   onGoBack?: () => void;
@@ -29,7 +47,7 @@ const AURORA_LEGENDARY_ENCLAVES: Record<string, string[]> = {
 };
 
 export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedHemisphere, setSelectedHemisphere] = useState<'todos' | 'norte' | 'sur'>('todos');
   const [selectedCategory, setSelectedCategory] = useState<string>('todos');
@@ -38,10 +56,30 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
 
   // Geolocation & Distance Calculation State
-  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [userCoords, setUserCoords] = useState<LiveCoordinates | null>(null);
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [sortByDistance, setSortByDistance] = useState<boolean>(false);
   const [geoMessage, setGeoMessage] = useState<string | null>(null);
+  const [liveKp, setLiveKp] = useState<LiveAuroraKpData | null>(null);
+  const [kpLoading, setKpLoading] = useState<boolean>(true);
+  const stopWatchRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchLiveNoaaKpIndex()
+      .then((data) => {
+        if (mounted) setLiveKp(data);
+      })
+      .finally(() => {
+        if (mounted) setKpLoading(false);
+      });
+    return () => {
+      mounted = false;
+      if (stopWatchRef.current) {
+        stopWatchRef.current();
+      }
+    };
+  }, []);
 
   // Haversine distance formula
   const calculateDistanceKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -59,34 +97,38 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
   };
 
   const handleDetectLocation = () => {
-    setIsLocating(true);
-    setGeoMessage('Detectando posición GPS...');
-
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          setUserCoords({ lat, lng });
-          setSortByDistance(true);
-          setGeoMessage(`Ubicación detectada (${lat.toFixed(2)}°, ${lng.toFixed(2)}°). Lugares ordenados por cercanía.`);
-          setIsLocating(false);
-          setTimeout(() => setGeoMessage(null), 4000);
-        },
-        (error) => {
-          console.warn('Geolocation error:', error);
-          setUserCoords({ lat: 40.4168, lng: -3.7038 }); // Madrid default
-          setSortByDistance(true);
-          setGeoMessage('Ubicación aproximada establecida. Lugares ordenados por distancia.');
-          setIsLocating(false);
-          setTimeout(() => setGeoMessage(null), 4000);
-        },
-        { timeout: 7000 }
-      );
-    } else {
-      setGeoMessage('Tu dispositivo no soporta geolocalización.');
-      setIsLocating(false);
+    if (stopWatchRef.current) {
+      stopWatchRef.current();
+      stopWatchRef.current = null;
     }
+
+    setIsLocating(true);
+    setGeoMessage(t('auLocatingMsg'));
+
+    stopWatchRef.current = watchLivePosition(
+      (coords) => {
+        setUserCoords(coords);
+        setSortByDistance(true);
+        setGeoMessage(
+          `${t('auGeoDetectedPrefix')} ${coords.lat.toFixed(4)}°, ${coords.lng.toFixed(4)}°${
+            coords.accuracyMeters ? ` (±${coords.accuracyMeters} m)` : ''
+          }`
+        );
+        setIsLocating(false);
+      },
+      (errCode) => {
+        setIsLocating(false);
+        setSortByDistance(false);
+        setUserCoords(null);
+        if (errCode === 'denied') {
+          setGeoMessage(t('gpsErrDenied', 'Permiso GPS denegado. Activa la ubicación en tu navegador/móvil para obtener tus coordenadas reales.'));
+        } else if (errCode === 'unsupported') {
+          setGeoMessage(t('auGeoNoSupport'));
+        } else {
+          setGeoMessage(t('gpsErrUnavailable', 'No se pudo obtener señal GPS todavía. Comprueba la ubicación del dispositivo.'));
+        }
+      }
+    );
   };
 
   // Distinct countries list
@@ -104,14 +146,16 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
       return false;
     }
     if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase().trim();
-    return (
-      spot.name.toLowerCase().includes(q) ||
-      spot.region.toLowerCase().includes(q) ||
-      spot.country.toLowerCase().includes(q) ||
-      spot.description.toLowerCase().includes(q) ||
-      spot.highlights.some((h) => h.toLowerCase().includes(q))
-    );
+    return matchesMultilingualSearch(searchQuery, [
+      spot.name,
+      spot.region,
+      spot.country,
+      translateCountry(spot.country, language),
+      spot.frequencyLabel,
+      translateAuroraFrequency(spot.frequencyLabel, language),
+      spot.description,
+      ...spot.highlights,
+    ]);
   });
 
   // Sort by distance if enabled
@@ -137,13 +181,13 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
       <header className="py-4 md:py-6 max-w-4xl">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-400/40 text-sky-300 text-xs font-bold uppercase tracking-wider mb-3 shadow-sm">
           <span className="material-symbols-outlined text-sm">auto_awesome</span>
-          <span>Atlas Mundial de Auroras Boreales & Australes</span>
+          <span>{t('auHeaderBadge')}</span>
         </div>
         <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-3 font-['Plus_Jakarta_Sans'] tracking-tight">
-          Localizador de Auroras Boreales y Australes
+          {t('auHeaderTitle')}
         </h1>
         <p className="text-base text-[#e1e3e4]/80 leading-relaxed font-['Plus_Jakarta_Sans']">
-          Explora los mejores enclaves del planeta para observar auroras boreales en el Ártico y auroras australes en el hemisferio sur, clasificados según su cercanía al óvalo auroral magnético, temporada de oscuridad y horizontes de baja contaminación lumínica.
+          {t('auHeaderDesc')}
         </p>
       </header>
 
@@ -156,15 +200,56 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-black uppercase tracking-wider text-sky-300 font-['JetBrains_Mono']">
-                Criterio Científico Stellaway
+                {t('auSciBadge')}
               </span>
               <span className="px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-200 text-[10px] font-bold border border-sky-400/30">
-                Óvalo Auroral & Viento Solar
+                {t('auSciPill')}
               </span>
             </div>
             <p className="text-xs text-white/90 mt-0.5 max-w-2xl leading-relaxed">
-              La visibilidad depende de la actividad solar (Kp, componente Bz y viento solar), noche polar y cielos despejados. Clasificamos en <strong>Núcleo Auroral</strong> (bajo el óvalo habitual), <strong>Frecuente</strong> (regular con oscuridad) y <strong>Ocasional</strong> (tormentas solares Kp 4-7+).
+              {t('auSciDesc')}
             </p>
+            {/* Live NOAA SWPC Kp Telemetry */}
+            <div className="mt-2.5 flex flex-wrap items-center gap-2 text-[11px]">
+              {kpLoading ? (
+                <span className="px-2.5 py-1 rounded-xl bg-black/40 border border-sky-400/30 text-sky-200 font-mono font-bold">
+                  NOAA SWPC Kp...
+                </span>
+              ) : liveKp ? (
+                <>
+                  <span
+                    className={`px-2.5 py-1 rounded-xl border font-mono font-black ${
+                      liveKp.kpIndex >= 5
+                        ? 'bg-emerald-500/25 border-emerald-400 text-emerald-200'
+                        : liveKp.kpIndex >= 3
+                        ? 'bg-amber-500/20 border-amber-400 text-amber-200'
+                        : 'bg-sky-500/20 border-sky-400/40 text-sky-200'
+                    }`}
+                  >
+                    ● NOAA Kp {liveKp.kpIndex.toFixed(1)} / 9
+                    {liveKp.kpIndex >= 5 ? ' · Tormenta Geomagnética' : liveKp.kpIndex >= 3 ? ' · Actividad Moderada' : ' · Calma'}
+                  </span>
+                  {liveKp.timeTagUTC && (
+                    <span className="text-white/60 font-mono">
+                      UTC: {liveKp.timeTagUTC}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span className="px-2.5 py-1 rounded-xl bg-black/40 border border-white/15 text-white/70 font-mono">
+                  NOAA SWPC Kp: no disponible
+                </span>
+              )}
+              <a
+                href="https://www.swpc.noaa.gov/products/aurora-30-minute-forecast"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-sky-200 font-bold inline-flex items-center gap-1 transition-colors"
+              >
+                <span>NOAA Óvalo 30 min</span>
+                <span className="material-symbols-outlined text-xs">open_in_new</span>
+              </a>
+            </div>
           </div>
         </div>
 
@@ -178,7 +263,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
           }`}
         >
           <span className="material-symbols-outlined text-sm">my_location</span>
-          <span>{isLocating ? 'Localizando...' : sortByDistance ? 'Ordenado por Cercanía' : 'Ordenar por Cercanía'}</span>
+          <span>{isLocating ? t('auLocatingBtn') : sortByDistance ? t('auSortedBtn') : t('auSortBtn')}</span>
         </button>
       </div>
 
@@ -200,7 +285,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar por lugar, fiordo, país (ej: Tromsø, Abisko, Rakiura, Ushuaia, Alaska)..."
+              placeholder={t('auSearchPlaceholder')}
               className="w-full bg-[#170E28] border border-[#38BDF8]/40 rounded-2xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-white/40 focus:outline-none focus:border-[#7DD3FC] font-bold"
             />
             {searchQuery && (
@@ -223,7 +308,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
               }`}
             >
               <span className="material-symbols-outlined text-base">grid_view</span>
-              <span>Cuadrícula</span>
+              <span>{t('auGridTab')}</span>
             </button>
 
             <button
@@ -235,7 +320,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
               }`}
             >
               <span className="material-symbols-outlined text-base">map</span>
-              <span>Mapa Mundial</span>
+              <span>{t('auMapTab')}</span>
             </button>
           </div>
         </div>
@@ -243,7 +328,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
         {/* Quick Filter Buttons: Hemispheres & Frequency */}
         <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-white/10">
           <span className="text-[11px] font-black uppercase tracking-wider text-[#7DD3FC] font-['JetBrains_Mono']">
-            Hemisferio:
+            {t('auHemisphereLabel')}
           </span>
 
           <button
@@ -254,7 +339,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                 : 'bg-[#082F49]/60 hover:bg-[#082F49] text-[#BAE6FD] hover:text-white border-[#38BDF8]/40'
             }`}
           >
-            Todos ({AURORAS_DATA.length})
+            {t('auAllCount')} ({AURORAS_DATA.length})
           </button>
 
           <button
@@ -265,7 +350,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                 : 'bg-[#082F49]/60 hover:bg-[#082F49] text-[#BAE6FD] hover:text-white border-[#38BDF8]/40'
             }`}
           >
-            <span>🌌 Norte (Aurora Boreal)</span>
+            <span>🌌 {t('auNorthPill')}</span>
             <span className="text-[10px] opacity-80">
               ({AURORAS_DATA.filter((s) => s.hemisphere === 'norte').length})
             </span>
@@ -279,7 +364,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                 : 'bg-[#082F49]/60 hover:bg-[#082F49] text-[#BAE6FD] hover:text-white border-[#38BDF8]/40'
             }`}
           >
-            <span>✨ Sur (Aurora Austral)</span>
+            <span>✨ {t('auSouthPill')}</span>
             <span className="text-[10px] opacity-80">
               ({AURORAS_DATA.filter((s) => s.hemisphere === 'sur').length})
             </span>
@@ -293,10 +378,10 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-3 py-1 bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl text-[#F0F9FF] text-xs font-bold focus:outline-none focus:border-[#7DD3FC] cursor-pointer"
           >
-            <option value="todos">Cualquier Frecuencia</option>
-            <option value="nucleo">Bajo el Núcleo Auroral</option>
-            <option value="frecuente">Frecuente / Con Oscuridad</option>
-            <option value="ocasional">Ocasional / Tormenta Solar</option>
+            <option value="todos">{t('auFreqAll')}</option>
+            <option value="nucleo">{t('auFreqCore')}</option>
+            <option value="frecuente">{t('auFreqFrequent')}</option>
+            <option value="ocasional">{t('auFreqOccasional')}</option>
           </select>
 
           {/* Country Select */}
@@ -305,10 +390,10 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
             onChange={(e) => setSelectedCountry(e.target.value)}
             className="px-3 py-1 bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl text-[#F0F9FF] text-xs font-bold focus:outline-none focus:border-[#7DD3FC] cursor-pointer"
           >
-            <option value="todos">Todos los Países</option>
+            <option value="todos">{t('auAllCountries')}</option>
             {countries.filter((c) => c !== 'todos').map((c) => (
               <option key={c} value={c}>
-                {c}
+                {translateCountry(c, language)}
               </option>
             ))}
           </select>
@@ -323,21 +408,21 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
               );
               if (match) return match;
             }
-            const q = searchQuery.toLowerCase();
-            if (q.includes('noruega') || q.includes('troms') || q.includes('lofot') || q.includes('svalbard') || q.includes('senja') || q.includes('alta') || q.includes('nordkapp')) return 'Noruega';
-            if (q.includes('suecia') || q.includes('abisko') || q.includes('kiruna') || q.includes('jukkasjarvi') || q.includes('porjus')) return 'Suecia';
-            if (q.includes('finlandia') || q.includes('laponia') || q.includes('rovaniemi') || q.includes('inari') || q.includes('saariselka')) return 'Finlandia';
-            if (q.includes('islandia') || q.includes('reykjavik') || q.includes('thingvellir') || q.includes('vik') || q.includes('kirkjufell')) return 'Islandia';
-            if (q.includes('canada') || q.includes('yellowknife') || q.includes('whitehorse') || q.includes('yukon') || q.includes('churchill')) return 'Canadá';
-            if (q.includes('alaska') || q.includes('fairbanks') || q.includes('eeuu') || q.includes('estados unidos') || q.includes('denali')) return 'Estados Unidos';
-            if (q.includes('rusia') || q.includes('murmansk') || q.includes('teriberka') || q.includes('kola')) return 'Rusia';
-            if (q.includes('nueva zelanda') || q.includes('rakiura') || q.includes('stewart') || q.includes('tekapo')) return 'Nueva Zelanda';
-            if (q.includes('australia') || q.includes('tasmania') || q.includes('hobart') || q.includes('cradle')) return 'Australia';
-            if (q.includes('chile') || q.includes('patagonia') || q.includes('punta arenas') || q.includes('paine')) return 'Chile';
-            if (q.includes('argentina') || q.includes('tierra del fuego') || q.includes('ushuaia')) return 'Argentina';
-            if (q.includes('antartida') || q.includes('ohiggins')) return 'Antártida';
+            const q = searchQuery.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (q.includes('noruega') || q.includes('norway') || q.includes('norvege') || q.includes('norwegen') || q.includes('norvegia') || q.includes('troms') || q.includes('lofot') || q.includes('svalbard') || q.includes('senja') || q.includes('alta') || q.includes('nordkapp')) return 'Noruega';
+            if (q.includes('suecia') || q.includes('sweden') || q.includes('suede') || q.includes('schweden') || q.includes('svezia') || q.includes('abisko') || q.includes('kiruna') || q.includes('jukkasjarvi') || q.includes('porjus')) return 'Suecia';
+            if (q.includes('finlandia') || q.includes('finland') || q.includes('finlande') || q.includes('finnland') || q.includes('laponia') || q.includes('lapland') || q.includes('lapponia') || q.includes('rovaniemi') || q.includes('inari') || q.includes('saariselka')) return 'Finlandia';
+            if (q.includes('islandia') || q.includes('iceland') || q.includes('islande') || q.includes('islanda') || q.includes('reykjavik') || q.includes('thingvellir') || q.includes('vik') || q.includes('kirkjufell')) return 'Islandia';
+            if (q.includes('canada') || q.includes('kanada') || q.includes('yellowknife') || q.includes('whitehorse') || q.includes('yukon') || q.includes('churchill')) return 'Canadá';
+            if (q.includes('alaska') || q.includes('fairbanks') || q.includes('eeuu') || q.includes('usa') || q.includes('united states') || q.includes('estados unidos') || q.includes('denali')) return 'Estados Unidos';
+            if (q.includes('rusia') || q.includes('russia') || q.includes('russie') || q.includes('russland') || q.includes('murmansk') || q.includes('teriberka') || q.includes('kola')) return 'Rusia';
+            if (q.includes('nueva zelanda') || q.includes('new zealand') || q.includes('nouvelle-zelande') || q.includes('neuseeland') || q.includes('rakiura') || q.includes('stewart') || q.includes('tekapo')) return 'Nueva Zelanda';
+            if (q.includes('australia') || q.includes('australie') || q.includes('australien') || q.includes('tasmania') || q.includes('hobart') || q.includes('cradle')) return 'Australia';
+            if (q.includes('chile') || q.includes('chili') || q.includes('cile') || q.includes('patagonia') || q.includes('punta arenas') || q.includes('paine')) return 'Chile';
+            if (q.includes('argentina') || q.includes('argentine') || q.includes('argentinien') || q.includes('tierra del fuego') || q.includes('ushuaia')) return 'Argentina';
+            if (q.includes('antartida') || q.includes('antarctica') || q.includes('antarctique') || q.includes('antartide') || q.includes('antarktis') || q.includes('ohiggins')) return 'Antártida';
             if (q.includes('georgia')) return 'Islas Georgias del Sur';
-            if (q.includes('malvina')) return 'Islas Malvinas';
+            if (q.includes('malvina') || q.includes('falkland') || q.includes('malouines')) return 'Islas Malvinas';
             if (selectedHemisphere === 'sur') return 'austral';
             if (selectedHemisphere === 'norte') return 'boreal';
             return 'global';
@@ -348,7 +433,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
           return (
             <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/10 text-xs">
               <span className="text-[#BAE6FD]/80 text-[11px] font-semibold">
-                Enclaves Legendarios{detectedCountry !== 'global' && detectedCountry !== 'boreal' && detectedCountry !== 'austral' ? ` (${detectedCountry})` : ''}:
+                {t('auLegendaryEnclaves')}{detectedCountry !== 'global' && detectedCountry !== 'boreal' && detectedCountry !== 'austral' ? ` (${translateCountry(detectedCountry, language)})` : ''}:
               </span>
               {enclaves.map((tag) => (
                 <button
@@ -377,21 +462,21 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
         let activeRegion: string | undefined = searchQuery || undefined;
 
         if (!activeCountry && searchQuery) {
-          const q = searchQuery.toLowerCase();
-          if (q.includes('noruega') || q.includes('troms') || q.includes('lofot') || q.includes('svalbard') || q.includes('senja') || q.includes('alta') || q.includes('nordkapp')) activeCountry = 'Noruega';
-          else if (q.includes('suecia') || q.includes('abisko') || q.includes('kiruna') || q.includes('jukkasjarvi') || q.includes('porjus')) activeCountry = 'Suecia';
-          else if (q.includes('finlandia') || q.includes('laponia') || q.includes('rovaniemi') || q.includes('inari') || q.includes('saariselka')) activeCountry = 'Finlandia';
-          else if (q.includes('islandia') || q.includes('reykjavik') || q.includes('thingvellir') || q.includes('vik') || q.includes('kirkjufell')) activeCountry = 'Islandia';
-          else if (q.includes('canada') || q.includes('yellowknife') || q.includes('whitehorse') || q.includes('yukon') || q.includes('churchill')) activeCountry = 'Canadá';
-          else if (q.includes('alaska') || q.includes('fairbanks') || q.includes('eeuu') || q.includes('estados unidos') || q.includes('denali')) activeCountry = 'Estados Unidos';
-          else if (q.includes('rusia') || q.includes('murmansk') || q.includes('teriberka') || q.includes('kola')) activeCountry = 'Rusia';
-          else if (q.includes('nueva zelanda') || q.includes('rakiura') || q.includes('stewart') || q.includes('tekapo')) activeCountry = 'Nueva Zelanda';
-          else if (q.includes('australia') || q.includes('tasmania') || q.includes('hobart') || q.includes('cradle')) activeCountry = 'Australia';
-          else if (q.includes('chile') || q.includes('patagonia') || q.includes('punta arenas') || q.includes('paine')) activeCountry = 'Chile';
-          else if (q.includes('argentina') || q.includes('tierra del fuego') || q.includes('ushuaia')) activeCountry = 'Argentina';
-          else if (q.includes('antartida') || q.includes('ohiggins')) activeCountry = 'Antártida';
+          const q = searchQuery.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          if (q.includes('noruega') || q.includes('norway') || q.includes('norvege') || q.includes('norwegen') || q.includes('norvegia') || q.includes('troms') || q.includes('lofot') || q.includes('svalbard') || q.includes('senja') || q.includes('alta') || q.includes('nordkapp')) activeCountry = 'Noruega';
+          else if (q.includes('suecia') || q.includes('sweden') || q.includes('suede') || q.includes('schweden') || q.includes('svezia') || q.includes('abisko') || q.includes('kiruna') || q.includes('jukkasjarvi') || q.includes('porjus')) activeCountry = 'Suecia';
+          else if (q.includes('finlandia') || q.includes('finland') || q.includes('finlande') || q.includes('finnland') || q.includes('laponia') || q.includes('lapland') || q.includes('lapponia') || q.includes('rovaniemi') || q.includes('inari') || q.includes('saariselka')) activeCountry = 'Finlandia';
+          else if (q.includes('islandia') || q.includes('iceland') || q.includes('islande') || q.includes('islanda') || q.includes('reykjavik') || q.includes('thingvellir') || q.includes('vik') || q.includes('kirkjufell')) activeCountry = 'Islandia';
+          else if (q.includes('canada') || q.includes('kanada') || q.includes('yellowknife') || q.includes('whitehorse') || q.includes('yukon') || q.includes('churchill')) activeCountry = 'Canadá';
+          else if (q.includes('alaska') || q.includes('fairbanks') || q.includes('eeuu') || q.includes('usa') || q.includes('united states') || q.includes('estados unidos') || q.includes('denali')) activeCountry = 'Estados Unidos';
+          else if (q.includes('rusia') || q.includes('russia') || q.includes('russie') || q.includes('russland') || q.includes('murmansk') || q.includes('teriberka') || q.includes('kola')) activeCountry = 'Rusia';
+          else if (q.includes('nueva zelanda') || q.includes('new zealand') || q.includes('nouvelle-zelande') || q.includes('neuseeland') || q.includes('rakiura') || q.includes('stewart') || q.includes('tekapo')) activeCountry = 'Nueva Zelanda';
+          else if (q.includes('australia') || q.includes('australie') || q.includes('australien') || q.includes('tasmania') || q.includes('hobart') || q.includes('cradle')) activeCountry = 'Australia';
+          else if (q.includes('chile') || q.includes('chili') || q.includes('cile') || q.includes('patagonia') || q.includes('punta arenas') || q.includes('paine')) activeCountry = 'Chile';
+          else if (q.includes('argentina') || q.includes('argentine') || q.includes('argentinien') || q.includes('tierra del fuego') || q.includes('ushuaia')) activeCountry = 'Argentina';
+          else if (q.includes('antartida') || q.includes('antarctica') || q.includes('antarctique') || q.includes('antartide') || q.includes('antarktis') || q.includes('ohiggins')) activeCountry = 'Antártida';
           else if (q.includes('georgia')) activeCountry = 'Islas Georgias del Sur';
-          else if (q.includes('malvina')) activeCountry = 'Islas Malvinas';
+          else if (q.includes('malvina') || q.includes('falkland') || q.includes('malouines')) activeCountry = 'Islas Malvinas';
           else if (filteredSpots.length > 0) activeCountry = filteredSpots[0].country;
         }
 
@@ -406,13 +491,14 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
           }
         }
 
-        const activeRegionInfo = getRegionImage({
+        const rawRegionInfo = getRegionImage({
           country: activeCountry,
           region: activeRegion,
           category: selectedHemisphere === 'sur' ? 'Aurora Austral' : 'Aurora Boreal',
           hemisphere: selectedHemisphere !== 'todos' ? selectedHemisphere : undefined,
           isAurora: true,
         });
+        const activeRegionInfo = rawRegionInfo ? translateRegionInfo(rawRegionInfo, language) : null;
         if (!activeRegionInfo) return null;
         return (
           <div className="rounded-3xl overflow-hidden border border-[#38BDF8]/40 shadow-2xl bg-gradient-to-br from-[#0b1b33] via-[#09152b] to-[#040b17] mb-8 relative">
@@ -426,7 +512,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
               <div className="absolute inset-0 bg-gradient-to-t from-[#040b17] via-[#040b17]/50 to-transparent" />
               <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-sky-400/40 text-[11px] font-extrabold text-sky-300 shadow-lg flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-sm text-sky-300">image</span>
-                Imagen Representativa: {activeRegionInfo.region || activeRegionInfo.pais}
+                {t('auRepImgLabel')}: {activeRegionInfo.region || activeRegionInfo.pais}
               </div>
               <div className="absolute bottom-4 left-4 right-4 space-y-1">
                 <span className="text-xs uppercase font-extrabold text-[#7DD3FC] tracking-wider block font-['JetBrains_Mono']">
@@ -443,10 +529,10 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
             <div className="px-5 py-3 bg-black/60 border-t border-sky-400/20 flex flex-wrap items-center justify-between text-xs text-sky-200 gap-2">
               <span className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-sm text-[#38BDF8]">verified</span>
-                Imagen del territorio. Las fichas inferiores muestran las especificaciones astronómicas y geomagnéticas oficiales.
+                {t('auTerritoryHint')}
               </span>
               <span className="font-['JetBrains_Mono'] font-bold text-amber-300 bg-black/50 px-2.5 py-0.5 rounded-lg border border-white/10">
-                {filteredSpots.length} enclaves aurorales catalogados
+                {filteredSpots.length} {t('auCatalogedSuffix')}
               </span>
             </div>
           </div>
@@ -460,30 +546,30 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
             <div>
               <h3 className="text-lg font-black text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2">
                 <span className="material-symbols-outlined text-[#7DD3FC]">public</span>
-                Distribución Global de Enclaves de Auroras
+                {t('auMapTitle')}
               </h3>
               <p className="text-xs text-white/70">
-                Puntos celestes: <span className="text-[#7DD3FC] font-bold">Auroras Boreales (Norte)</span> • Puntos violetas: <span className="text-violet-300 font-bold">Auroras Australes (Sur)</span>
+                {t('auMapLegend')}
               </p>
             </div>
             <span className="text-xs font-bold text-[#7DD3FC] bg-[#082F49]/80 px-3 py-1 rounded-full border border-[#38BDF8]/50 self-start sm:self-auto shadow-sm">
-              {filteredSpots.length} lugares localizados
+              {filteredSpots.length} {t('auMapCountSuffix')}
             </span>
           </div>
 
           {/* Simulated SVG World Map Projection Container */}
           <div className="relative w-full aspect-[2/1] min-h-[300px] bg-gradient-to-b from-[#021020] via-[#051829] to-[#010811] rounded-2xl border border-white/10 overflow-hidden shadow-inner">
             {/* Arctic Oval Indicator Line */}
-            <div className="absolute top-[12%] left-0 right-0 h-0.5 border-t border-dashed border-[#38BDF8]/50 z-0">
+            <div className="absolute top-[12%] left-0 right-0 h-0.5 border-t border-dashed border-[#38BDF8]/50 z-0" title={t('auBorealMapTip')}>
               <span className="text-[9px] font-mono font-bold text-[#7DD3FC]/80 ml-3">
-                Óvalo Auroral Boreal (~65° - 75° N)
+                {t('auBorealOval')} (~65° - 75° N)
               </span>
             </div>
 
             {/* Antarctic Oval Indicator Line */}
-            <div className="absolute bottom-[16%] left-0 right-0 h-0.5 border-t border-dashed border-violet-400/40 z-0">
+            <div className="absolute bottom-[16%] left-0 right-0 h-0.5 border-t border-dashed border-violet-400/40 z-0" title={t('auAustralMapTip')}>
               <span className="text-[9px] font-mono font-bold text-violet-400/70 ml-3">
-                Óvalo Auroral Austral (~60° - 75° S)
+                {t('auAustralOval')} (~60° - 75° S)
               </span>
             </div>
 
@@ -501,7 +587,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                   onClick={() => setSelectedSpot(spot)}
                   style={{ left: pos.left, top: pos.top }}
                   className="absolute -translate-x-1/2 -translate-y-1/2 group cursor-pointer z-10 transition-transform hover:scale-125 focus:outline-none"
-                  title={`${spot.name} (${spot.country}) - ${spot.frequencyLabel}`}
+                  title={`${spot.name} (${translateCountry(spot.country, language)}) - ${translateAuroraFrequency(spot.frequencyLabel, language)}`}
                 >
                   <div className="relative flex items-center justify-center">
                     <div
@@ -514,7 +600,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                     {/* Hover Tooltip */}
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-30 pointer-events-none whitespace-nowrap bg-black/90 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold border border-white/20 shadow-xl backdrop-blur-md">
                       <span className={isBoreal ? 'text-[#7DD3FC]' : 'text-violet-300'}>
-                        {isBoreal ? '● Boreal: ' : '● Austral: '}
+                        {isBoreal ? `● ${t('auBorealBadge')}: ` : `● ${t('auAustralBadge')}: `}
                       </span>
                       {spot.name}
                     </div>
@@ -522,6 +608,10 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                 </button>
               );
             })}
+          </div>
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-white/75">
+            <div className="px-3 py-2 rounded-xl bg-sky-950/50 border border-sky-400/25">{t('auBorealMapTip')}</div>
+            <div className="px-3 py-2 rounded-xl bg-violet-950/40 border border-violet-400/25">{t('auAustralMapTip')}</div>
           </div>
         </div>
       )}
@@ -533,6 +623,9 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
           const distance = userCoords
             ? calculateDistanceKm(userCoords.lat, userCoords.lng, spot.latitude, spot.longitude)
             : null;
+          const localizedCountry = translateCountry(spot.country, language);
+          const localizedFrequency = translateAuroraFrequency(spot.frequencyLabel, language);
+          const localizedBortleShort = translateBortleText(spot.bortle.split(' - ')[0], language);
 
           return (
             <div
@@ -551,18 +644,18 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                           : 'bg-violet-500/80 text-white border-violet-300'
                       }`}
                     >
-                      {isBoreal ? '🌌 Aurora Boreal' : '✨ Aurora Austral'}
+                      {isBoreal ? `🌌 ${t('auBorealBadge')}` : `✨ ${t('auAustralBadge')}`}
                     </span>
 
                     <span className="px-2 py-0.5 rounded-full bg-black/70 text-amber-300 text-[10px] font-mono font-bold border border-amber-400/30">
-                      {spot.bortle.split(' - ')[0]}
+                      {localizedBortleShort}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between text-xs text-white mt-3">
                     <span className="font-extrabold flex items-center gap-1">
                       <span className="material-symbols-outlined text-sm text-[#38BDF8]">location_on</span>
-                      {spot.country} • {spot.region}
+                      {localizedCountry} • {spot.region}
                     </span>
                     {distance !== null && (
                       <span className="text-[11px] font-mono text-[#7DD3FC] font-bold bg-black/60 border border-[#38BDF8]/40 px-2 py-0.5 rounded-full">
@@ -573,7 +666,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
 
                   <div className="mt-2 text-[11px] font-['JetBrains_Mono'] text-white/70 flex items-center justify-between">
                     <span>📍 {spot.latitude.toFixed(2)}°, {spot.longitude.toFixed(2)}°</span>
-                    <span className="text-[#7DD3FC] font-bold">{spot.frequencyLabel}</span>
+                    <span className="text-[#7DD3FC] font-bold">{localizedFrequency}</span>
                   </div>
                 </div>
 
@@ -581,7 +674,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                 <div className="p-5 space-y-3">
                   <div>
                     <span className="text-[10px] font-black uppercase tracking-wider text-[#7DD3FC] font-['JetBrains_Mono'] block mb-0.5">
-                      {spot.region} • {spot.frequencyLabel}
+                      {spot.region} • {localizedFrequency}
                     </span>
                     <h3 className="text-lg font-black text-white group-hover:text-[#7DD3FC] transition-colors font-['Plus_Jakarta_Sans'] leading-tight">
                       {spot.name}
@@ -615,7 +708,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                   }}
                   className="w-full py-2.5 rounded-xl bg-[#082F49]/80 hover:bg-[#0284C7] text-[#BAE6FD] hover:text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all border border-[#38BDF8]/60 hover:border-[#7DD3FC] shadow-md shadow-sky-950/40 cursor-pointer"
                 >
-                  <span>Ver Ficha y Consejos</span>
+                  <span>{t('auViewSheetBtn')}</span>
                   <span className="material-symbols-outlined text-sm">arrow_forward</span>
                 </button>
               </div>
@@ -627,9 +720,9 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
       {filteredSpots.length === 0 && (
         <div className="text-center py-16 bg-[#130B22]/50 rounded-3xl border border-white/10 p-8 space-y-3">
           <span className="material-symbols-outlined text-4xl text-white/40">travel_explore</span>
-          <h4 className="text-lg font-black text-white">No se encontraron lugares de auroras con estos filtros</h4>
+          <h4 className="text-lg font-black text-white">{t('auEmptyTitle')}</h4>
           <p className="text-xs text-white/70">
-            Intenta cambiar el término de búsqueda o selecciona "Todos los hemisferios" y "Todas las frecuencias".
+            {t('auEmptyDesc')}
           </p>
           <button
             onClick={() => {
@@ -640,7 +733,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
             }}
             className="px-5 py-2.5 bg-[#0284C7] hover:bg-[#38BDF8] text-white hover:text-black font-black text-xs uppercase rounded-xl border border-[#7DD3FC] shadow-lg shadow-sky-950/40 cursor-pointer transition-all"
           >
-            Restablecer Filtros
+            {t('auResetBtn')}
           </button>
         </div>
       )}
@@ -657,7 +750,8 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
           >
             {/* Modal Image Header with Regional Image */}
             {(() => {
-              const regImg = getRegionImage({ ...selectedSpot, isAurora: true });
+              const rawRegImg = getRegionImage({ ...selectedSpot, isAurora: true });
+              const regImg = rawRegImg ? translateRegionInfo(rawRegImg, language) : null;
               const displayImg = regImg?.imageUrl || selectedSpot.imageUrl;
               return (
                 <div className="relative aspect-[16/9] w-full shrink-0 bg-slate-900 overflow-hidden">
@@ -673,7 +767,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                   <button
                     onClick={() => setSelectedSpot(null)}
                     className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-all cursor-pointer border border-white/30 backdrop-blur-md z-10"
-                    aria-label="Cerrar modal"
+                    aria-label={t('landingLegalCloseBtn')}
                   >
                     <span className="material-symbols-outlined text-lg">close</span>
                   </button>
@@ -687,16 +781,16 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                           : 'bg-violet-500 text-white border-violet-300'
                       }`}
                     >
-                      {selectedSpot.hemisphere === 'norte' ? '🌌 Aurora Boreal' : '✨ Aurora Austral'}
+                      {selectedSpot.hemisphere === 'norte' ? `🌌 ${t('auBorealBadge')}` : `✨ ${t('auAustralBadge')}`}
                     </span>
 
                     <span className="px-3 py-1 rounded-full bg-[#082F49]/80 text-[#7DD3FC] text-xs font-black uppercase tracking-wider border border-[#38BDF8]/50 backdrop-blur-md">
-                      {selectedSpot.frequencyLabel}
+                      {translateAuroraFrequency(selectedSpot.frequencyLabel, language)}
                     </span>
 
                     {regImg && (
                       <span className="px-2.5 py-1 rounded-full bg-black/75 text-amber-300 text-[10px] font-bold border border-amber-400/40 backdrop-blur-md">
-                        🌄 Territorio: {regImg.region || selectedSpot.region}
+                        🌄 {t('dsTerritoryPrefix')} {regImg.region || selectedSpot.region}
                       </span>
                     )}
                   </div>
@@ -704,7 +798,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                   {/* Spot Title on image */}
                   <div className="absolute bottom-3 left-4 right-4">
                     <span className="text-xs font-mono font-bold text-[#7DD3FC] block">
-                      {selectedSpot.region}, {selectedSpot.country}
+                      {selectedSpot.region}, {translateCountry(selectedSpot.country, language)}
                     </span>
                     <h2 className="text-xl sm:text-3xl font-black text-white font-['Plus_Jakarta_Sans'] leading-tight drop-shadow-md">
                       {selectedSpot.name}
@@ -725,28 +819,28 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-white/5 p-4 rounded-2xl border border-[#38BDF8]/40 font-medium">
                 <div>
                   <span className="text-[10px] text-[#7DD3FC] uppercase tracking-wider font-bold block">
-                    Temporada Óptima de Oscuridad
+                    {t('auSeasonLabel')}
                   </span>
                   <span className="text-white font-bold">{selectedSpot.bestSeason}</span>
                 </div>
 
                 <div>
                   <span className="text-[10px] text-[#7DD3FC] uppercase tracking-wider font-bold block">
-                    Orientación Recomendada
+                    {t('auOrientationLabel')}
                   </span>
                   <span className="text-white font-bold">{selectedSpot.orientation}</span>
                 </div>
 
                 <div>
                   <span className="text-[10px] text-[#7DD3FC] uppercase tracking-wider font-bold block">
-                    Contaminación Lumínica
+                    {t('auLightPollLabel')}
                   </span>
-                  <span className="text-white font-bold">{selectedSpot.bortle}</span>
+                  <span className="text-white font-bold">{translateBortleText(selectedSpot.bortle, language)}</span>
                 </div>
 
                 <div>
                   <span className="text-[10px] text-[#7DD3FC] uppercase tracking-wider font-bold block">
-                    Coordenadas Geográficas
+                    {t('auCoordsLabel')}
                   </span>
                   <span className="text-white font-mono font-bold">
                     {selectedSpot.latitude.toFixed(4)}°, {selectedSpot.longitude.toFixed(4)}°
@@ -757,7 +851,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
               {/* Highlights */}
               <div className="space-y-2">
                 <h4 className="text-xs font-black uppercase tracking-wider text-[#7DD3FC] font-['JetBrains_Mono']">
-                  Puntos Destacados & Observación:
+                  {t('auHighlightsTitle')}:
                 </h4>
                 <ul className="space-y-1.5">
                   {selectedSpot.highlights.map((h, i) => (
@@ -774,7 +868,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
               {/* Accessibility / Night Notes */}
               <div className="p-3.5 bg-[#082F49]/40 rounded-2xl border border-[#38BDF8]/40 text-white/90 space-y-1">
                 <span className="text-[10px] font-black uppercase tracking-wider text-[#7DD3FC] font-['JetBrains_Mono'] block">
-                  Accesibilidad & Consejos de Seguridad Nocturna:
+                  {t('auAccessTitle')}:
                 </span>
                 <p className="leading-relaxed">{selectedSpot.accessibility}</p>
               </div>
@@ -782,19 +876,39 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
               {/* Official Tourism Source */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-white/10 text-xs">
                 <div>
-                  <span className="text-[10px] text-white/60 block">Fuente Oficial Verificada:</span>
+                  <span className="text-[10px] text-white/60 block">{t('auOfficialSourceLabel')}:</span>
                   <span className="text-[#7DD3FC] font-bold">{selectedSpot.officialSource}</span>
                 </div>
 
-                <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${selectedSpot.latitude},${selectedSpot.longitude}`}
+                    href={buildClearOutsideUrl(selectedSpot.latitude, selectedSpot.longitude)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-2.5 rounded-xl bg-emerald-950/70 hover:bg-emerald-800/80 text-emerald-200 hover:text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all border border-emerald-400/40 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-sm">cloud</span>
+                    <span>Clear Outside 7d</span>
+                  </a>
+
+                  <a
+                    href={buildWindyUrl(selectedSpot.latitude, selectedSpot.longitude)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-2.5 rounded-xl bg-sky-950/70 hover:bg-sky-800/80 text-sky-200 hover:text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all border border-sky-400/40 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-sm">air</span>
+                    <span>Windy</span>
+                  </a>
+
+                  <a
+                    href={buildGoogleMapsDirectionsUrl(selectedSpot.latitude, selectedSpot.longitude, userCoords)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-[#082F49]/80 hover:bg-[#0284C7] text-[#BAE6FD] hover:text-white font-bold text-xs uppercase flex items-center justify-center gap-1.5 transition-all border border-[#38BDF8]/60 hover:border-[#7DD3FC] shadow-md shadow-sky-950/30 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-sm text-[#7DD3FC]">map</span>
-                    <span>Abrir en Google Maps</span>
+                    <span>{t('auOpenGMapsBtn')}</span>
                   </a>
 
                   <a
@@ -803,7 +917,7 @@ export const AurorasView: React.FC<AurorasViewProps> = ({ onGoBack, onGoHome }) 
                     rel="noopener noreferrer"
                     className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#38BDF8] to-[#0284C7] hover:from-[#7DD3FC] hover:to-[#38BDF8] text-[#082F49] hover:text-black font-black text-xs uppercase flex items-center justify-center gap-1.5 transition-all shadow-md shadow-sky-950/40 border border-[#7DD3FC] cursor-pointer"
                   >
-                    <span>Guía Oficial</span>
+                    <span>{t('auOfficialGuideBtn')}</span>
                     <span className="material-symbols-outlined text-sm">open_in_new</span>
                   </a>
                 </div>

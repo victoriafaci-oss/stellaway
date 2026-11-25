@@ -1,521 +1,646 @@
-/**
- * StellaWay - Motor Experto de Conocimiento Astronómico
- * Proporciona respuestas astronómicas ricas, precisas y rigurosas.
- * Actúa como motor principal y fallback inteligente ante indisponibilidad del modelo en la nube.
- */
+import { SupportedLanguage, normalizeLanguage } from './i18nHelpers';
 
+function pick(lang: SupportedLanguage, texts: Record<SupportedLanguage, string>): string {
+  return texts[lang] || texts.es;
+}
+
+/**
+ * StellaWay - Motor Experto Multilingüe de Conocimiento Astronómico
+ * Proporciona respuestas astronómicas rigurosas en los 6 idiomas de StellaWay
+ * y sirve de fallback inteligente cuando Gemini no está disponible.
+ */
 export function generateAstronomicalAnswer(message: string, language: string = 'es'): string {
-  const q = (message || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  const isGerman = language === 'de';
-  const isEnglish = language === 'en';
+  const l = normalizeLanguage(language);
+  const q = (message || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 
   // 1. ZARAGOZA & ARAGÓN
-  if (q.includes('zaragoza') || q.includes('vicort') || q.includes('aranda') || q.includes('ariza') || q.includes('moncayo') || q.includes('daroca')) {
-    if (isGerman) {
-      return `🏛️ **Zertifizierte Starlight-Zonen in Saragossa (Aragonien, Spanien)** ⭐
+  if (
+    q.includes('zaragoza') ||
+    q.includes('saragos') ||
+    q.includes('vicort') ||
+    q.includes('aranda') ||
+    q.includes('ariza') ||
+    q.includes('moncayo') ||
+    q.includes('daroca') ||
+    q.includes('gallocanta')
+  ) {
+    return pick(l, {
+      es: `🏛️ **Zonas Certificadas Starlight en Zaragoza (Aragón, España)** ⭐
 
-In der Provinz Saragossa gibt es **3 offiziell von der Fundación Starlight zertifizierte Territorien**:
-1. **Comarca del Aranda (Starlight-Reiseziel seit 2022):** Netzwerk von 11 Sternbeobachtungspunkten (Illueca, Purujosa, Calcena, Jarque, Tierga, Pomer).
-2. **Sierra de Vicort (Starlight-Reiseziel seit Juli 2025):** Sediles, El Frasno, Mara, Miedes und der spektakuläre Aussichtspunkt *Pico del Rayo (1.427 m)* mit Bortle-2-Himmel.
-3. **Ariza (Starlight-Gemeinde seit 2026):** Burg-Aussichtspunkt und Tal des Flusses Jalón.
+1. **Comarca del Aranda (Destino Starlight desde 2022):** 11 miradores estelares en Illueca, Purujosa, Calcena, Jarque de Moncayo, Tierga y Pomer.
+2. **Sierra de Vicort (Destino Starlight desde julio 2025):** Sediles, El Frasno, Mara, Miedes y el **Mirador del Pico del Rayo (1.427 m)** con Bortle 2.
+3. **Ariza (Municipio Starlight 2026):** Mirador astronómico del Castillo y valle del Jalón.
 
-*Zusätzliche Bergzonen:* Naturpark Moncayo (Observatorium Moncayo in Lituénigo) und Campo de Daroca / Lagune von Gallocanta.`;
-    }
-    if (isEnglish) {
-      return `🏛️ **Certified Starlight Destinations in Zaragoza (Aragon, Spain)** ⭐
+*Extras de alta montaña:* Parque Natural del Moncayo (Lituénigo) y Laguna de Gallocanta / Daroca.`,
+      en: `🏛️ **Certified Starlight Zones in Zaragoza (Aragon, Spain)** ⭐
 
-The province of Zaragoza features **3 official territories certified by the Starlight Foundation**:
+1. **Comarca del Aranda (Starlight Destination since 2022):** Network of 11 dark-sky viewpoints across Illueca, Purujosa, Calcena, Jarque, Tierga and Pomer.
+2. **Sierra de Vicort (Starlight Destination since 2025):** Features the **Pico del Rayo Viewpoint (1,427 m)** under Bortle 2 skies.
+3. **Ariza (Starlight Municipality 2026):** Castle hill viewpoint overlooking the Jalón valley.
 
-1. **Comarca del Aranda (Starlight Tourist Destination since July 2022):**
-   - Network of **11 stellar viewpoints** in mountain villages like Illueca, Purujosa ("Eagle's Nest"), Calcena, Jarque de Moncayo, Tierga, Pomer, and Gotor.
-   - Astronomical trails and the historic Papa Luna Palace Castle.
+*High-altitude extras:* Moncayo Natural Park Observatory (Lituénigo) and Gallocanta Lagoon.`,
+      fr: `🏛️ **Zones Certifiées Starlight à Saragosse (Aragon, Espagne)** ⭐
 
-2. **Sierra de Vicort (Starlight Tourist Destination since July 2025):**
-   - Mountain range in Calatayud integrating Sediles, El Frasno, Mara, Miedes, and Villalba Perejil.
-   - High summits exceeding 1,400m, featuring the **Pico del Rayo Viewpoint (1,427m)** with pristine Bortle 2 skies.
+1. **Comarca del Aranda (Destination Starlight depuis 2022) :** Réseau de 11 belvédères stellaires (Illueca, Purujosa, Calcena, Jarque, Tierga).
+2. **Sierra de Vicort (Destination Starlight 2025) :** Sommets à plus de 1 400 m dont le **Pico del Rayo (1 427 m)** en classe Bortle 2.
+3. **Ariza (Commune Starlight 2026) :** Belvédère du château et vallée du Jalón.
 
-3. **Ariza (Starlight Municipality since 2026):**
-   - Certified municipality with night-sky protected public lighting and panoramic castle ruin viewpoints.
+*Compléments :* Parc Naturel du Moncayo (Lituénigo) et Lagune de Gallocanta.`,
+      pt: `🏛️ **Zonas Certificadas Starlight em Saragoça (Aragão, Espanha)** ⭐
 
-*Complementary High-Sky Enclaves:*
-- **Moncayo Natural Park & Lituénigo:** Somontano slopes with the Moncayo Astronomical Observatory.
-- **Campo de Daroca & Gallocanta Lake:** "Daroca, mine of stars" project with unobstructed 360° horizons.`;
-    }
-    return `🏛️ **Zonas Certificadas Starlight en Zaragoza (Aragón, España)** ⭐
+1. **Comarca del Aranda (Destino Starlight desde 2022):** Rede com 11 miradouros estelares (Illueca, Purujosa, Calcena, Jarque, Tierga).
+2. **Sierra de Vicort (Destino Starlight 2025):** Cumes acima de 1.400 m incluindo o **Pico del Rayo (1.427 m)** em Bortle 2.
+3. **Ariza (Município Starlight 2026):** Miradouro do Castelo e vale do Jalón.
 
-En la provincia de Zaragoza existen **3 territorios certificados oficialmente por la Fundación Starlight**:
+*Extras:* Parque Natural do Moncayo e Lagoa de Gallocanta.`,
+      it: `🏛️ **Zone Certificate Starlight a Saragozza (Aragona, Spagna)** ⭐
 
-1. **Comarca del Aranda (Destino Turístico Starlight desde julio de 2022):**
-   - Red comarcal de **11 miradores estelares** protegidos en municipios como Illueca, Purujosa ("El Nido de Águilas"), Calcena, Jarque de Moncayo, Tierga, Pomer y Gotor.
-   - Cuenta con senderos astronómicos señalizados y el imponente Castillo Palacio del Papa Luna.
+1. **Comarca del Aranda (Destinazione Starlight dal 2022):** Rete di 11 punti panoramici (Illueca, Purujosa, Calcena, Jarque, Tierga).
+2. **Sierra de Vicort (Destinazione Starlight 2025):** Vette oltre 1.400 m con il **Pico del Rayo (1.427 m)** sotto cieli Bortle 2.
+3. **Ariza (Comune Starlight 2026):** Belvedere del Castello sulla valle del Jalón.
 
-2. **Sierra de Vicort (Destino Turístico Starlight desde julio de 2025):**
-   - Espacio de montaña en la comarca de Calatayud que integra municipios como Sediles, El Frasno, Mara, Miedes y Villalba Perejil.
-   - Cumbres que superan los 1.400 m con el **Mirador astronómico del Pico del Rayo (1.427 m)** y el Santuario de la Virgen de Vicor, con cielos oscuros de Bortle 2.
+*Extra:* Parco Naturale del Moncayo e Laguna di Gallocanta.`,
+      de: `🏛️ **Zertifizierte Starlight-Zonen in Saragossa (Aragonien, Spanien)** ⭐
 
-3. **Ariza (Municipio Starlight desde 2026):**
-   - Municipio acreditado oficialmente en la comarca de Calatayud con alumbrado de protección nocturna y mirador panorámico en las ruinas del Castillo de Ariza sobre el valle del río Jalón.
+1. **Comarca del Aranda (Starlight-Reiseziel seit 2022):** 11 Sternbeobachtungspunkte in Illueca, Purujosa, Calcena, Jarque und Tierga.
+2. **Sierra de Vicort (Starlight-Reiseziel seit 2025):** Aussichtspunkt *Pico del Rayo (1.427 m)* mit Bortle-2-Himmel.
+3. **Ariza (Starlight-Gemeinde 2026):** Burg-Aussichtspunkt im Jalón-Tal.
 
-*Enclaves complementarios de montaña en Zaragoza:*
-- **Parque Natural del Moncayo & Lituénigo:** Cumbre del Moncayo (2.314 m) y el Observatorio Astronómico del Moncayo.
-- **Campo de Daroca & Laguna de Gallocanta:** Proyecto "Daroca, mina de estrellas" con amplios horizontes despejados de 360°.`;
+*Zusätzlich:* Naturpark Moncayo (Lituénigo) und Lagune von Gallocanta.`,
+    });
   }
 
   // 2. GALICIA
-  if (q.includes('galicia') || q.includes('trevinca') || q.includes('cies') || q.includes('muras') || q.includes('finisterre') || q.includes('fisterra') || q.includes('costa da morte') || q.includes('ancares')) {
-    if (isGerman) {
-      return `🌊 **Zertifizierte Starlight-Zonen in Galicien (Spanien)** ⭐
+  if (
+    q.includes('galicia') ||
+    q.includes('galice') ||
+    q.includes('galiza') ||
+    q.includes('trevinca') ||
+    q.includes('cies') ||
+    q.includes('muras') ||
+    q.includes('finisterre') ||
+    q.includes('fisterra') ||
+    q.includes('costa da morte') ||
+    q.includes('ancares')
+  ) {
+    return pick(l, {
+      es: `🌊 **7 Zonas Certificadas Starlight en Galicia (España)** ⭐
 
-Galicien verfügt über **7 offiziell zertifizierte Starlight-Gebiete**:
-1. **Pena Trevinca - A Veiga (Ourense, 2015):** Erstes Starlight-Reiseziel Galiciens auf 2.127 m mit Observatorium & Planetarium.
-2. **Nationalpark Illas Atlánticas (Pontevedra/A Coruña, 2016):** Cíes- und Ons-Inseln mit ozeanischer Dunkelheit.
-3. **Muras - Serra do Xistral (Lugo, 2020):** Starlight-Gemeinde mit kristallklarem Himmel.
-4. **Costa da Morte (A Coruña, 2023):** Fisterra, Muxía und Carnota mit endlosem Westhorizont.
-5. **Mariñas Coruñesas e Terras do Mandeo (A Coruña, 2023):** Biosphärenreservat.
-6. **Lalín (Pontevedra, 2023):** Starlight-Gemeinde mit Observatorium do Castro.
-7. **Ancares Lucenses (Lugo, 2023):** Hochgebirgstal unter Bortle-1-Himmel.`;
-    }
-    if (isEnglish) {
-      return `🌊 **Certified Starlight Spaces in Galicia (Spain)** ⭐
+1. **Pena Trevinca - A Veiga (Ourense, 2015):** Cumbre a 2.127 m con Centro Astronómico y planetario.
+2. **Islas Atlánticas (Cíes & Ons):** Oscuridad oceánica pura frente al Atlántico.
+3. **Muras - Serra do Xistral (Lugo):** Cielos limpios sin contaminación lumínica.
+4. **Costa da Morte (Fisterra, Muxía, Carnota):** Horizonte oeste oceánico infinito.
+5. **Mariñas Coruñesas · 6. Lalín (O. do Castro) · 7. Ancares Lucenses (Bortle 1).**`,
+      en: `🌊 **7 Certified Starlight Spaces in Galicia (Spain)** ⭐
 
-Galicia is an international dark-sky reference with **7 official territories certified by the Starlight Foundation**:
+1. **Pena Trevinca - A Veiga (2,127m):** Galicia's highest peak with observatory & planetarium.
+2. **Atlantic Islands National Park (Cíes & Ons):** Pure oceanic darkness under the Milky Way.
+3. **Muras - Serra do Xistral (Lugo):** Mountain peat bogs with pristine dark skies.
+4. **Costa da Morte (Finisterre, Muxía):** Unobstructed Atlantic western horizon.
+5. **Mariñas Coruñesas · 6. Lalín Observatory · 7. Ancares Lucenses (Bortle 1).**`,
+      fr: `🌊 **7 Territoires Certifiés Starlight en Galice (Espagne)** ⭐
 
-1. **Pena Trevinca - A Veiga (Ourense - Certified 2015):** The first Starlight Destination in Galicia. Highest peak in the region (2,127m) hosting the Trevinca Astronomical Center with observatory and planetarium.
-2. **Atlantic Islands National Park (Pontevedra / A Coruña - Certified 2016):** Cíes Islands, Ons, Sálvora, and Cortegada with ocean-dark skies and Milky Way arching over the sea.
-3. **Muras - Serra do Xistral (Lugo - Certified 2020):** Starlight town with high peat bogs and zero light pollution.
-4. **Costa da Morte (A Coruña - Certified 2023):** Cape Finisterre, Muxía, Carnota, and Camariñas with infinite western horizons.
-5. **Mariñas Coruñesas e Terras do Mandeo (A Coruña - Certified 2023):** Biosphere Reserve & Starlight Destination.
-6. **Lalín - Deza (Pontevedra - Certified 2023):** Starlight Municipality with the Lalín Astronomical Observatory.
-7. **Ancares Lucenses, Cervantes & Navia (Lugo - Certified 2023):** Glacial valleys and ancient mountain pallozas under pure Bortle 1 skies.`;
-    }
-    return `🌊 **Zonas Certificadas Starlight en Galicia (España)** ⭐
+1. **Pena Trevinca - A Veiga (2 127 m) :** Plus haut sommet de Galice avec observatoire et planétarium.
+2. **Îles Atlantiques (Cíes & Ons) :** Obscurité océanique pure face à l'Atlantique.
+3. **Muras - Serra do Xistral (Lugo) :** Hautes landes sans pollution lumineuse.
+4. **Costa da Morte (Finisterre, Muxía) :** Horizon ouest dégagé sur l'océan.
+5. **Mariñas Coruñesas · 6. Lalín · 7. Ancares Lucenses (Bortle 1).**`,
+      pt: `🌊 **7 Destinos Certificados Starlight na Galiza (Espanha)** ⭐
 
-Galicia cuenta con **7 espacios certificados oficialmente por la Fundación Starlight**:
+1. **Pena Trevinca - A Veiga (2.127 m):** Pico mais alto com centro astronómico e planetário.
+2. **Parque Nacional das Ilhas Atlânticas (Cíes e Ons):** Escuridão oceânica pura.
+3. **Muras - Serra do Xistral (Lugo):** Céus límpidos livres de poluição luminosa.
+4. **Costa da Morte (Fisterra, Muxía):** Horizonte oeste aberto sobre o Atlântico.
+5. **Mariñas Coruñesas · 6. Lalín · 7. Ancares Lucenses (Bortle 1).**`,
+      it: `🌊 **7 Spazi Certificati Starlight in Galizia (Spagna)** ⭐
 
-1. **Pena Trevinca - A Veiga (Ourense - Certificado en 2015):**
-   - El primer Destino Turístico Starlight de Galicia. Enclavado en el Macizo de Trevinca con el pico más alto de Galicia (2.127 m), alberga el Centro Astronómico de Trevinca con planetario y cúpula.
-2. **Parque Nacional das Illas Atlánticas (Pontevedra / A Coruña - Certificado en 2016):**
-   - Archipiélagos de las **Islas Cíes, Isla de Ons, Sálvora y Cortegada**. Oscuridad oceánica pura, Vía Láctea sobre el mar y rutas nocturnas guiadas con astrónomos.
-3. **Muras - Serra do Xistral (Lugo - Certificado en 2020):**
-   - Municipio Starlight en el norte montañoso de Lugo, con los miradores astronómicos de Campo da Feira y O Cristo.
-4. **Costa da Morte (A Coruña - Certificado en 2023):**
-   - Extremo occidental continental (Fisterra, Muxía, Carnota y Camariñas) con horizonte oeste de oscuridad oceánica infinita sobre el Atlántico.
-5. **Mariñas Coruñesas e Terras do Mandeo (A Coruña - Certificado en 2023):**
-   - Reserva de la Biosfera Starlight que protege los valles y montes de Curtis, Sobrado y Aranga.
-6. **Lalín - Deza (Pontevedra - Certificado en 2023):**
-   - Municipio Starlight con el Observatorio Astronómico de Lalín en el Castro Tecnológico y miradores en la Serra do Candán.
-7. **Ancares Lucenses, Cervantes y Navia (Lugo - Certificado en 2023):**
-   - Reserva de la Biosfera en alta montaña con valles glaciares y pallozas milenarias bajo una cúpula estelar Bortle 1.`;
+1. **Pena Trevinca - A Veiga (2.127 m):** Vetta più alta con osservatorio e planetario.
+2. **Isole Atlantiche (Cíes e Ons):** Oscurità oceanica pura sull'Atlantico.
+3. **Muras - Serra do Xistral (Lugo):** Altopiani privi di inquinamento luminoso.
+4. **Costa da Morte (Finisterre, Muxía):** Orizzonte ovest infinito sul mare.
+5. **Mariñas Coruñesas · 6. Lalín · 7. Ancares Lucenses (Bortle 1).**`,
+      de: `🌊 **7 Zertifizierte Starlight-Zonen in Galicien (Spanien)** ⭐
+
+1. **Pena Trevinca - A Veiga (2.127 m):** Höchster Gipfel Galiciens mit Observatorium & Planetarium.
+2. **Atlantische Inseln (Cíes & Ons):** Ozeanische Dunkelheit unter der Milchstraße.
+3. **Muras - Serra do Xistral (Lugo):** Klarer Hochlandhimmel ohne Lichtsmog.
+4. **Costa da Morte (Finisterre, Muxía):** Freier Westhorizont am Atlantik.
+5. **Mariñas Coruñesas · 6. Lalín · 7. Ancares Lucenses (Bortle 1).**`,
+    });
   }
 
   // 3. ECLIPSES (2026 / 2027)
-  if (q.includes('eclipse') || q.includes('2026') || q.includes('2027') || q.includes('solar') || q.includes('finsternis')) {
-    if (isGerman) {
-      return `✨ **Leitfaden zu den großen totalen Sonnenfinsternissen in Spanien** 🌑
+  if (
+    q.includes('eclipse') ||
+    q.includes('ecliss') ||
+    q.includes('finsternis') ||
+    q.includes('2026') ||
+    q.includes('2027') ||
+    q.includes('solar') ||
+    q.includes('soleil') ||
+    q.includes('solare') ||
+    q.includes('sonne')
+  ) {
+    return pick(l, {
+      es: `✨ **Guía de los Grandes Eclipses Solares Totales en España** 🌑
 
-1. **12. August 2026 (Große totale Sonnenfinsternis):**
-   - **Totalitätszone:** Galicien, Asturien, Kastilien und León, Aragón (Saragossa, Teruel), Castellón (Maestrat/Penyagolosa) und Balearen.
-   - **Uhrzeit:** Später Nachmittag (~19:30 - 20:30 Uhr MESZ), Sonne steht ca. 10°-12° über dem Westhorizont.
-   - **Augenschutz:** Verwende unbedingt eine nach **ISO 12312-2** zertifizierte Sonnenfinsternisbrille während aller partiellen Phasen.
+1. **12 de Agosto de 2026:** Cruza Galicia, Aragón (Zaragoza/Teruel), Castellón y Baleares al atardecer (~19:30–20:30 CEST, 10°–12° sobre el oeste).
+2. **2 de Agosto de 2027 (Eclipse del Siglo):** Sur de Andalucía (**Tarifa, Cádiz, Málaga, Gibraltar, Ceuta**) con hasta **4m 30s – 6m 23s** de totalidad al mediodía.
+- **Seguridad obligatoria:** Usa gafas homologadas **ISO 12312-2** durante todas las fases parciales.`,
+      en: `✨ **Guide to the Great Total Solar Eclipses in Spain** 🌑
 
-2. **2. August 2027 (Das Jahrhundert-Eclipse):**
-   - **Totalitätszone:** Südspanien / Andalusien (Cádiz, Tarifa, Málaga, Granada, Almería).
-   - **Dauer:** Über **4 Minuten und 30 Sekunden** totale Verfinsterung zur Mittagszeit!`;
-    }
-    if (isEnglish) {
-      return `✨ **Guide to the Great Total Solar Eclipses in Spain** 🌑
+1. **August 12, 2026:** Path across Galicia, Aragon (Zaragoza/Teruel), Castellón and Balearics near sunset (~19:30–20:30 CEST, 10°–12° West).
+2. **August 2, 2027 (Eclipse of the Century):** Southern Andalusia (**Tarifa, Cadiz, Malaga, Gibraltar, Ceuta**) offering **4.5 to 6+ minutes** of midday totality!
+- **Mandatory Eye Safety:** Always wear **ISO 12312-2** certified solar glasses during every partial phase.`,
+      fr: `✨ **Guide des Grandes Éclipses Solaires Totales en Espagne** 🌑
 
-1. **August 12, 2026 — The Great Iberian Total Solar Eclipse:**
-   - **Totality Path:** Crosses Galicia, Asturias, Castile & León, Aragon (Zaragoza, Teruel), northern Castellón (Maestrat & Penyagolosa), and the Balearic Islands.
-   - **Timing:** Late afternoon (~19:30 to 20:30 CEST), with the Sun 10°–12° above the western horizon.
-   - **Safety:** You MUST use certified **ISO 12312-2** eclipse glasses during all partial phases. Remove glasses only during totality (~1m 45s).
+1. **12 Août 2026 :** Traverse la Galice, l'Aragon (Saragosse/Teruel), Castellón et les Baléares au coucher du soleil (~19h30–20h30 CEST).
+2. **2 Août 2027 (Éclipse du Siècle) :** Sud de l'Andalousie (**Tarifa, Cadix, Málaga, Gibraltar, Ceuta**) avec plus de **4m 30s** de totalité en plein midi !
+- **Sécurité :** Portez impérativement des lunettes certifiées **ISO 12312-2** pendant toutes les phases partielles.`,
+      pt: `✨ **Guia dos Grandes Eclipses Solares Totais em Espanha** 🌑
 
-2. **August 2, 2027 — Eclipse of the Century:**
-   - **Totality Path:** Southern Spain (Andalusia: Cádiz, Tarifa, Málaga, Granada, Almería) and North Africa.
-   - **Duration:** Over **4 minutes and 30 seconds** of daytime darkness at solar noon!`;
-    }
-    return `✨ **Guía de los Grandes Eclipses Solares Totales en España** 🌑
+1. **12 de Agosto de 2026:** Atravessa Galiza, Aragão (Saragoça/Teruel), Castellón e Baleares ao entardecer (~19h30–20h30 CEST).
+2. **2 de Agosto de 2027 (Eclipse do Século):** Sul da Andaluzia (**Tarifa, Cádis, Málaga, Gibraltar, Ceuta**) com mais de **4m 30s** de totalidade ao meio-dia!
+- **Segurança Obrigatória:** Use sempre óculos homologados **ISO 12312-2** em todas as fases parciais.`,
+      it: `✨ **Guida alle Grandi Eclissi Solari Totali in Spagna** 🌑
 
-1. **Gran Eclipse Solar Total — 12 de Agosto de 2026:**
-   - **Franja de Totalidad:** Cruza Galicia, Asturias, Cantabria, Castilla y León, Aragón (Zaragoza, Teruel), interior y costa norte de Castellón (Maestrat / Penyagolosa) y las Islas Baleares.
-   - **Horario:** Ocurrirá a última hora de la tarde (~19:30 a 20:30h CEST), con el Sol a baja elevación (unos 10°-12° sobre el horizonte oeste).
-   - **Seguridad:** Usa gafas con filtro certificado **ISO 12312-2** o lámina Baader AstroSolar durante todas las fases parciales. Solo se retiran durante los ~1m45s de totalidad.
+1. **12 Agosto 2026:** Attraversa Galizia, Aragona (Saragozza/Teruel), Castellón e Baleari al tramonto (~19:30–20:30 CEST).
+2. **2 Agosto 2027 (Eclissi del Secolo):** Andalusia meridionale (**Tarifa, Cadice, Malaga, Gibilterra, Ceuta**) con oltre **4m 30s** di totalità a mezzogiorno!
+- **Sicurezza:** Indossa sempre occhiali certificati **ISO 12312-2** durante le fasi parziali.`,
+      de: `✨ **Leitfaden zu den Totalen Sonnenfinsternissen 2026 & 2027** 🌑
 
-2. **Gran Eclipse del Siglo — 2 de Agosto de 2027:**
-   - **Franja de Totalidad:** Sur de Andalucía (Cádiz, Tarifa, Málaga, costa de Granada y Almería) y norte de África.
-   - **Duración:** ¡Más de **4 minutos y 30 segundos** de oscuridad absoluta a pleno mediodía!
-
-¿Deseas coordenadas de miradores despejados al oeste o ajustes de cámara para fotografiar la corona?`;
+1. **12. August 2026:** Totalität über Galicien, Aragonien (Saragossa/Teruel), Castellón und Balearen am späten Nachmittag (~19:30–20:30 MESZ).
+2. **2. August 2027 (Jahrhundert-Finsternis):** Südspanien / Andalusien (**Tarifa, Cádiz, Málaga, Gibraltar, Ceuta**) mit über **4 Min. 30 Sek.** Totalität am Mittag!
+- **Augenschutz:** Während aller partiellen Phasen zwingend **ISO 12312-2** zertifizierte Brillen tragen.`,
+    });
   }
 
   // 4. TELESCOPIOS & EQUIPO
-  if (q.includes('telescop') || q.includes('comprar') || q.includes('equipo') || q.includes('ocular') || q.includes('apertura') || q.includes('dobson') || q.includes('refractor') || q.includes('maksutov')) {
-    if (isGerman) {
-      return `🔭 **StellaWays Teleskop- und Optik-Empfehlungen**:
+  if (
+    q.includes('telescop') ||
+    q.includes('prismatic') ||
+    q.includes('binocular') ||
+    q.includes('jumell') ||
+    q.includes('fernglas') ||
+    q.includes('comprar') ||
+    q.includes('equipo') ||
+    q.includes('ocular') ||
+    q.includes('dobson') ||
+    q.includes('refractor') ||
+    q.includes('maksutov')
+  ) {
+    return pick(l, {
+      es: `🔭 **Recomendaciones de Telescopios y Óptica StellaWay**:
 
-1. **Beste Wahl für Einsteiger & visuelle Beobachtung (Große Öffnung):**
-   - **Dobson 150mm oder 200mm (6" oder 8")** (z. B. *Sky-Watcher Classic 200P*). Größte Lichtsammelleistung pro Euro für Mondkrater, Saturnringe, Jupiterbänder und Galaxien unter Bortle 2–4.
-2. **Kompakt & für Planeten/Reisen:**
-   - **Maksutov-Cassegrain 90mm bis 127mm** auf azimutaler Montierung. Keine chromatische Aberration.
-3. **Für Deep-Sky-Astrofotografie:**
-   - **Apochromatischer ED-Refraktor (70–80mm f/6)** auf parallaktischer GoTo-Montierung (*HEQ5 Pro* oder *Star Adventurer GTi*).
-4. **Wichtiges Zubehör:** 2x achromatische Barlow-Linse, 32mm Plössl-Okular für Weitfeld und Rotlichtlampe.`;
-    }
-    if (isEnglish) {
-      return `🔭 **StellaWay's Telescope & Optics Buying Guide**:
+1. **Iniciación y Cielo Profundo:** **Dobson 150mm o 200mm (6"–8")** (*Sky-Watcher 200P*) — máxima apertura y luz por euro.
+2. **Portátil y Planetaria:** **Maksutov-Cassegrain 90–127mm** (*Skymax 127*) — compacto y nítido para Luna, Júpiter y Saturno.
+3. **Astrofotografía:** **Refractor ED/APO 70–80mm f/6** sobre montura ecuatorial motorizada (*HEQ5 Pro* o *Star Adventurer GTi*).
+4. **Prismáticos:** **10x50** con prisma BAK-4 para empezar de forma inmediata.`,
+      en: `🔭 **StellaWay Telescope & Optics Guide**:
 
-1. **Best for Beginners / Visual Astronomy (Maximum Aperture):**
-   - **Dobsonian 150mm or 200mm (6" or 8")** (e.g. *Sky-Watcher Classic 200P*). Offers the most light-gathering power per dollar, revealing Saturn's rings, Jupiter's Great Red Spot, and Messier deep-sky objects.
-2. **Best for Portability & Lunar/Planetary observing:**
-   - **Maksutov-Cassegrain 90mm to 127mm** (e.g. *Skymax 102/127*). Ultra-compact optical tube, razor-sharp on planets.
-3. **Best for Deep-Sky Astrophotography:**
-   - **ED / APO Refractor (70–80mm f/6)** on a motorized equatorial mount (e.g. *Sky-Watcher Star Adventurer GTi* or *HEQ5 Pro*).
-4. **Essential Accessories:** 2x Barlow lens, a 32mm Plössl wide-field eyepiece, and a red headlamp for dark adaptation.`;
-    }
-    return `🔭 **Recomendaciones de Telescopios por StellaWay**:
+1. **Best Value Visual & Deep-Sky:** **150mm or 200mm Dobsonian (6"–8")** — maximum aperture per dollar for nebulae, galaxies, and planets.
+2. **Portable Planetary Observing:** **90–127mm Maksutov-Cassegrain** — compact, razor-sharp contrast on Moon, Jupiter & Saturn.
+3. **Astrophotography:** **70–80mm f/6 ED/APO Refractor** on a tracking equatorial mount (*HEQ5 Pro* / *Star Adventurer GTi*).
+4. **Binoculars:** **10x50 BAK-4** are ideal for wide-field stargazing.`,
+      fr: `🔭 **Guide Télescopes & Optique StellaWay** :
 
-1. **Mejor opción para iniciación y observación visual (Gran Apertura):**
-   - **Telescopio Dobson de 150mm o 200mm (6" u 8")** (ej. *Sky-Watcher Skyliner 200P* o *GSO Deluxe*).
-   - *Por qué:* Ofrece la mayor captación de luz por euro invertido. Permite resolver cúmulos globulares (M13), detalles en Júpiter, los anillos de Saturno y nebulosas (Orión M42) con claridad inigualable en cielos Bortle 2-4.
+1. **Ciel profond & visuel :** **Dobson 150 ou 200 mm (6"–8")** — le meilleur diamètre par euro.
+2. **Compact & planétaire :** **Maksutov-Cassegrain 90–127 mm** — très piqué sur la Lune, Jupiter et Saturne.
+3. **Astrophotographie :** **Lunette ED/APO 70–80 mm f/6** sur monture équatoriale motorisée (*HEQ5 Pro* / *Star Adventurer GTi*).
+4. **Jumelles :** **10x50** à prismes BAK-4 pour débuter facilement.`,
+      pt: `🔭 **Guia de Telescópios e Ótica StellaWay**:
 
-2. **Mejor para portabilidad y observación planetaria / urbana:**
-   - **Maksutov-Cassegrain de 90mm a 127mm** (ej. *Sky-Watcher Skymax 102/127*).
-   - *Por qué:* Tubo óptico ultra compacto, sin aberración cromática y fácil de transportar en mochila de senderismo.
+1. **Iniciação e Céu Profundo:** **Dobson 150mm ou 200mm (6"–8")** — máxima abertura por euro.
+2. **Portátil e Planetária:** **Maksutov-Cassegrain 90–127mm** — nítido para Lua, Júpiter e Saturno.
+3. **Astrofotografia:** **Refrator ED/APO 70–80mm f/6** com montagem equatorial motorizada.
+4. **Binóculos:** **10x50 BAK-4** para campos largos e Via Láctea.`,
+      it: `🔭 **Guida Telescopi & Ottiche StellaWay**:
 
-3. **Mejor para Astrofotografía de Cielo Profundo:**
-   - **Refractor Apocromático (ED Triplete o Doblete 70-80mm f/6)** montado sobre una base ecuatorial motorizada (ej. *Sky-Watcher HEQ5 Pro* o montura ligera *Star Adventurer GTi*).
+1. **Visuale & Profondo Cielo:** **Dobson 150 o 200 mm (6"–8")** — massima apertura al miglior prezzo.
+2. **Portatile & Pianeti:** **Maksutov-Cassegrain 90–127 mm** — nitido per Luna, Giove e Saturno.
+3. **Astrofotografia:** **Rifrattore ED/APO 70–80 mm f/6** su montatura equatoriale motorizzata.
+4. **Binocoli:** **10x50 BAK-4** ideali per iniziare subito.`,
+      de: `🔭 **StellaWay Teleskop- & Optik-Empfehlungen**:
 
-4. **Accesorios Indispensables:**
-   - Ocular gran angular (24mm o 32mm) para localizar objetos débiles.
-   - Lente Barlow 2x acromática para duplicar aumentos en planetaria.
-   - Luz roja de preservación de visión nocturna (para no deslumbrar la retina).
-
-¿Tienes algún presupuesto estimado o prefieres visualización vs astrofotografía?`;
+1. **Einstieg & Deep-Sky:** **Dobson 150mm oder 200mm (6"–8")** — größte Öffnung pro Euro.
+2. **Kompakt & Planeten:** **Maksutov-Cassegrain 90–127mm** — gestochen scharf für Mond, Jupiter & Saturn.
+3. **Astrofotografie:** **ED/APO-Refraktor 70–80mm f/6** auf parallaktischer Montierung (*HEQ5 Pro* / *Star Adventurer GTi*).
+4. **Fernglas:** **10x50 BAK-4** für weite Sternfelder.`,
+    });
   }
 
   // 5. ASTROFOTOGRAFÍA
-  if (q.includes('astrofotograf') || q.includes('camara') || q.includes('via lactea') || q.includes('milky way') || q.includes('foto') || q.includes('sensor') || q.includes('apilado') || q.includes('siril')) {
-    if (isGerman) {
-      return `📸 **Astrofotografie-Kurztipps für die Milchstraße**:
+  if (
+    q.includes('astrofot') ||
+    q.includes('astrophoto') ||
+    q.includes('camara') ||
+    q.includes('camera') ||
+    q.includes('movil') ||
+    q.includes('smartphone') ||
+    q.includes('handy') ||
+    q.includes('via lactea') ||
+    q.includes('voie lactee') ||
+    q.includes('via lattea') ||
+    q.includes('milchstrass') ||
+    q.includes('milky way') ||
+    q.includes('foto') ||
+    q.includes('photo')
+  ) {
+    return pick(l, {
+      es: `📸 **Astrofotografía de la Vía Láctea (Cámara y Móvil)**:
 
-1. **Objektiv:** Lichtstarkes Weitwinkel (14mm bis 24mm) mit Offenblende (**f/1.4, f/1.8 oder f/2.8**).
-2. **Belichtungszeit (NPF-Regel):** Ca. 10 bis 15 Sekunden bei 24mm Vollformat, um punktförmige Sterne zu behalten.
-3. **ISO-Wert:** Zwischen **ISO 3200 und 6400**.
-4. **Manueller Fokus (MF):** 10x Digitalzoom im Live-View auf einen hellen Stern (z. B. Wega), bis er nadelspitz klein ist.
-5. **Stacking:** Im **RAW-Format** aufnehmen und 10–15 Bilder in *Siril* oder *Sequator* stacken, um das Sensorrauschen zu eliminieren.`;
-    }
-    if (isEnglish) {
-      return `📸 **Milky Way & Night Landscape Photography Guide**:
+1. **Lente / Modo Pro:** Gran angular (14–24mm) a **f/1.4 – f/2.8**. En móvil activa Modo Pro/Noche sobre trípode.
+2. **Exposición:** **10 a 15 s** (regla NPF) para estrellas puntuales sin trazos.
+3. **ISO:** **3200 – 6400** (en móviles, ISO 1600–3200).
+4. **Enfoque Manual (MF):** Zoom x10 a una estrella brillante (Vega/Sirio) hasta dejarla puntual y dispara siempre en **RAW** (apila 10–15 tomas en *Siril* o *Sequator*).`,
+      en: `📸 **Milky Way & Smartphone Astrophotography Guide**:
 
-1. **Lens:** Ultra-wide angle (14mm to 24mm) with fast aperture (**f/1.8 or f/2.8**).
-2. **Exposure Time (NPF Rule):** Around 10–15s on 24mm full frame to keep stars as sharp pinpoints without trailing.
-3. **ISO Setting:** Between **ISO 3200 and 6400** (depending on sensor ISO invariance).
-4. **Pinpoint Focus:** Switch to Manual Focus (MF), 10x digital zoom in Live View on a bright star (e.g. Vega), and adjust until it's as small as possible.
-5. **Post-Processing:** Shoot strictly in **RAW**, capture 10–20 consecutive frames, and stack them in free software like *Siril* or *Sequator* to eliminate digital noise.`;
-    }
-    return `📸 **Guía Experta para Astrofotografía de la Vía Láctea**:
+1. **Lens / Pro Mode:** Fast wide-angle (14–24mm) at **f/1.4 – f/2.8**. On phones, mount on a tripod and enable Pro/RAW mode.
+2. **Shutter Speed:** **10–15 seconds** (NPF rule) to avoid star trails.
+3. **ISO:** **3200 – 6400** (or 1600–3200 on phones).
+4. **Manual Focus:** Magnify 10x in Live View on a bright star (Vega/Sirius), shoot in **RAW**, and stack 10–20 frames in *Siril* or *Sequator*.`,
+      fr: `📸 **Guide Astrophotographie Voie Lactée (Appareil & Mobile)** :
 
-1. **Objetivo Recomendado:** Gran angular luminoso (14mm a 24mm) con apertura amplia (**f/1.4, f/1.8 o f/2.8**).
-2. **Tiempo de Exposición (Regla NPF):**
-   - Para un objetivo de 24mm en sensor Full Frame: entre 10 y 15 segundos para evitar que las estrellas salgan como trazos.
-3. **Sensibilidad ISO:** Entre **ISO 3200 y 6400** (busca el punto de invariancia ISO de tu sensor).
-4. **Enfoque Preciso:**
-   - Desactiva el autoenfoque (pasa a Enfoque Manual - MF).
-   - Haz zoom digital x10 en la pantalla LCD apuntando a una estrella brillante (como Vega o Sirio) y gira el anillo milimétricamente hasta que sea un punto minúsculo.
-5. **Procesado y Apilado:**
-   - Dispara siempre en formato **RAW**.
-   - Haz entre 10 y 20 tomas consecutivas y apílalas con software gratuito como *Sequator* (Windows) o *Siril* (Mac/Linux) para eliminar el ruido térmico del sensor.`;
+1. **Objectif / Mode Pro :** Grand angle lumineux (14–24 mm, **f/1.4 – f/2.8**) sur trépied.
+2. **Exposition :** **10 à 15 s** (règle NPF) pour des étoiles bien ponctuelles.
+3. **ISO :** **3200 – 6400** (1600–3200 sur smartphone).
+4. **Mise au point manuelle :** Zoom x10 sur une étoile brillante (Véga) et prise de vue en **RAW** puis empilement sous *Siril* ou *Sequator*.`,
+      pt: `📸 **Guia de Astrofotografia da Via Láctea (Câmara e Telemóvel)**:
+
+1. **Objetiva / Modo Pro:** Grande angular (14–24mm, **f/1.4 – f/2.8**) em tripé firme.
+2. **Exposição:** **10 a 15 s** (regra NPF) para estrelas sem arrasto.
+3. **ISO:** **3200 – 6400** (1600–3200 em telemóveis).
+4. **Foco Manual:** Zoom x10 numa estrela brilhante, fotografe em **RAW** e empilhe 10–20 fotos no *Siril* ou *Sequator*.`,
+      it: `📸 **Guida Astrofotografia Via Lattea (Fotocamera & Smartphone)**:
+
+1. **Obiettivo / Modalità Pro:** Grandangolo luminoso (14–24 mm, **f/1.4 – f/2.8**) su treppiede.
+2. **Esposizione:** **10–15 secondi** (regola NPF) per stelle puntiformi.
+3. **ISO:** **3200 – 6400** (1600–3200 su smartphone).
+4. **Fuoco Manuale:** Zoom 10x su una stella luminosa, scatta in **RAW** e somma 10–20 scatti in *Siril* o *Sequator*.`,
+      de: `📸 **Milchstraßen- & Smartphone-Astrofotografie**:
+
+1. **Objektiv / Pro-Modus:** Lichtstarkes Weitwinkel (14–24mm, **f/1.4 – f/2.8**) auf stabilem Stativ.
+2. **Belichtung:** **10–15 Sek.** (NPF-Regel) für punktförmige Sterne.
+3. **ISO:** **3200 – 6400** (Smartphone 1600–3200).
+4. **Manueller Fokus:** 10x Zoom auf einen hellen Stern (Wega), im **RAW-Format** fotografieren und in *Siril* oder *Sequator* stacken.`,
+    });
   }
 
   // 6. CANARIAS
-  if (q.includes('canarias') || q.includes('palma') || q.includes('teide') || q.includes('tenerife') || q.includes('muchachos') || q.includes('fuerteventura') || q.includes('gran canaria') || q.includes('sicasumbre') || q.includes('risco caido')) {
-    return `✨ **Astroturismo en las Islas Canarias (Cielos Starlight de Nivel Mundial)** 🇮🇨
-
-Canarias alberga una de las ventanas astronómicas más limpias del planeta gracias a la **Ley del Cielo** (Ley 31/1988) y la capa de inversión térmica provocada por los vientos alisios:
-
-1. **La Palma — Reserva Starlight y Roque de los Muchachos (2.426 m):**
-   - Sede del Gran Telescopio Canarias (GTC, 10.4 m) y observatorios de astrofísica de altas energías MAGIC y CTA.
-   - SQM > 21.90 mag/arcsec² y más de 300 noches despejadas al año.
-2. **Tenerife — Parque Nacional del Teide:**
-   - Destino Turístico Starlight por encima del mar de nubes (2.000 - 2.400 m) y el Observatorio del Teide en Izaña.
-3. **Fuerteventura — Reserva Starlight completa:**
-   - Cielos desérticos oceánicos de Bortle 1. Destaca el **Mirador Astronómico de Sicasumbre** (equipado con relojes de sol y nocturnos y soportes para telescopios), Morro Velosa y la península de Jandía.
-4. **Cumbres de Gran Canaria & Risco Caído:**
-   - Destino Turístico Starlight donde la arqueoastronomía aborigen (Patrimonio Mundial UNESCO) se une con la cumbre del Pico de las Nieves (1.949 m) y la Degollada de las Palomas.`;
+  if (
+    q.includes('canarias') ||
+    q.includes('canary') ||
+    q.includes('canaries') ||
+    q.includes('kanar') ||
+    q.includes('palma') ||
+    q.includes('teide') ||
+    q.includes('tenerife') ||
+    q.includes('muchachos') ||
+    q.includes('fuerteventura') ||
+    q.includes('gran canaria')
+  ) {
+    return pick(l, {
+      es: `✨ **Islas Canarias — Cielos Starlight de Nivel Mundial** 🇮🇨
+Protegidas por la Ley del Cielo: **Roque de los Muchachos** (La Palma, 2.426 m, GTC 10.4 m, SQM >21.9), **Parque Nacional del Teide** (Tenerife), **Fuerteventura** (Mirador de Sicasumbre, Bortle 1) y **Gran Canaria / Risco Caído**.`,
+      en: `✨ **Canary Islands — World-Class Starlight Skies** 🇮🇨
+Protected under the Sky Law: **Roque de los Muchachos** (La Palma, 2,426m, SQM >21.9), **Teide National Park** (Tenerife), **Fuerteventura** (Sicasumbre Viewpoint, Bortle 1), and **Gran Canaria / Risco Caído**.`,
+      fr: `✨ **Îles Canaries — Ciels Starlight de Classe Mondiale** 🇮🇨
+Protégées par la Loi du Ciel : **Roque de los Muchachos** (La Palma, 2 426 m, SQM >21,9), **Parc du Teide** (Tenerife), **Fuerteventura** (Sicasumbre, Bortle 1) et **Grande Canarie / Risco Caído**.`,
+      pt: `✨ **Ilhas Canárias — Céus Starlight de Classe Mundial** 🇮🇨
+Protegidas pela Lei do Céu: **Roque de los Muchachos** (La Palma, 2.426 m, SQM >21.9), **Parque Nacional do Teide** (Tenerife), **Fuerteventura** (Sicasumbre, Bortle 1) e **Gran Canaria**.`,
+      it: `✨ **Isole Canarie — Cieli Starlight di Livello Mondiale** 🇮🇨
+Protette dalla Legge del Cielo: **Roque de los Muchachos** (La Palma, 2.426 m, SQM >21.9), **Parco del Teide** (Tenerife), **Fuerteventura** (Sicasumbre, Bortle 1) e **Gran Canaria**.`,
+      de: `✨ **Kanarische Inseln — Starlight-Himmel der Weltklasse** 🇮🇨
+Durch das Himmelsgesetz geschützt: **Roque de los Muchachos** (La Palma, 2.426 m, SQM >21,9), **Teide-Nationalpark** (Teneriffa), **Fuerteventura** (Sicasumbre, Bortle 1) & **Gran Canaria**.`,
+    });
   }
 
-  // 6b. ISLAS BALEARES (MENORCA)
-  if (q.includes('menorca') || q.includes('baleares') || q.includes('toro') || q.includes('cavalleria')) {
-    return `🏝️ **Reserva y Destino Turístico Starlight Isla de Menorca** ⭐
-
-Toda la isla de Menorca está certificada por la Fundación Starlight desde enero de 2019:
-- **Monte Toro (358 m):** Cima central con visión panorámica de 360° sobre toda la isla y horizonte marino sin obstáculos.
-- **Faros Históricos:** Faro de Cavalleria y Faro de Punta Nati, en los acantilados de la costa norte, con horizonte marino de altísima oscuridad.
-- **Parque Natural s'Albufera des Grau y Cala Pregonda:** Cielos protegidos y acústica natural nocturna perfecta.
-- Menorca cuenta con una red de alojamientos rurales Starlight y empresas de divulgación astronómica con telescopios en calas vírgenes.`;
+  // 6b. MENORCA / BALEARES
+  if (q.includes('menorca') || q.includes('minorca') || q.includes('minorque') || q.includes('baleares') || q.includes('balearic')) {
+    return pick(l, {
+      es: `🏝️ **Reserva Starlight Isla de Menorca** — Toda la isla está certificada desde 2019. Destacan **Monte Toro (358 m)**, **Faro de Cavalleria**, **Punta Nati** y **s'Albufera des Grau**.`,
+      en: `🏝️ **Menorca Starlight Reserve & Destination** — Certified island-wide since 2019. Highlights: **Monte Toro (358m)**, **Cavalleria Lighthouse**, **Punta Nati**, and **s'Albufera des Grau**.`,
+      fr: `🏝️ **Réserve Starlight de Minorque** — Toute l'île est certifiée depuis 2019 : **Monte Toro (358 m)**, **Phare de Cavalleria**, **Punta Nati** et **s'Albufera des Grau**.`,
+      pt: `🏝️ **Reserva Starlight Ilha de Menorca** — Toda a ilha certificada desde 2019: **Monte Toro (358 m)**, **Farol de Cavalleria**, **Punta Nati** e **s'Albufera des Grau**.`,
+      it: `🏝️ **Riserva Starlight Isola di Minorca** — Certificata dal 2019: **Monte Toro (358 m)**, **Faro di Cavalleria**, **Punta Nati** e **s'Albufera des Grau**.`,
+      de: `🏝️ **Starlight-Reservat Menorca** — Seit 2019 inselweit zertifiziert: **Monte Toro (358 m)**, **Leuchtturm Cavalleria**, **Punta Nati** & **s'Albufera des Grau**.`,
+    });
   }
 
-  // 6c. NAVARRA (VALLE DE RONCAL)
-  if (q.includes('roncal') || q.includes('navarra') || q.includes('belagua') || q.includes('isaba') || q.includes('larra')) {
-    return `🏔️ **Destino Turístico Starlight Valle de Roncal (Navarra)** ⭐
-
-El Valle de Roncal, en el Pirineo navarro oriental, es el primer Destino Starlight de Navarra:
-- **Macizo de Larra y Rincón de Belagua:** Alta montaña pirenaica kárstica a más de 1.400 m de altitud con aire finísimo y Bortle 2.
-- **Centro de Montaña Larra-Belagua y Mata de Haya:** Puntos de observación acondicionados para telescopios y astrofotografía.
-- **Municipios del Valle:** Isaba, Uztárroz, Roncal, Burgui, Garde, Urzainqui y Vidángoz, todos comprometidos con la protección de la noche pirenaica.`;
+  // 6c. NAVARRA (RONCAL)
+  if (q.includes('roncal') || q.includes('navarra') || q.includes('navarre') || q.includes('belagua') || q.includes('larra')) {
+    return pick(l, {
+      es: `🏔️ **Destino Starlight Valle de Roncal (Navarra)** — Primer Destino Starlight navarro en el Pirineo: **Larra-Belagua (>1.400 m)**, Mata de Haya, Isaba y Uztárroz con cielos Bortle 2.`,
+      en: `🏔️ **Roncal Valley Starlight Destination (Navarre Pyrenees)** — **Larra-Belagua (>1,400m)**, Mata de Haya, Isaba & Uztárroz under pristine Bortle 2 mountain skies.`,
+      fr: `🏔️ **Destination Starlight Vallée de Roncal (Navarre)** — **Larra-Belagua (>1 400 m)**, Mata de Haya, Isaba et Uztárroz sous des cieux pyrénéens Bortle 2.`,
+      pt: `🏔️ **Destino Starlight Vale de Roncal (Navarra)** — **Larra-Belagua (>1.400 m)**, Mata de Haya e Isaba sob céus pirenaicos Bortle 2.`,
+      it: `🏔️ **Destinazione Starlight Valle di Roncal (Navarra)** — **Larra-Belagua (>1.400 m)**, Mata de Haya e Isaba sotto cieli pirenaici Bortle 2.`,
+      de: `🏔️ **Starlight-Reiseziel Roncal-Tal (Navarra-Pyrenäen)** — **Larra-Belagua (>1.400 m)**, Mata de Haya & Isaba unter klarem Bortle-2-Gebirgshimmel.`,
+    });
   }
 
-  // 6d. CASTILLA Y LEÓN (BABIA, GREDOS, SIERRA DE FRANCIA, TIERRAS ALTAS DE SORIA)
-  if (q.includes('babia') || q.includes('cuatro valles') || q.includes('leon') || q.includes('gredos') || q.includes('sierra de francia') || q.includes('soria') || q.includes('tierras altas') || q.includes('muriel')) {
-    return `🏰 **Territorios Starlight en Castilla y León** ⭐
-
-Castilla y León cuenta con una excepcional constelación de espacios Starlight:
-1. **Parque Estelar y Reserva Starlight Cuatro Valles y Babia (León):** En la Cordillera Cantábrica (San Emiliano, Riolago de Babia, Puerto de Ventana) a más de 1.300 m con cielo Bortle 1.
-2. **Sierra de Gredos Norte (Ávila):** Uno de los primeros Destinos Starlight de España, con miradores en Navarredonda, Hoyos del Espino y la Plataforma de Gredos.
-3. **Sierra de Francia y Las Quilamas (Salamanca):** El Santuario de la Peña de Francia (1.727 m) y pueblos como La Alberca y Miranda del Castañar.
-4. **Soria Starlight:** **Muriel Viejo** (Pueblo Starlight pionero) y el **Destino Starlight Tierras Altas de Soria** (San Pedro Manrique, Puerto de Oncala a 1.454 m y Fuentes de Magaña).`;
+  // 6d. CASTILLA Y LEÓN
+  if (q.includes('babia') || q.includes('cuatro valles') || q.includes('leon') || q.includes('gredos') || q.includes('sierra de francia') || q.includes('soria')) {
+    return pick(l, {
+      es: `🏰 **Territorios Starlight en Castilla y León**: **Babia y Cuatro Valles** (León, Bortle 1), **Sierra de Gredos Norte** (Ávila), **Sierra de Francia** (Salamanca) y **Tierras Altas / Muriel Viejo** (Soria).`,
+      en: `🏰 **Starlight Territories in Castile & León**: **Babia & Cuatro Valles** (León, Bortle 1), **Northern Sierra de Gredos** (Ávila), **Sierra de Francia** (Salamanca) & **Tierras Altas / Muriel Viejo** (Soria).`,
+      fr: `🏰 **Territoires Starlight en Castille-et-León** : **Babia & Cuatro Valles** (León, Bortle 1), **Sierra de Gredos Nord** (Ávila), **Sierra de Francia** (Salamanque) & **Soria**.`,
+      pt: `🏰 **Territórios Starlight em Castela e Leão**: **Babia & Cuatro Valles** (Leão, Bortle 1), **Serra de Gredos** (Ávila), **Serra de França** e **Soria**.`,
+      it: `🏰 **Territori Starlight in Castiglia e León**: **Babia & Cuatro Valles** (León, Bortle 1), **Sierra de Gredos** (Ávila), **Sierra de Francia** e **Soria**.`,
+      de: `🏰 **Starlight-Gebiete in Kastilien und León**: **Babia & Cuatro Valles** (León, Bortle 1), **Sierra de Gredos** (Ávila), **Sierra de Francia** & **Soria**.`,
+    });
   }
 
-  // 6e. ANDALUCÍA (SIERRA MORENA, PEDROCHES, CAZORLA, FILABRES/CALAR ALTO, TORCAL, SIERRA NEVADA)
-  if (q.includes('andalucia') || q.includes('pedroches') || q.includes('cordoba') || q.includes('torcal') || q.includes('antequera') || q.includes('cazorla') || q.includes('alar alto') || q.includes('filabres') || q.includes('almanzora') || q.includes('sierra morena') || q.includes('sierra nevada') || q.includes('alpujarra')) {
-    return `⭐ **Red de Territorios Starlight en Andalucía** 🌌
-
-Andalucía posee la mayor concentración de reservas y destinos astronómicos de Europa:
-1. **Reserva Starlight Sierra Morena Andaluza:** La reserva de cielo oscuro más grande del planeta (más de 400 km a través de Jaén, Córdoba, Sevilla y Huelva).
-2. **Reserva Starlight Los Pedroches (Córdoba):** 17 municipios con una red de 17 miradores astronómicos en dehesas centenarias de encinas.
-3. **Paraje Starlight El Torcal de Antequera (Málaga):** Paisaje kárstico a 1.200 m con su Observatorio Astronómico (OATA) permanente.
-4. **Sierras de Cazorla, Segura y Las Villas (Jaén):** Con los Campos de Hernán Perea (1.650 m), el mayor altiplano desértico estelar de España con Bortle 1.
-5. **Sierra de Los Filabres y Calar Alto (Almería):** Hogar del mayor observatorio astrofísico continental (CAHA, 2.168 m) bajo cielos semidesérticos ultrasecos.
-6. **Sierra Nevada y La Alpujarra (Granada):** Cúpulas a más de 2.500 m en la Hoya de la Mora y pueblos de alta montaña como Capileira y Trevélez.
-7. **Sierra Sur de Jaén:** Destino Starlight pionero con observatorios en Alcalá la Real y Frailes.`;
+  // 6e. ANDALUCÍA
+  if (
+    q.includes('andaluc') ||
+    q.includes('andalus') ||
+    q.includes('pedroches') ||
+    q.includes('cordoba') ||
+    q.includes('torcal') ||
+    q.includes('cazorla') ||
+    q.includes('calar alto') ||
+    q.includes('sierra morena') ||
+    q.includes('sierra nevada')
+  ) {
+    return pick(l, {
+      es: `⭐ **Andalucía Starlight & Eclipse 2027**: **Sierra Morena Andaluza** (mayor reserva del mundo >400 km), **Los Pedroches**, **El Torcal**, **Cazorla (Hernán Perea, Bortle 1)**, **Calar Alto (2.168 m)** y **Sierra Nevada**. Además, Tarifa, Cádiz y Málaga serán epicentro de totalidad el 2 de agosto de 2027.`,
+      en: `⭐ **Andalusia Starlight & Eclipse 2027**: **Sierra Morena Reserve** (>400 km), **Los Pedroches**, **El Torcal**, **Cazorla (Bortle 1)**, **Calar Alto Observatory (2,168m)** & **Sierra Nevada**. Plus Tarifa, Cadiz and Malaga sit dead-center on the August 2, 2027 total solar eclipse path.`,
+      fr: `⭐ **Andalousie Starlight & Éclipse 2027** : **Sierra Morena** (>400 km), **Los Pedroches**, **El Torcal**, **Cazorla (Bortle 1)**, **Calar Alto (2 168 m)** & **Sierra Nevada**. Tarifa, Cadix et Málaga seront aussi au cœur de l'éclipse totale du 2 août 2027.`,
+      pt: `⭐ **Andaluzia Starlight & Eclipse 2027**: **Serra Morena** (>400 km), **Los Pedroches**, **El Torcal**, **Cazorla (Bortle 1)**, **Calar Alto (2.168 m)** & **Serra Nevada**. Tarifa, Cádis e Málaga estarão na faixa central de totalidade em 2 de agosto de 2027.`,
+      it: `⭐ **Andalusia Starlight & Eclissi 2027**: **Sierra Morena** (>400 km), **Los Pedroches**, **El Torcal**, **Cazorla (Bortle 1)**, **Calar Alto (2.168 m)** & **Sierra Nevada**. Tarifa, Cadice e Malaga saranno al centro della totalità il 2 agosto 2027.`,
+      de: `⭐ **Andalusien Starlight & Finsternis 2027**: **Sierra Morena** (>400 km), **Los Pedroches**, **El Torcal**, **Cazorla (Bortle 1)**, **Calar Alto (2.168 m)** & **Sierra Nevada**. Zudem liegen Tarifa, Cádiz und Málaga im Kern der Totalität am 2. August 2027.`,
+    });
   }
 
-  // 6f. CASTILLA-LA MANCHA (CUENCA, SIERRA DEL SEGURA, NERPIO, ALCUDIA, CABAÑEROS)
-  if (q.includes('castilla-la mancha') || q.includes('mancha') || q.includes('cuenca') || q.includes('nerpio') || q.includes('sierra del segura') || q.includes('alcudia') || q.includes('cabaneros') || q.includes('alcaraz')) {
-    return `🌾 **Destinos Starlight en Castilla-La Mancha** ⭐
-
-1. **Serranía de Cuenca:** Reserva y Destino Starlight (Vega del Codorno, Las Majadas, Parque Cinegético de El Hosquillo) con cañones kársticos y cielo Bortle 2.
-2. **Sierra del Segura y Nerpio (Albacete):** Nerpio es Municipio Starlight y alberga telescopios remotos profesionales; Ayna, Yeste y Riópar completan la comarca con Bortle 1.
-3. **Sierra de Alcaraz y Campo de Montiel (Albacete / Ciudad Real):** Horizontes cervantinos abiertos de 360° y Lagunas de Ruidera.
-4. **Valle de Alcudia y Sierra Madrona (Ciudad Real):** Dehesas protegidas y pinturas rupestres bajo cielos vírgenes en Fuencaliente y Pico de la Bañuela (1.332 m).
-5. **Parque Nacional de Cabañeros:** Rutas nocturnas 4x4 por la raña y centro de visitantes con observatorio astronómico.`;
+  // 6f. CASTILLA-LA MANCHA
+  if (q.includes('mancha') || q.includes('cuenca') || q.includes('nerpio') || q.includes('segura') || q.includes('alcudia') || q.includes('cabaneros')) {
+    return pick(l, {
+      es: `🌾 **Castilla-La Mancha Starlight**: **Serranía de Cuenca** (Bortle 2), **Sierra del Segura y Nerpio** (telescopios remotos en Bortle 1), **Alcaraz / Ruidera**, **Valle de Alcudia** y **P.N. de Cabañeros**.`,
+      en: `🌾 **Castilla-La Mancha Starlight**: **Serranía de Cuenca** (Bortle 2), **Sierra del Segura & Nerpio** (Bortle 1 remote observatory hub), **Ruidera**, **Valle de Alcudia** & **Cabañeros National Park**.`,
+      fr: `🌾 **Castille-La Manche Starlight** : **Serranía de Cuenca** (Bortle 2), **Sierra del Segura & Nerpio** (observatoires Bortle 1), **Ruidera**, **Valle de Alcudia** & **Cabañeros**.`,
+      pt: `🌾 **Castela-La Mancha Starlight**: **Serranía de Cuenca** (Bortle 2), **Sierra del Segura e Nerpio** (Bortle 1), **Ruidera**, **Valle de Alcudia** e **Cabañeros**.`,
+      it: `🌾 **Castiglia-La Mancia Starlight**: **Serranía de Cuenca** (Bortle 2), **Sierra del Segura e Nerpio** (Bortle 1), **Ruidera**, **Valle de Alcudia** e **Cabañeros**.`,
+      de: `🌾 **Kastilien-La Mancha Starlight**: **Serranía de Cuenca** (Bortle 2), **Sierra del Segura & Nerpio** (Bortle 1), **Ruidera**, **Valle de Alcudia** & **Cabañeros**.`,
+    });
   }
 
-  // 6g. EXTREMADURA (MONFRAGÜE, SIERRA DE GATA, HURDES, TAJO INTERNACIONAL, ALQUEVA)
-  if (q.includes('extremadura') || q.includes('monfrague') || q.includes('gata') || q.includes('hurdes') || q.includes('tajo internacional') || q.includes('alqueva') || q.includes('caceres') || q.includes('badajoz')) {
-    return `🦅 **Extremadura Buenas Noches — Destinos y Reservas Starlight** ⭐
-
-Extremadura es pionera en la integración de redes de miradores celestes retroiluminados:
-1. **Parque Nacional de Monfragüe (Cáceres):** Reserva Starlight con el Observatorio de Torrejón el Rubio y el mirador del Salto del Gitano.
-2. **Sierra de Gata y Las Hurdes (Cáceres):** Destino Starlight con el Castillo de Trevejo, Meandro del Melero y Puerto de Esperabán (1.295 m).
-3. **Parque Natural Tajo Internacional (Cáceres):** Reserva Starlight en el cañón fronterizo del río Tajo, con dólmenes prehistóricos en Valencia de Alcántara.
-4. **Entorno del Gran Lago de Alqueva (Badajoz):** Primer Destino Starlight Transfronterizo (Olivenza, Cheles, Alconchel y Villanueva del Fresno).`;
+  // 6g. EXTREMADURA
+  if (q.includes('extremadura') || q.includes('monfrague') || q.includes('gata') || q.includes('hurdes') || q.includes('alqueva')) {
+    return pick(l, {
+      es: `🦅 **Extremadura Starlight**: **Parque Nacional de Monfragüe** (Torrejón el Rubio), **Sierra de Gata y Las Hurdes**, **Tajo Internacional** y **Gran Lago de Alqueva**.`,
+      en: `🦅 **Extremadura Starlight**: **Monfragüe National Park**, **Sierra de Gata & Las Hurdes**, **International Tagus**, and **Great Lake Alqueva**.`,
+      fr: `🦅 **Estrémadure Starlight** : **Parc National de Monfragüe**, **Sierra de Gata & Las Hurdes**, **Tage International** et **Lac d'Alqueva**.`,
+      pt: `🦅 **Estremadura Starlight**: **Parque Nacional de Monfragüe**, **Serra de Gata e Las Hurdes**, **Tejo Internacional** e **Grande Lago do Alqueva**.`,
+      it: `🦅 **Estremadura Starlight**: **Parco Nazionale di Monfragüe**, **Sierra de Gata e Las Hurdes**, **Tago Internazionale** e **Lago di Alqueva**.`,
+      de: `🦅 **Extremadura Starlight**: **Nationalpark Monfragüe**, **Sierra de Gata & Las Hurdes**, **Internationaler Tajo** & **Alqueva-Stausee**.`,
+    });
   }
 
   // 6h. LA RIOJA & CATALUÑA
-  if (q.includes('rioja') || q.includes('montsec') || q.includes('prades') || q.includes('montsant') || q.includes('cataluna')) {
-    return `🍇 **Territorios Starlight en La Rioja y Cataluña** ⭐
-
-- **La Rioja — Reserva Starlight Valles del Leza, Jubera, Cidacos y Alhama:** Reserva de la Biosfera en el Sistema Ibérico riojano (Munilla, Enciso, Contrebia Leucade) con huellas de dinosaurios y noches de Bortle 2.
-- **Cataluña — Parc Astronòmic Montsec (Lleida):** Uno de los centros astronómicos más avanzados del mundo con el OAdM y cúpula "Ojo del Montsec".
-- **Cataluña — Muntanyes de Prades y Montsant (Tarragona):** Destino Starlight con el Parc Astronòmic Muntanyes de Prades (PAMP) y la cumbre del Tossal de la Baltasana (1.201 m).`;
+  if (q.includes('rioja') || q.includes('montsec') || q.includes('prades') || q.includes('montsant') || q.includes('catalun') || q.includes('catalon')) {
+    return pick(l, {
+      es: `🍇 **La Rioja y Cataluña Starlight**: **Valles de Leza, Jubera, Cidacos y Alhama** (La Rioja, Bortle 2), **Parc Astronòmic Montsec** (Lleida) y **Muntanyes de Prades & Montsant** (Tarragona).`,
+      en: `🍇 **La Rioja & Catalonia Starlight**: **Leza, Jubera, Cidacos & Alhama Valleys** (Bortle 2), **Montsec Astronomical Park** (Lleida) and **Muntanyes de Prades & Montsant** (Tarragona).`,
+      fr: `🍇 **La Rioja & Catalogne Starlight** : **Vallées du Leza et Jubera** (Bortle 2), **Parc Astronomique du Montsec** (Lérida) et **Prades & Montsant** (Tarragone).`,
+      pt: `🍇 **La Rioja e Catalunha Starlight**: **Vales do Leza e Jubera** (Bortle 2), **Parque Astronómico Montsec** (Lleida) e **Prades & Montsant**.`,
+      it: `🍇 **La Rioja & Catalogna Starlight**: **Valli del Leza e Jubera** (Bortle 2), **Parco Astronomico Montsec** (Lleida) e **Prades & Montsant**.`,
+      de: `🍇 **La Rioja & Katalonien Starlight**: **Täler von Leza & Jubera** (Bortle 2), **Astronomiepark Montsec** (Lleida) und **Muntanyes de Prades**.`,
+    });
   }
 
   // 7. CASTELLÓN, TERUEL Y ARCO MEDITERRÁNEO
   if (q.includes('castellon') || q.includes('penyagolosa') || q.includes('culla') || q.includes('teruel') || q.includes('javalambre') || q.includes('galactica') || q.includes('maestrat')) {
-    return `🌌 **Cielos Starlight en Castellón y Teruel (Gúdar-Javalambre & Maestrat)** ⭐
-
-El sistema ibérico oriental cuenta con una de las mayores reservas de cielo oscuro de la Europa continental:
-
-1. **Castellón (Maestrat & Penyagolosa):**
-   - **Parque Natural del Penyagolosa (1.814 m):** La cumbre más emblemática de Castellón con cielo Bortle 2-3.
-   - **Culla:** Municipio y Destino Starlight certificado con observatorio astronómico municipal y actividades regulares de divulgación.
-   - **Ares del Maestrat y Morella:** Alta meseta con horizontes diáfanos y muy baja humedad en noches invernales.
-2. **Teruel (Comarca Gúdar-Javalambre):**
-   - **Arcos de las Salinas y Centro Galáctica:** Parque de divulgación astronómica profesional al pie del Observatorio Astrofísico de Javalambre (OAJ) en el Pico del Buitre (1.957 m).
-   - **Sierra de Albarracín:** Bosques de pino albar bajo cielos de Bortle 2.`;
+    return pick(l, {
+      es: `🌌 **Castellón y Teruel Starlight**: **Penyagolosa (1.814 m)**, **Culla**, **Morella** y **Ares del Maestrat** en Castellón, junto a **Gúdar-Javalambre / Centro Galáctica** (Observatorio OAJ, 1.957 m) y **Sierra de Albarracín** en Teruel (Bortle 2).`,
+      en: `🌌 **Castellón & Teruel Starlight**: **Penyagolosa (1,814m)**, **Culla**, **Morella** & **Maestrat** in Castellón, plus **Gúdar-Javalambre / Galáctica** (OAJ Observatory, 1,957m) and **Sierra de Albarracín** in Teruel (Bortle 2).`,
+      fr: `🌌 **Castellón & Teruel Starlight** : **Penyagolosa (1 814 m)**, **Culla**, **Morella** (Castellón) et **Gúdar-Javalambre / Galáctica** (Observatoire OAJ, 1 957 m) à Teruel (Bortle 2).`,
+      pt: `🌌 **Castellón e Teruel Starlight**: **Penyagolosa (1.814 m)**, **Culla**, **Morella** e **Gúdar-Javalambre / Centro Galáctica** (Observatório OAJ, 1.957 m) em Teruel (Bortle 2).`,
+      it: `🌌 **Castellón e Teruel Starlight**: **Penyagolosa (1.814 m)**, **Culla**, **Morella** e **Gúdar-Javalambre / Centro Galáctica** (Osservatorio OAJ, 1.957 m) a Teruel (Bortle 2).`,
+      de: `🌌 **Castellón & Teruel Starlight**: **Penyagolosa (1.814 m)**, **Culla**, **Morella** sowie **Gúdar-Javalambre / Galáctica** (Observatorium OAJ, 1.957 m) & **Sierra de Albarracín** (Bortle 2).`,
+    });
   }
 
-  // 8. ESCALA BORTLE & CONTAMINACIÓN LUMÍNICA
-  if (q.includes('bortle') || q.includes('contaminacion') || q.includes('sqm') || q.includes('oscuridad')) {
-    return `🌌 **La Escala Bortle de Calidad de Cielo Nocturno (1 al 9)**:
-
-- **Clase 1 (Cielo Oscuro Virgen):** La Vía Láctea arroja sombra visible en el suelo. Galaxia de Andrómeda y M33 visibles a simple vista. SQM > 21.75. (Ej. Roque de los Muchachos, Trevinca, Ancares).
-- **Clase 2 (Cielo Oscuro Típico):** Vía Láctea con estructuras complejas y nebulosas oscuras visibles. SQM 21.5 - 21.75. (Ej. Vicort, Gúdar-Javalambre, Serranía de Cuenca, Gredos).
-- **Clase 3 (Cielo Rural):** Alguna cúpula de luz lejana en el horizonte. SQM 21.3 - 21.5. (Ej. Penyagolosa, Muras, Aranda).
-- **Clase 4 (Transición Rural / Suburbana):** Vía Láctea visible alta en el cielo pero débil cerca del horizonte. SQM 20.4 - 21.3.
-- **Clase 5-6 (Cielo Suburbano):** Vía Láctea muy difusa o imperceptible. SQM 19.1 - 20.4.
-- **Clase 7-9 (Cielo Urbano e Interior de Ciudad):** Solo la Luna, planetas y estrellas más brillantes (Vega, Sirio) son visibles. SQM < 18.0.
-
-*Consejo:* En StellaWay puedes filtrar miradores directamente por su Clase Bortle y SQM certificado.`;
+  // 8. ESCALA BORTLE
+  if (q.includes('bortle') || q.includes('contaminacion') || q.includes('pollution') || q.includes('lichtverschmutzung') || q.includes('sqm') || q.includes('oscuridad')) {
+    return pick(l, {
+      es: `🌌 **Escala Bortle (1–9)**:
+- **Bortle 1 (SQM >21.75):** Cielo virgen; Vía Láctea proyecta sombra (Roque, Trevinca, Ancares).
+- **Bortle 2–3 (SQM 21.3–21.75):** Cielo oscuro/rural ideal para astrofotografía (Vicort, Gúdar, Cuenca).
+- **Bortle 4–6:** Suburbano. **Bortle 7–9:** Urbano (Luna y planetas brillantes).`,
+      en: `🌌 **Bortle Dark-Sky Scale (1–9)**:
+- **Bortle 1 (SQM >21.75):** Pristine sky; Milky Way casts shadows (La Palma, Trevinca, Atacama).
+- **Bortle 2–3 (SQM 21.3–21.75):** Typical dark/rural skies ideal for deep sky & astrophotography.
+- **Bortle 4–6:** Suburban transition. **Bortle 7–9:** Urban sky (Moon & bright planets only).`,
+      fr: `🌌 **Échelle de Bortle (1–9)** :
+- **Bortle 1 (SQM >21,75) :** Ciel pur ; la Voie lactée projette une ombre.
+- **Bortle 2–3 (SQM 21,3–21,75) :** Ciel noir rural idéal pour le ciel profond et l'astrophoto.
+- **Bortle 4–6 :** Périurbain. **Bortle 7–9 :** Urbain (Lune et planètes brillantes).`,
+      pt: `🌌 **Escala Bortle (1–9)**:
+- **Bortle 1 (SQM >21.75):** Céu virgem; Via Láctea projeta sombra.
+- **Bortle 2–3 (SQM 21.3–21.75):** Céu escuro rural ideal para astrofotografia.
+- **Bortle 4–6:** Suburbano. **Bortle 7–9:** Urbano (Lua e planetas brilhantes).`,
+      it: `🌌 **Scala di Bortle (1–9)**:
+- **Bortle 1 (SQM >21.75):** Cielo incontaminato; la Via Lattea proietta ombre.
+- **Bortle 2–3 (SQM 21.3–21.75):** Cielo buio rurale perfetto per astrofotografia e profondo cielo.
+- **Bortle 4–6:** Suburbano. **Bortle 7–9:** Urbano (solo Luna e pianeti brillanti).`,
+      de: `🌌 **Bortle-Skala (1–9)**:
+- **Bortle 1 (SQM >21,75):** Absolut dunkler Himmel; Milchstraße wirft Schatten.
+- **Bortle 2–3 (SQM 21,3–21,75):** Dunkler Landhimmel ideal für Deep-Sky & Astrofotografie.
+- **Bortle 4–6:** Vorstadt. **Bortle 7–9:** Stadthimmel (Mond & helle Planeten).`,
+    });
   }
 
   // 9. LUNA & EVENTOS CELESTES
-  if (q.includes('luna') || q.includes('lluvia') || q.includes('perseidas') || q.includes('geminidas') || q.includes('planeta') || q.includes('saturno') || q.includes('jupiter')) {
-    return `🌠 **Efemérides y Observación del Sistema Solar**:
-
-- **Fases Lunares:**
-  - Para observar objetos de cielo profundo (galaxias, nebulosas y cúmulos), planifica tus salidas durante la **Luna Nueva** o los 4 días antes y después.
-  - Para observar la Luna con telescopio, el mejor momento son los **cuartos creciente y menguante**, apuntando al *terminador* (la línea que separa el día de la noche lunar) para apreciar el relieve de cráteres y montañas.
-- **Grandes Lluvias de Meteoros:**
-  - **Perseidas ("Lágrimas de San Lorenzo"):** Pico el 12-13 de agosto (~100 meteoros/hora).
-  - **Gemínidas:** Pico el 13-14 de diciembre (~120-150 meteoros/hora, muy brillantes y lentas).
-  - **Cuadrántidas:** Pico a principios de enero.
-- **Planetas Gigantes:**
-  - **Saturno:** Anillos visibles con cualquier telescopio a partir de 60mm de apertura con 50x aumentos.
-  - **Júpiter:** 4 lunas galileanas (Ío, Europa, Ganímedes y Calisto) visibles incluso con prismáticos 10x50.`;
+  if (
+    q.includes('luna') ||
+    q.includes('moon') ||
+    q.includes('lune') ||
+    q.includes('lua') ||
+    q.includes('mond') ||
+    q.includes('lluvia') ||
+    q.includes('perseid') ||
+    q.includes('geminid') ||
+    q.includes('planeta') ||
+    q.includes('planet') ||
+    q.includes('saturn') ||
+    q.includes('jupiter')
+  ) {
+    return pick(l, {
+      es: `🌠 **Luna, Meteoros y Planetas**:
+- **Luna Nueva:** Ventana perfecta para galaxias y Vía Láctea; **Cuartos** ideales para cráteres en el terminador lunar.
+- **Lluvias Top:** **Perseidas** (12–13 ago) y **Gemínidas** (13–14 dic).
+- **Planetas:** Anillos de **Saturno** desde 50x; lunas galileanas de **Júpiter** ya visibles con prismáticos 10x50.`,
+      en: `🌠 **Moon, Meteor Showers & Planets**:
+- **New Moon:** Best dark window for galaxies & Milky Way; **Quarter phases** reveal dramatic crater shadows along the terminator.
+- **Top Showers:** **Perseids** (Aug 12–13) & **Geminids** (Dec 13–14).
+- **Planets:** **Saturn's rings** clear at 50x magnification; **Jupiter's** 4 Galilean moons visible even in 10x50 binoculars.`,
+      fr: `🌠 **Lune, Météores & Planètes** :
+- **Nouvelle Lune :** Fenêtre idéale pour galaxies et Voie lactée ; **Quartiers** parfaits pour les cratères sur le terminateur.
+- **Pluies majeures :** **Perséides** (12–13 août) et **Géminides** (13–14 déc).
+- **Planètes :** Anneaux de **Saturne** dès 50x ; satellites galiléens de **Jupiter** visibles aux jumelles 10x50.`,
+      pt: `🌠 **Lua, Meteoros e Planetas**:
+- **Lua Nova:** Ideal para galáxias e Via Láctea; **Quartos** excelentes para crateras no terminador lunar.
+- **Chuvas Principais:** **Perseidas** (12–13 ago) e **Gemínidas** (13–14 dez).
+- **Planetas:** Anéis de **Saturno** a partir de 50x; luas galileanas de **Júpiter** visíveis até com binóculos 10x50.`,
+      it: `🌠 **Luna, Sciami Meteorici & Pianeti**:
+- **Luna Nuova:** Ideale per galassie e Via Lattea; **Quarti** ottimi per crateri lungo il terminatore.
+- **Sciami Top:** **Perseidi** (12–13 ago) e **Geminidi** (13–14 dic).
+- **Pianeti:** Anelli di **Saturno** già a 50x; lune galileiane di **Giove** visibili con binocoli 10x50.`,
+      de: `🌠 **Mond, Meteorströme & Planeten**:
+- **Neumond:** Bestes Zeitfenster für Galaxien & Milchstraße; **Halbmond** ideal für Krater am Terminator.
+- **Top-Ströme:** **Perseiden** (12.–13. Aug.) & **Geminiden** (13.–14. Dez.).
+- **Planeten:** **Saturnringe** ab 50x Vergrößerung; **Jupitermonde** schon im 10x50 Fernglas.`,
+    });
   }
 
-  // 9b. DARKSKY & ESTADOS UNIDOS (EE.UU.)
-  if (q.includes('darksky') || q.includes('dark sky') || q.includes('eeuu') || q.includes('estados unidos') || q.includes('usa') || q.includes('big bend') || q.includes('arches') || q.includes('bryce') || q.includes('joshua tree') || q.includes('grand canyon') || q.includes('death valley') || q.includes('cherry springs') || q.includes('flagstaff')) {
-    return `🌌 **Zonas Certificadas DarkSky en Estados Unidos (EE.UU.)** 🇺🇸
-
-En **StellaWay** tienes disponible el catálogo con las principales zonas certificadas por **DarkSky International (la IDA)** en EE.UU., organizadas por categorías:
-
-1. **Grandes Parques Nacionales ("Mighty 5" y Cañones del Oeste):**
-   - **Utah:** *Natural Bridges* (el **primer Parque Dark Sky del mundo** en 2007), *Arches National Park*, *Bryce Canyon*, *Canyonlands*, *Zion National Park* y *Capitol Reef*.
-   - **Arizona:** *Grand Canyon National Park* (cañón colosal y Star Party anual).
-   - **California / Nevada:** *Death Valley* (el mayor parque de cielo oscuro de EE.UU. con 13.600 km², Bortle 1), *Joshua Tree* (desierto de Mojave) y *Great Basin* (Wheeler Peak y pinos milenarios).
-   - **Colorado:** *Black Canyon of the Gunnison* (abismos de granito) y *Mesa Verde* (viviendas en acantilados pueblo).
-   - **Nuevo México:** *Chaco Culture* (arqueoastronomía milenaria) y *Cosmic Campground* (primer Santuario Dark Sky de Norteamérica).
-   - **Dakota del Sur:** *Badlands National Park* (pinnáculos de arcilla).
-
-2. **Grandes Reservas y Santuarios:**
-   - **Texas:** *Greater Big Bend International Dark Sky Reserve* (la **mayor reserva Dark Sky del mundo**, con más de 38.000 km² en el desierto chihuahuense).
-   - **Idaho:** *Central Idaho Dark Sky Reserve* (montañas Sawtooth, nivel oro).
-   - **Nevada:** *Massacre Rim Sanctuary* (oscuridad natural absoluta SQM 22.00).
-   - **Minnesota:** *Boundary Waters Canoe Area Wilderness* (el mayor santuario Dark Sky del mundo, 4.400 km² de lagos vírgenes y auroras boreales) y *Voyageurs National Park*.
-
-3. **Costa Este y Montañas Rocosas:**
-   - **Pensilvania:** *Cherry Springs State Park* (el gran templo astronómico de la Costa Este, meseta de 700 m en Susquehannock).
-   - **Montana / Canadá:** *Waterton-Glacier International Peace Park* (primer parque transfronterizo del mundo).
-   - **Kentucky:** *Mammoth Cave National Park* (cielos protegidos sobre la cueva más larga del mundo).
-
-4. **Comunidades Dark Sky Pioneras:**
-   - **Flagstaff (Arizona):** La **primera Comunidad Dark Sky de la historia** (2001, sede del Observatorio Lowell).
-   - **Sedona (Arizona)** y **Borrego Springs (California)**.
-
-*Nota:* Puedes explorar todas estas zonas en la pestaña **"DarkSky Int."** del menú de navegación, con cálculo de distancias GPS, fotos diurnas de los parques y fichas técnicas completas.`;
+  // 9b. DARKSKY GLOBAL & USA
+  if (
+    q.includes('darksky') ||
+    q.includes('dark sky') ||
+    q.includes('eeuu') ||
+    q.includes('estados unidos') ||
+    q.includes('etats-unis') ||
+    q.includes('stati uniti') ||
+    q.includes('vereinigte staaten') ||
+    q.includes('usa') ||
+    q.includes('big bend') ||
+    q.includes('arches') ||
+    q.includes('bryce') ||
+    q.includes('grand canyon') ||
+    q.includes('death valley')
+  ) {
+    return pick(l, {
+      es: `🌌 **Catálogo Global DarkSky® International en StellaWay**:
+Explora **Parques, Reservas y Santuarios** acreditados en la pestaña **DarkSky®**: *Greater Big Bend* (Texas, mayor reserva del mundo), *Death Valley*, *Grand Canyon*, *Natural Bridges / Arches / Bryce Canyon* (Utah), *Aoraki Mackenzie* (Nueva Zelanda), *NamibRand* (Namibia) y *Pic du Midi* (Francia).`,
+      en: `🌌 **DarkSky® International Global Catalog in StellaWay**:
+Open the **DarkSky®** tab to explore certified Parks, Reserves & Sanctuaries worldwide: *Greater Big Bend* (Texas), *Death Valley*, *Grand Canyon*, *Utah's Mighty 5 (Arches, Bryce, Natural Bridges)*, *Aoraki Mackenzie* (New Zealand), *NamibRand* (Namibia) & *Pic du Midi* (France).`,
+      fr: `🌌 **Catalogue Mondial DarkSky® International dans StellaWay** :
+Dans l'onglet **DarkSky®**, explorez *Greater Big Bend* (Texas), *Death Valley*, *Grand Canyon*, les parcs de l'Utah (*Arches, Bryce*), *Aoraki Mackenzie* (Nouvelle-Zélande), *NamibRand* (Namibie) et *Pic du Midi* (France).`,
+      pt: `🌌 **Catálogo Global DarkSky® International no StellaWay**:
+Explore Parques, Reservas e Santuários no separador **DarkSky®**: *Greater Big Bend* (Texas), *Death Valley*, *Grand Canyon*, *Arches / Bryce Canyon* (Utah), *Aoraki Mackenzie* (Nova Zelândia), *NamibRand* e *Pic du Midi*.`,
+      it: `🌌 **Catalogo Globale DarkSky® International in StellaWay**:
+Nella scheda **DarkSky®** trovi Parchi, Riserve e Santuari certificati: *Greater Big Bend* (Texas), *Death Valley*, *Grand Canyon*, *Arches / Bryce Canyon* (Utah), *Aoraki Mackenzie* (Nuova Zelanda), *NamibRand* e *Pic du Midi*.`,
+      de: `🌌 **DarkSky® International Weltkatalog in StellaWay**:
+Im Tab **DarkSky®** findest du Parks, Reservate & Schutzgebiete wie *Greater Big Bend* (Texas), *Death Valley*, *Grand Canyon*, *Arches / Bryce Canyon* (Utah), *Aoraki Mackenzie* (Neuseeland), *NamibRand* & *Pic du Midi*.`,
+    });
   }
 
   // 9c. AURORAS BOREALES Y AUSTRALES
-  if (q.includes('aurora') || q.includes('auroras') || q.includes('boreal') || q.includes('boreales') || q.includes('austral') || q.includes('australes') || q.includes('northern lights') || q.includes('southern lights') || q.includes('polarlicht') || q.includes('polarlichter') || q.includes('tromso') || q.includes('abisko') || q.includes('rakiura') || q.includes('fairbanks') || q.includes('ushuaia') || q.includes('kp') || q.includes('geomagnet')) {
-    if (isGerman) {
-      return `✨ **Atlas der Polarlichter (Nord- und Südlichter) in StellaWay** 🌌
+  if (
+    q.includes('aurora') ||
+    q.includes('aurore') ||
+    q.includes('boreal') ||
+    q.includes('austral') ||
+    q.includes('northern lights') ||
+    q.includes('southern lights') ||
+    q.includes('polarlicht') ||
+    q.includes('tromso') ||
+    q.includes('abisko') ||
+    q.includes('rakiura') ||
+    q.includes('fairbanks') ||
+    q.includes('ushuaia') ||
+    q.includes('kp') ||
+    q.includes('geomagnet')
+  ) {
+    return pick(l, {
+      es: `✨ **Atlas Mundial de Auroras (Boreales & Australes) en StellaWay** 🌌
 
-In **StellaWay** steht dir das dritte weltweite Suchportal zur Verfügung, das der Beobachtung von Polarlichtern gewidmet ist:
+1. **Hemisferio Norte (Boreal):** Noruega (*Tromsø, Lofoten, Senja, Svalbard*), Suecia (*Abisko* "Agujero Azul"), Finlandia (*Inari, Rovaniemi*), Islandia, Groenlandia, Canadá (*Yellowknife*) y Alaska (*Fairbanks*).
+2. **Hemisferio Sur (Austral):** Tasmania (*Bruny Island*), Nueva Zelanda (*Rakiura / Stewart Island*, *Lake Tekapo*) y Patagonia (*Ushuaia*, *Puerto Williams*).
+3. **Criterios Científicos:** **Kp 2–3** dentro del óvalo polar (Kp ≥ 5–6 en tormentas solares), **Bz negativo (Sur)** indispensable para abrir la magnetosfera, y foto **f/1.4–f/2.8 · 1–5s · ISO 1600–6400**.`,
+      en: `✨ **Worldwide Aurora Atlas (Northern & Southern Lights) in StellaWay** 🌌
 
-1. **Nordhalbkugel (Nordlichter / Aurora Borealis):**
-   - **Norwegen:** *Tromsø / Kvaløya*, *Alta*, *Senja*, *Lyngen-Alpen*, *Lofoten-Inseln*, *Vesterålen*, *Nordkap* und *Spitzbergen (Svalbard)* (mit Tagespolarlichtern in der Polarnacht).
-   - **Schweden:** *Abisko* (das berühmte „Blaue Loch“ mit mikroklimatisch klarem Himmel) und *Kiruna*.
-   - **Finnland:** *Inari*, *Ivalo*, *Saariselkä*, *Utsjoki* und *Rovaniemi* (am Polarkreis).
-   - **Island:** *Þingvellir-Nationalpark*, *Snæfellsnes / Kirkjufell*, *Reykjanes*, *Vík* und *Akureyri*.
-   - **Grönland:** *Kangerlussuaq* (>300 klare Nächte/Jahr) und *Ilulissat* (Disko-Bucht).
-   - **Kanada & Alaska:** *Yellowknife*, *Whitehorse (Yukon)*, *Fairbanks* und *Chena Hot Springs*.
+1. **Northern Hemisphere (Borealis):** Norway (*Tromsø, Lofoten, Senja, Svalbard*), Sweden (*Abisko* clear-sky "Blue Hole"), Finland (*Inari, Rovaniemi*), Iceland, Greenland, Canada (*Yellowknife*) & Alaska (*Fairbanks*).
+2. **Southern Hemisphere (Australis):** Tasmania (*Bruny Island*), New Zealand (*Rakiura / Stewart Island*, *Lake Tekapo*) & Patagonia (*Ushuaia*, *Puerto Williams*).
+3. **Key Science & Camera Metrics:** **Kp 2–3** inside the auroral oval (Kp ≥ 5–6 during geomagnetic storms), **southward/negative IMF Bz**, and camera **f/1.4–f/2.8 · 1–5s · ISO 1600–6400**.`,
+      fr: `✨ **Atlas Mondial des Aurores (Boréales & Australes) dans StellaWay** 🌌
 
-2. **Südhalbkugel (Südlichter / Aurora Australis):**
-   - **Tasmanien (Australien):** *Bruny Island / The Neck*, *Cockle Creek* und *kunanyi / Mount Wellington*.
-   - **Neuseeland:** *Rakiura / Stewart Island* (Dark Sky Sanctuary) und *Aoraki Mackenzie / Lake Tekapo*.
-   - **Südamerika:** *Ushuaia / Feuerland* (Argentinien) und *Puerto Williams* (Chile).
+1. **Hémisphère Nord (Boréal) :** Norvège (*Tromsø, Lofoten, Senja, Svalbard*), Suède (*Abisko* « Trou Bleu »), Finlande (*Inari, Rovaniemi*), Islande, Groenland, Canada (*Yellowknife*) & Alaska (*Fairbanks*).
+2. **Hémisphère Sud (Austral) :** Tasmanie (*Bruny Island*), Nouvelle-Zélande (*Rakiura / Stewart Island*, *Lac Tekapo*) & Patagonie (*Ushuaia*, *Puerto Williams*).
+3. **Critères scientifiques :** **Kp 2–3** dans l'ovale auroral (Kp ≥ 5–6 lors de tempêtes solaires), champ **Bz négatif (Sud)**, et photo **f/1.4–f/2.8 · 1–5s · ISO 1600–6400**.`,
+      pt: `✨ **Atlas Mundial de Auroras (Boreais & Austrais) no StellaWay** 🌌
 
-3. **Wissenschaftliche Beobachtungskriterien:**
-   - **Kp-Index:** Kp 2–3 reicht im Polaroval; Kp 5–7+ (geomagnetischer Sturm) für mittlere Breiten.
-   - **Magnetfeld Bz:** Entscheidend ist ein **negativer Bz-Wert (Südausrichtung)**, der Sonnenwindpartikeln den Eintritt in die irdische Magnetosphäre ermöglicht.
-   - **Kamera-Tipps:** Blende f/1.4–f/2.8, Belichtungszeit 1–5 Sekunden (um tanzende Vorhänge scharf einzufrieren), ISO 1600–6400.
+1. **Hemisfério Norte (Boreal):** Noruega (*Tromsø, Lofoten, Senja, Svalbard*), Suécia (*Abisko* "Buraco Azul"), Finlândia (*Inari, Rovaniemi*), Islândia, Gronelândia, Canadá (*Yellowknife*) e Alasca (*Fairbanks*).
+2. **Hemisfério Sul (Austral):** Tasmânia (*Bruny Island*), Nova Zelândia (*Rakiura / Ilha Stewart*, *Lago Tekapo*) e Patagónia (*Ushuaia*, *Puerto Williams*).
+3. **Ciência & Câmara:** **Kp 2–3** no oval polar (Kp ≥ 5–6 em tempestades solares), **Bz negativo (Sul)** e foto **f/1.4–f/2.8 · 1–5s · ISO 1600–6400**.`,
+      it: `✨ **Atlante Mondiale delle Aurore (Boreali & Australi) in StellaWay** 🌌
 
-*Alle Orte mit GPS-Routen, Kp-Prognosen und Fotos findest du im Reiter **„Auroras“** in StellaWay.*`;
-    }
+1. **Emisfero Nord (Boreale):** Norvegia (*Tromsø, Lofoten, Senja, Svalbard*), Svezia (*Abisko*), Finlandia (*Inari, Rovaniemi*), Islanda, Groenlandia, Canada (*Yellowknife*) & Alaska (*Fairbanks*).
+2. **Emisfero Sud (Australe):** Tasmania (*Bruny Island*), Nuova Zelanda (*Rakiura / Stewart Island*, *Lago Tekapo*) & Patagonia (*Ushuaia*, *Puerto Williams*).
+3. **Metriche chiave:** **Kp 2–3** nell'ovale polare (Kp ≥ 5–6 in tempeste solari), campo **Bz negativo (Sud)** e scatto **f/1.4–f/2.8 · 1–5s · ISO 1600–6400**.`,
+      de: `✨ **Weltweiter Polarlicht-Atlas (Nord & Süd) in StellaWay** 🌌
 
-    if (isEnglish) {
-      return `✨ **Worldwide Aurora Atlas (Northern & Southern Lights) in StellaWay** 🌌
-
-In **StellaWay**, you have access to the 3rd integrated global locator dedicated to observing Polar Auroras:
-
-1. **Northern Hemisphere (Aurora Borealis / Northern Lights):**
-   - **Norway:** *Tromsø / Kvaløya*, *Alta*, *Senja*, *Lyngen Alps*, *Lofoten Islands (Reine, Hamnøy)*, *Vesterålen*, *North Cape*, and extreme *Svalbard* (daytime auroras during polar night).
-   - **Sweden:** *Abisko National Park* (the famed "Blue Hole" microclimate with maximum clear sky probability) and *Kiruna*.
-   - **Finland:** *Inari*, *Ivalo*, *Saariselkä*, *Utsjoki*, and *Rovaniemi* (at the Arctic Circle).
-   - **Iceland:** *Þingvellir*, *Snæfellsnes / Kirkjufell*, *Reykjanes*, *Vík*, and *Akureyri*.
-   - **Greenland:** *Kangerlussuaq* (>300 clear nights/year) and *Ilulissat* (icebergs in Disko Bay).
-   - **Canada & Alaska:** *Yellowknife* (aurora capital with teepee villages), *Yukon (Whitehorse)*, *Fairbanks*, and *Chena Hot Springs*.
-
-2. **Southern Hemisphere (Aurora Australis / Southern Lights):**
-   - **Tasmania (Australia):** *Bruny Island / The Neck*, *Cockle Creek* (southernmost drivable point), and *Mount Wellington*.
-   - **New Zealand:** *Rakiura / Stewart Island* (International Dark Sky Sanctuary), *Lake Tekapo / Aoraki Mackenzie*, and *The Catlins*.
-   - **Patagonia:** *Ushuaia* (Beagle Channel, Argentina) and *Puerto Williams / Navarino Island* (Chile).
-
-3. **Key Observing & Astrophotography Metrics:**
-   - **Kp Index:** Kp 2-3 is sufficient inside the auroral oval; Kp 5+ (geomagnetic storm G1-G5) reaches mid-latitudes.
-   - **Bz Component:** Crucial interplanetary magnetic field orientation — a **negative/southward Bz** connects directly with Earth's magnetosphere, allowing solar wind particles to enter.
-   - **Camera Settings:** Fast wide lens (f/1.4 to f/2.8), shutter speed between 1s and 5s (to freeze moving coronal rays without blur), ISO 1600-6400, sturdy tripod, manual focus on infinity.
-
-*Explore all cataloged aurora spots with live GPS navigation, coordinates, and weather in the **"Auroras"** tab in StellaWay.*`;
-    }
-
-    return `✨ **Atlas Mundial de Auroras Boreales y Australes en StellaWay** 🌌
-
-En **StellaWay** cuentas con el tercer gran localizador mundial dedicado exclusivamente a la observación de auroras polares:
-
-1. **Hemisferio Norte (Aurora Boreal):**
-   - **Noruega:** *Tromsø / Kvaløya*, *Alta*, *Senja*, *Lyngen*, *Islas Lofoten (Reine, Hamnøy)*, *Vesterålen*, *Cabo Norte* y la extrema *Svalbard* (con auroras diurnas durante la noche polar).
-   - **Suecia:** *Abisko* (el célebre "Agujero Azul" con la mayor tasa de noches despejadas del planeta para auroras), *Kiruna* y *Jukkasjärvi*.
-   - **Finlandia:** *Inari*, *Ivalo*, *Saariselkä*, *Utsjoki* y *Rovaniemi* (en el Círculo Polar Ártico).
-   - **Islandia:** *Þingvellir*, *Snæfellsnes / Kirkjufell*, *Reykjanes*, *Vík* y *Akureyri*.
-   - **Groenlandia:** *Kangerlussuaq* (>300 noches despejadas al año), *Ilulissat* (con icebergs gigantes en la bahía de Disko) y *Nuuk*.
-   - **Canadá:** *Yellowknife* (capital mundial de la aurora con poblados de tipis), *Whitehorse* (Yukón) y *Churchill* (Manitoba).
-   - **Alaska (EE.UU.):** *Fairbanks* (temporada de oro del 21 de agosto al 21 de abril), *Chena Hot Springs*, *Denali* y *Coldfoot*.
-
-2. **Hemisferio Sur (Aurora Austral / Southern Lights):**
-   - **Tasmania (Australia):** *Bruny Island / The Neck*, *Cockle Creek* (el punto de carretera más austral de Australia) y *kunanyi / Mount Wellington*.
-   - **Nueva Zelanda:** *Rakiura / Stewart Island* (Santuario Internacional Dark Sky), *Aoraki Mackenzie / Lake Tekapo* y *The Catlins*.
-   - **Chile y Argentina:** *Ushuaia* (Canal Beagle y Parque Nacional Tierra del Fuego) y *Puerto Williams / Isla Navarino*.
-   - **Antártida:** Continente blanco y bases científicas (*McMurdo*).
-
-3. **Criterios Científicos de Observación y Astrofotografía:**
-   - **Actividad Solar:** Depende del índice **Kp** (Kp 2-3 suficiente en el óvalo polar; Kp 5 a 8+ para tormentas solares visibles en latitudes medias), la orientación del campo magnético interplanetario (**Bz negativo / sur**, indispensable para abrir el escudo magnético terrestre) y la velocidad del viento solar (>400-800 km/s).
-   - **Temporada:** De finales de agosto a mediados de abril en el norte; de marzo a septiembre en el sur.
-   - **Parámetros de Cámara recomendados:** Objetivo gran angular f/1.4 a f/2.8, obturación corta de **1s a 5s** para congelar cortinas y rayos en movimiento sin que se empasten, ISO 1600 a 6400, trípode robusto y baterías de repuesto abrigadas contra el frío polar.
-
-*Puedes explorar todos los enclaves con distancias GPS, coordenadas exactas y fotografías en la sección **"Auroras"** de la barra de navegación de StellaWay.*`;
+1. **Nordhalbkugel (Borealis):** Norwegen (*Tromsø, Lofoten, Senja, Spitzbergen*), Schweden (*Abisko* „Blaues Loch“), Finnland (*Inari, Rovaniemi*), Island, Grönland, Kanada (*Yellowknife*) & Alaska (*Fairbanks*).
+2. **Südhalbkugel (Australis):** Tasmanien (*Bruny Island*), Neuseeland (*Rakiura / Stewart Island*, *Lake Tekapo*) & Patagonien (*Ushuaia*, *Puerto Williams*).
+3. **Wissenschaft & Kamera:** **Kp 2–3** im Polaroval (Kp ≥ 5–6 bei Sonnenstürmen), **negativer Bz-Wert (Südausrichtung)**, sowie **f/1.4–f/2.8 · 1–5s · ISO 1600–6400**.`,
+    });
   }
 
-  // 10. GENERAL / BIENVENIDA
-  if (isGerman) {
-    return `✨ **Hallo! Ich bin Stella, deine astronomische KI-Assistentin von StellaWay.**
+  // 10. BIENVENIDA / GENERAL (6 IDIOMAS)
+  return pick(l, {
+    es: `✨ **¡Hola! Soy Stella, tu Asistente Astronómica experta de StellaWay.**
 
-Ich unterstütze dich bei allen Themen rund um den Nachthimmel:
-- 🌌 **Atlas der Polarlichter (Nord- & Südlichter)** (Kp-Index, Bz-Komponente, Reiseziele wie Tromsø, Abisko, Rovaniemi, Island, Neuseeland und Fototipps).
-- 🔭 **Teleskop- und Okularkauf** passend zu deinem Budget.
-- 🌑 **Totale Sonnenfinsternis 2026 & 2027 in Spanien** (Totalitätszonen, Zeiten, ISO-Filter).
-- 🏛️ **Zertifizierte Starlight-Zonen** (Saragossa, Galicien, Teruel, Kanaren, Andalusien).
-- 📸 **Astrofotografie der Milchstraße** (Kameraeinstellungen, NPF-Regel, RAW-Stacking).
-- 🌌 **Bortle-Skala & Dunkelhimmelsuche**.
+Estoy lista para guiarte en tu idioma sobre cualquier tema celeste:
+- 🌌 **Atlas Mundial de Auroras Boreales y Australes** (índice Kp, orientación Bz y mejores enclaves).
+- 🔭 **Telescopios, oculares y prismáticos** según tu presupuesto.
+- 🌑 **Eclipses Solares Totales 2026 y 2027 en España** (totalidad en Tarifa, Málaga, Aragón y Galicia + filtros ISO 12312-2).
+- 🏛️ **Zonas Starlight & Santuarios DarkSky®** (Escala Bortle 1–9).
+- 📸 **Astrofotografía de la Vía Láctea** (regla NPF, RAW y apilado).
 
-Wie kann ich dir bei deiner nächsten Beobachtungsnacht helfen?`;
-  }
-  if (isEnglish) {
-    return `✨ **Hello! I'm Stella, your Starlight Astronomical AI Assistant from StellaWay.**
+¿Qué quieres consultar para tu próxima noche de observación?`,
+    en: `✨ **Hello! I'm Stella, your Starlight Astronomical AI Assistant from StellaWay.**
 
-I am ready to assist you with everything related to astronomy and the cosmos:
-- 🌌 **Worldwide Auroras Atlas (Northern & Southern Lights)** (Kp index, southward Bz, prime locations like Tromsø, Abisko, Rovaniemi, Iceland, New Zealand, camera settings).
-- 🔭 **Telescope & Eyepiece recommendations** tailored to your budget and observing goals.
-- 🌑 **Planning the Great Total Solar Eclipses of 2026 & 2027 in Spain** (totality paths, timing, ISO 12312-2 filters).
-- 🏛️ **Certified Starlight Destinations** in Spain (Zaragoza, Galicia, Teruel, Canary Islands, Cuenca, Andalusia).
-- 📸 **Milky Way & Deep-Sky Astrophotography** (exposure settings, NPF rule, stacking).
-- 🌌 **Dark Sky Locations (Bortle Scale 1-3)** and real-time observing conditions.
+I can assist you right now in English with:
+- 🌌 **Worldwide Aurora Atlas (Northern & Southern Lights)** — Kp index, southward Bz & top viewing spots.
+- 🔭 **Telescopes, eyepieces & binoculars** tailored to your level.
+- 🌑 **Great Total Solar Eclipses of 2026 & 2027 in Spain** — totality corridors & ISO 12312-2 filters.
+- 🏛️ **Starlight Reserves & DarkSky® Sanctuaries** (Bortle Scale 1–9).
+- 📸 **Milky Way Astrophotography** — NPF rule, RAW & stacking.
 
-What would you like to explore in the night sky today?`;
-  }
+What would you like to explore in the night sky today?`,
+    fr: `✨ **Bonjour ! Je suis Stella, votre Assistante Astronomique experte de StellaWay.**
 
-  return `✨ **¡Hola! Soy Stella, tu Asistente Astronómica experta de StellaWay.**
+Je suis prête à vous guider en français sur :
+- 🌌 **Atlas Mondial des Aurores (Boréales & Australes)** — indice Kp, Bz négatif et meilleurs sites.
+- 🔭 **Télescopes, oculaires et jumelles** adaptés à votre budget.
+- 🌑 **Éclipses Solaires Totales 2026 & 2027 en Espagne** — bandes de totalité et filtres ISO 12312-2.
+- 🏛️ **Destinations Starlight & Sanctuaires DarkSky®** (Échelle de Bortle 1–9).
+- 📸 **Astrophotographie de la Voie Lactée** — règle NPF, RAW et empilement.
 
-Estoy lista para guiarte en cualquier consulta astronómica:
-- 🌌 **Atlas Mundial de Auroras Boreales y Australes** (índice Kp, orientación Bz del viento solar, destinos top como Tromsø, Abisko, Rovaniemi, Islandia, Ushuaia o Nueva Zelanda y ajustes fotográficos).
-- 🔭 **Telescopios, oculares y equipo de observación** adaptados a tu presupuesto y nivel.
-- 🌑 **Gran Eclipse Solar Total de 2026 y 2027 en España** (franjas exactas de totalidad, horarios y filtros certificados ISO 12312-2).
-- 🏛️ **Zonas Certificadas Starlight** (Zaragoza, Galicia, Teruel, Castellón, Canarias, Serranía de Cuenca, Sierra Morena).
-- 📸 **Astrofotografía de la Vía Láctea y cielo profundo** (parámetros de cámara, regla NPF, enfoque y apilado).
-- 🌌 **Calidad de cielo y Escala Bortle** para elegir el mejor punto sin contaminación lumínica.
+Que souhaitez-vous préparer pour votre prochaine nuit d'observation ?`,
+    pt: `✨ **Olá! Sou a Stella, sua Assistente Astronómica especialista do StellaWay.**
 
-¿Qué te gustaría preparar o consultar hoy?`;
+Estou pronta para ajudar em português sobre:
+- 🌌 **Atlas Mundial de Auroras (Boreais & Austrais)** — índice Kp, Bz negativo e melhores destinos.
+- 🔭 **Telescópios, oculares e binóculos** para o seu nível.
+- 🌑 **Grandes Eclipses Solares Totais de 2026 & 2027 em Espanha** — faixas de totalidade e filtros ISO 12312-2.
+- 🏛️ **Zonas Starlight & Santuários DarkSky®** (Escala Bortle 1–9).
+- 📸 **Astrofotografia da Via Láctea** — regra NPF, RAW e empilhamento.
+
+O que gostaria de explorar no céu noturno hoje?`,
+    it: `✨ **Ciao! Sono Stella, la tua Assistente Astronomica esperta di StellaWay.**
+
+Posso guidarti subito in italiano su:
+- 🌌 **Atlante Mondiale delle Aurore (Boreali & Australi)** — indice Kp, Bz negativo e migliori località.
+- 🔭 **Telescopi, oculari e binocoli** adatti al tuo livello.
+- 🌑 **Grandi Eclissi Solari Totali 2026 & 2027 in Spagna** — fasce di totalità e filtri ISO 12312-2.
+- 🏛️ **Territori Starlight & Santuari DarkSky®** (Scala Bortle 1–9).
+- 📸 **Astrofotografia della Via Lattea** — regola NPF, scatti RAW e stacking.
+
+Cosa vorresti esplorare stanotte sotto le stelle?`,
+    de: `✨ **Hallo! Ich bin Stella, deine astronomische KI-Assistentin von StellaWay.**
+
+Ich helfe dir jederzeit auf Deutsch bei:
+- 🌌 **Weltweiter Polarlicht-Atlas (Nord & Süd)** — Kp-Index, negativer Bz-Wert & Top-Orte.
+- 🔭 **Teleskope, Okulare & Ferngläser** passend zu deinem Budget.
+- 🌑 **Totale Sonnenfinsternisse 2026 & 2027 in Spanien** — Totalitätszonen & ISO 12312-2 Schutzfilter.
+- 🏛️ **Starlight-Zonen & DarkSky®-Schutzgebiete** (Bortle-Skala 1–9).
+- 📸 **Astrofotografie der Milchstraße** — NPF-Regel, RAW & Stacking.
+
+Wobei darf ich dich für deine nächste Beobachtungsnacht unterstützen?`,
+  });
 }

@@ -14,6 +14,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
   const { user, signIn, logout, userLogs, addLogToFirestore } = useAuth();
   const { t } = useLanguage();
   const { stats, clearAllOfflineData } = useOfflineStorage();
+  const [confirmClearOffline, setConfirmClearOffline] = useState(false);
 
   const [localLogs, setLocalLogs] = useState<ObservationLog[]>([
     {
@@ -60,7 +61,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
       date: new Date().toISOString().split('T')[0],
       location: newLog.location,
       targetObject: newLog.targetObject,
-      telescopeEquipment: newLog.telescopeEquipment || 'Observación a simple vista / Prismáticos',
+      telescopeEquipment: newLog.telescopeEquipment || t('profileDefaultEquip', 'Prismáticos / A simple vista'),
       notes: newLog.notes,
       rating: newLog.rating,
       bortle: newLog.bortle
@@ -105,18 +106,20 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
-                {user ? user.displayName || 'Observador Google' : 'Observador StellaWay'}
+                {user
+                  ? user.displayName || t('profileObserverGoogle', 'Observador Google Conectado')
+                  : t('profileObserverLocal', 'Modo Observador Local')}
               </h1>
               <span className="px-2.5 py-0.5 rounded-full bg-[#082F49]/90 text-[#7DD3FC] border border-[#38BDF8]/40 text-[10px] font-extrabold uppercase tracking-wider">
-                {user ? 'Google & Firebase Sync' : 'Socio Starlight'}
+                {user ? t('profileFirebaseSync', 'Sincronizado en Nube Firebase') : t('profileStarlightMember', 'Miembro Certificado StellaWay')}
               </span>
             </div>
 
             <p className="text-sm text-[#BAE6FD] font-medium mt-1">
-              {user ? user.email : 'Ubicación principal: Castellón & Arco Mediterráneo'}
+              {user ? user.email : t('profileDefaultLoc', 'Castellón / Penyagolosa (España)')}
             </p>
             <p className="text-xs text-[#7DD3FC] font-extrabold font-['JetBrains_Mono'] mt-1">
-              Días de observación registrados: {displayLogs.length} sesiones
+              {t('profileLoggedSessions', 'Sesiones Registradas')}: {displayLogs.length} {t('profileSessionsUnit', 'observaciones')}
             </p>
           </div>
         </div>
@@ -129,7 +132,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
               className="px-5 py-3 rounded-2xl bg-red-900/40 hover:bg-red-900/60 text-red-200 border border-red-500/40 font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
             >
               <span className="material-symbols-outlined text-base">logout</span>
-              Cerrar Sesión Google
+              {t('profileLogoutGoogle', 'Cerrar Sesión Google')}
             </button>
           ) : (
             <button
@@ -142,17 +145,17 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
                 <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
                 <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
               </svg>
-              Conectar Google Account
+              {t('profileConnectGoogle', 'Conectar Cuenta Google')}
             </button>
           )}
 
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('open-install-modal'))}
             className="px-5 py-3 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/50 font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
-            title="Añadir icono a la pantalla de inicio"
+            title={t('profileInstallTitle', 'Poner el icono de la estrella dorada en pantalla de inicio')}
           >
             <span className="material-symbols-outlined text-lg">install_mobile</span>
-            Instalar en Móvil
+            {t('profileInstallMobile', 'Instalar App en Móvil')}
           </button>
 
           <button
@@ -167,7 +170,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
             <span className="material-symbols-outlined text-lg">
               {nightVision ? 'visibility_off' : 'visibility'}
             </span>
-            {nightVision ? 'Luz Roja ON' : 'Luz Roja'}
+            {nightVision ? t('profileRedOn', 'Modo Luz Roja ACTIVADO') : t('profileRedOff', 'Activar Modo Luz Roja (660nm)')}
           </button>
         </div>
       </div>
@@ -182,30 +185,51 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans']">
-                  Almacenamiento Selectivo Offline (Salidas Nocturnas)
+                  {t('profileOfflineTitle', 'Almacenamiento Offline / Sin Cobertura')}
                 </h3>
                 <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[11px] font-bold border border-emerald-400/30">
-                  Ligero
+                  {t('profileOfflineBadge', 'Caché en Dispositivo')}
                 </span>
               </div>
               <p className="text-xs text-white/80 mt-1 leading-relaxed">
-                Solo se guardan las búsquedas y miradores que tú decides añadir. Espacio en tu móvil: <strong className="text-amber-300 font-mono">{stats.approxKB} KB</strong> ({stats.spotsCount} miradores, {stats.eventsCount} eventos).
+                {t('profileOfflineSummaryPrefix', 'Guardados actualmente:')}{' '}
+                <strong className="text-amber-300 font-mono">{stats.approxKB} KB</strong> ({stats.spotsCount} {t('profileOfflineSpotsUnit', 'miradores')}, {stats.eventsCount} {t('profileOfflineEventsUnit', 'eventos')}).
               </p>
             </div>
           </div>
 
           {stats.totalItems > 0 && (
-            <button
-              onClick={() => {
-                if (window.confirm('¿Deseas vaciar todos los miradores y eventos guardados offline en este teléfono?')) {
-                  clearAllOfflineData();
-                }
-              }}
-              className="px-4 py-2.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-200 border border-red-500/40 text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 self-start sm:self-auto"
-            >
-              <span className="material-symbols-outlined text-sm">delete_sweep</span>
-              Liberar Espacio Offline
-            </button>
+            confirmClearOffline ? (
+              <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearAllOfflineData();
+                    setConfirmClearOffline(false);
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white border border-red-400 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                >
+                  <span className="material-symbols-outlined text-sm">check</span>
+                  {t('profileOfflineConfirmBtn', 'Confirmar borrado')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmClearOffline(false)}
+                  className="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-all cursor-pointer"
+                >
+                  {t('profileOfflineCancelBtn', 'Cancelar')}
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmClearOffline(true)}
+                className="px-4 py-2.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-200 border border-red-500/40 text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 self-start sm:self-auto"
+              >
+                <span className="material-symbols-outlined text-sm">delete_sweep</span>
+                {t('profileOfflineClearBtn', 'Borrar datos offline')}
+              </button>
+            )
           )}
         </div>
       </div>
@@ -215,12 +239,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
         <div>
           <h2 className="text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
             <span className="material-symbols-outlined text-[#7DD3FC]">edit_note</span>
-            Diario de Observación
+            {t('profileDiaryTitle', 'Diario de Observación Astronómica')}
           </h2>
           <p className="text-xs text-[#BAE6FD] font-medium">
             {user
-              ? 'Tus observaciones se sincronizan automáticamente en la nube con Firebase'
-              : 'Registra tus observaciones nocturnas (conéctate con Google para sincronizar entre dispositivos)'}
+              ? t('profileDiaryCloud', 'Respaldo Nube Activo')
+              : t('profileDiaryLocal', 'Guardado Localmente')}
           </p>
         </div>
 
@@ -270,7 +294,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
             <div className="flex items-center justify-between border-b border-[#38BDF8]/40 pb-4 mb-4">
               <h3 className="text-xl font-extrabold text-white flex items-center gap-2 font-['Plus_Jakarta_Sans'] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
                 <span className="material-symbols-outlined text-[#7DD3FC]">edit_note</span>
-                Registrar Salida de Observación
+                {t('profileNewModalTitle', 'Nuevo Registro de Observación')}
               </h3>
               <button 
                 onClick={() => setShowAddModal(false)} 
@@ -282,53 +306,63 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
 
             <form onSubmit={handleAddLog} className="space-y-4 text-sm">
               <div>
-                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Lugar de Observación</label>
+                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">
+                  {t('profileLocLabel', 'Ubicación / Mirador')}
+                </label>
                 <input
                   type="text"
                   value={newLog.location}
                   onChange={(e) => setNewLog({ ...newLog, location: e.target.value })}
                   className="w-full bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl px-3.5 py-2.5 text-white text-sm focus:border-[#7DD3FC] outline-none font-medium placeholder-[#7DD3FC]/50"
-                  placeholder="Ej: Observatorio Penyagolosa"
+                  placeholder={t('profileLocPlaceholder', 'Ej. Ermita de San Juan de Penyagolosa')}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Objetos Observados</label>
+                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">
+                  {t('profileObjLabel', 'Objeto o Fenómeno Observado')}
+                </label>
                 <input
                   type="text"
                   required
                   value={newLog.targetObject}
                   onChange={(e) => setNewLog({ ...newLog, targetObject: e.target.value })}
                   className="w-full bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl px-3.5 py-2.5 text-white text-sm focus:border-[#7DD3FC] outline-none font-medium placeholder-[#7DD3FC]/50"
-                  placeholder="Ej: Saturno, M31 Andrómeda, Orión"
+                  placeholder={t('profileObjPlaceholder', 'Ej. Galaxia de Andrómeda M31 / Perseidas')}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Equipo Utilizado</label>
+                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">
+                  {t('profileEquipLabel', 'Instrumento / Óptica Utilizada')}
+                </label>
                 <input
                   type="text"
                   value={newLog.telescopeEquipment}
                   onChange={(e) => setNewLog({ ...newLog, telescopeEquipment: e.target.value })}
                   className="w-full bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl px-3.5 py-2.5 text-white text-sm focus:border-[#7DD3FC] outline-none font-medium placeholder-[#7DD3FC]/50"
-                  placeholder="Ej: Telescopio 130EQ + Ocular 10mm"
+                  placeholder={t('profileEquipPlaceholder', 'Ej. Dobsonian 200mm / Prismáticos 10x50')}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Notas y Detalles del Seeing</label>
+                <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">
+                  {t('profileNotesLabel', 'Notas de Seeing y Experiencias')}
+                </label>
                 <textarea
                   rows={3}
                   value={newLog.notes}
                   onChange={(e) => setNewLog({ ...newLog, notes: e.target.value })}
                   className="w-full bg-[#082F49]/80 border border-[#38BDF8]/50 rounded-xl px-3.5 py-2.5 text-white text-sm focus:border-[#7DD3FC] outline-none font-medium placeholder-[#7DD3FC]/50"
-                  placeholder="Describe la nitidez, viento, o lo que pudiste apreciar..."
+                  placeholder={t('profileNotesPlaceholder', 'Ej. Cielo muy transparente tras paso de frente, SQM 21.6...')}
                 />
               </div>
 
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Clase Bortle (1-9)</label>
+                  <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">
+                    {t('profileBortleLabel', 'Escala Bortle (1-9)')}
+                  </label>
                   <select
                     value={newLog.bortle}
                     onChange={(e) => setNewLog({ ...newLog, bortle: Number(e.target.value) })}
@@ -343,7 +377,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
                 </div>
 
                 <div className="flex-1">
-                  <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">Valoración (1-5 ★)</label>
+                  <label className="block text-xs font-extrabold text-[#7DD3FC] mb-1">
+                    {t('profileRatingLabel', 'Valoración del Cielo')}
+                  </label>
                   <select
                     value={newLog.rating}
                     onChange={(e) => setNewLog({ ...newLog, rating: Number(e.target.value) })}
@@ -351,7 +387,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
                   >
                     {[5, 4, 3, 2, 1].map((r) => (
                       <option key={r} value={r} className="bg-[#082F49] text-white">
-                        {r} Estrellas
+                        {r} {t('profileStarsUnit', 'Estrellas')}
                       </option>
                     ))}
                   </select>
@@ -364,13 +400,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ nightVision, setNightV
                   onClick={() => setShowAddModal(false)}
                   className="px-5 py-2.5 rounded-2xl bg-[#082F49]/80 hover:bg-[#082F49] text-white font-bold text-xs uppercase border border-[#38BDF8]/40 cursor-pointer"
                 >
-                  Cancelar
+                  {t('profileCancelBtn', 'Cancelar')}
                 </button>
                 <button
                   type="submit"
                   className="px-6 py-2.5 rounded-2xl bg-[#0284C7] hover:bg-[#0369A1] text-white font-extrabold text-xs uppercase cursor-pointer transition-all shadow-md border border-[#7DD3FC]/50"
                 >
-                  Guardar en Diario
+                  {t('profileSaveLogBtn', 'Guardar en Diario')}
                 </button>
               </div>
             </form>

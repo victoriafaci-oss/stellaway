@@ -60,7 +60,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
       >
         <div>
           <div className="px-6 mb-8 flex items-center justify-between">
-            <StellaLogo size="md" showSubtitle subtitleText="Astroturismo" />
+            <StellaLogo size="md" showSubtitle subtitleText={t('appSubtitle', 'Astroturismo')} />
             <button
               onClick={() => setDrawerOpen(false)}
               className="text-white/70 hover:text-white p-1.5 rounded-lg bg-white/10"
@@ -83,10 +83,10 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                   <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'welcome' ? "'FILL' 1" : "'FILL' 0" }}>
                     stars
                   </span>
-                  <span>{t('subscription', 'Planes & Suscripción')}</span>
+                  <span>{t('welcomePlansKicker', 'Planes & Suscripción')}</span>
                 </div>
                 <span className="px-2 py-0.5 rounded-full bg-amber-400 text-black text-[9px] font-black uppercase">
-                  48h Gratis
+                  {t('free48hBadge', '48h Gratis')}
                 </span>
               </button>
             </li>
@@ -200,7 +200,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                       <circle cx="73" cy="15.5" r="2.5" fill="#FFFFFF" />
                     </svg>
                   </div>
-                  <span>Instalar App en Móvil</span>
+                  <span>{t('installAppMobileBtn', 'Instalar App en Móvil')}</span>
                 </div>
                 <span className="material-symbols-outlined text-sm text-[#F0DEAA]">install_mobile</span>
               </button>
@@ -238,7 +238,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
             <button
               type="button"
               onClick={() => setNightVision((prev) => !prev)}
-              aria-label={nightVision ? 'Desactivar Luz Roja' : 'Activar Luz Roja'}
+              aria-label={nightVision ? t('landingNvAriaOn', 'Desactivar Modo Visión Nocturna') : t('landingNvAriaOff', 'Activar Modo Luz Roja')}
               className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center cursor-pointer ${
                 nightVision ? 'bg-[#FF3B30] justify-end' : 'bg-white/20 justify-start'
               }`}
@@ -256,7 +256,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
             onClick={() => handleNavClick('dashboard')}
             className="px-6 mb-8 cursor-pointer flex items-center gap-3 group"
           >
-            <StellaLogo size="lg" showSubtitle subtitleText="Astroturismo" />
+            <StellaLogo size="lg" showSubtitle subtitleText={t('appSubtitle', 'Astroturismo')} />
           </div>
 
           <ul className="flex flex-col gap-1.5 px-4 font-body-md text-body-md">
@@ -274,10 +274,10 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                   <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: activeTab === 'welcome' ? "'FILL' 1" : "'FILL' 0" }}>
                     stars
                   </span>
-                  <span>{t('subscription', 'Planes & Suscripción')}</span>
+                  <span>{t('welcomePlansKicker', 'Planes & Suscripción')}</span>
                 </div>
                 <span className="px-2 py-0.5 rounded-full bg-amber-400 text-black text-[9px] font-black uppercase">
-                  48h Gratis
+                  {t('free48hBadge', '48h Gratis')}
                 </span>
               </button>
             </li>
@@ -464,7 +464,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
                 <p className="text-xs font-bold uppercase tracking-wider">
                   {nightVision ? t('redLightActive', 'Modo Luz Roja Activo') : t('redLight', 'Luz Roja / Campo')}
                 </p>
-                <p className="text-[10px] text-white/60">Preserva visión nocturna</p>
+                <p className="text-[10px] text-white/60">{t('preserveNightVision', 'Preserva tu visión nocturna')}</p>
               </div>
             </div>
             <div

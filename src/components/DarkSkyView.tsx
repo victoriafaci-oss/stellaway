@@ -1,7 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DARKSKY_ZONES, DarkSkyZone } from '../data/darkSkyData';
 import { useLanguage } from '../context/LanguageContext';
 import { getRegionImage } from '../lib/regionImages';
+import {
+  watchLivePosition,
+  buildGoogleMapsDirectionsUrl,
+  LiveCoordinates,
+} from '../lib/locationService';
+import {
+  translateCountry,
+  translateContinent,
+  translateDarkSkyCategory,
+  translateRegionInfo,
+  matchesMultilingualSearch,
+} from '../lib/locationI18n';
 
 interface DarkSkyViewProps {
   onGoBack?: () => void;
@@ -36,7 +48,7 @@ const LEGENDARY_ENCLAVES_BY_COUNTRY: Record<string, string[]> = {
 };
 
 export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedContinent, setSelectedContinent] = useState<string>('todos');
   const [selectedCountry, setSelectedCountry] = useState('todos');
@@ -45,10 +57,19 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
 
   // Geolocation & Distance Calculation State
-  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [userCoords, setUserCoords] = useState<LiveCoordinates | null>(null);
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [sortByDistance, setSortByDistance] = useState<boolean>(false);
   const [geoMessage, setGeoMessage] = useState<string | null>(null);
+  const stopWatchRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (stopWatchRef.current) {
+        stopWatchRef.current();
+      }
+    };
+  }, []);
 
   // Haversine formula to compute distance in km
   const calculateDistanceKm = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -66,46 +87,49 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
   };
 
   const handleDetectLocation = () => {
-    setIsLocating(true);
-    setGeoMessage('Detectando posición GPS...');
-
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          setUserCoords({ lat, lng });
-          setSortByDistance(true);
-          setGeoMessage(`Ubicación detectada (${lat.toFixed(2)}°, ${lng.toFixed(2)}°). Lugares ordenados por cercanía.`);
-          setIsLocating(false);
-          setTimeout(() => setGeoMessage(null), 4000);
-        },
-        (error) => {
-          console.warn('Geolocation error:', error);
-          // Default to central Spain (Madrid) for testing
-          setUserCoords({ lat: 40.4168, lng: -3.7038 });
-          setSortByDistance(true);
-          setGeoMessage('Ubicación aproximada establecida. Lugares ordenados por distancia.');
-          setIsLocating(false);
-          setTimeout(() => setGeoMessage(null), 4000);
-        },
-        { timeout: 7000 }
-      );
-    } else {
-      setGeoMessage('Tu navegador no soporta geolocalización.');
-      setIsLocating(false);
+    if (stopWatchRef.current) {
+      stopWatchRef.current();
+      stopWatchRef.current = null;
     }
+
+    setIsLocating(true);
+    setGeoMessage(t('dsLocatingMsg'));
+
+    stopWatchRef.current = watchLivePosition(
+      (coords) => {
+        setUserCoords(coords);
+        setSortByDistance(true);
+        setGeoMessage(
+          `${t('dsGeoDetectedPrefix')} ${coords.lat.toFixed(4)}°, ${coords.lng.toFixed(4)}°${
+            coords.accuracyMeters ? ` (±${coords.accuracyMeters} m)` : ''
+          }`
+        );
+        setIsLocating(false);
+      },
+      (errCode) => {
+        setIsLocating(false);
+        setSortByDistance(false);
+        setUserCoords(null);
+        if (errCode === 'denied') {
+          setGeoMessage(t('gpsErrDenied', 'Permiso GPS denegado. Activa la ubicación en tu navegador/móvil para obtener tus coordenadas reales.'));
+        } else if (errCode === 'unsupported') {
+          setGeoMessage(t('dsGeoNoSupport'));
+        } else {
+          setGeoMessage(t('gpsErrUnavailable', 'No se pudo obtener señal GPS todavía. Comprueba la ubicación del dispositivo.'));
+        }
+      }
+    );
   };
 
   // Continents list
   const continents: Array<{ id: string; label: string; icon: string }> = [
-    { id: 'todos', label: 'Todo el Mundo', icon: 'public' },
-    { id: 'Europa', label: 'Europa', icon: 'euro' },
-    { id: 'América del Norte', label: 'N. América', icon: 'travel_explore' },
-    { id: 'América del Sur', label: 'S. América', icon: 'south_america' },
-    { id: 'África', label: 'África', icon: 'landscape' },
-    { id: 'Asia', label: 'Asia & O. Medio', icon: 'temple_buddhist' },
-    { id: 'Oceanía', label: 'Oceanía', icon: 'water' },
+    { id: 'todos', label: t('dsContWorld'), icon: 'public' },
+    { id: 'Europa', label: t('dsContEurope'), icon: 'euro' },
+    { id: 'América del Norte', label: t('dsContNA'), icon: 'travel_explore' },
+    { id: 'América del Sur', label: t('dsContSA'), icon: 'south_america' },
+    { id: 'África', label: t('dsContAfrica'), icon: 'landscape' },
+    { id: 'Asia', label: t('dsContAsia'), icon: 'temple_buddhist' },
+    { id: 'Oceanía', label: t('dsContOceania'), icon: 'water' },
   ];
 
   // Extract unique countries
@@ -116,23 +140,25 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
     if (selectedContinent !== 'todos' && zone.continent !== selectedContinent) {
       return false;
     }
-    if (selectedCountry !== 'todos' && !zone.country.toLowerCase().includes(selectedCountry.toLowerCase())) {
+    if (selectedCountry !== 'todos' && zone.country.toLowerCase() !== selectedCountry.toLowerCase()) {
       return false;
     }
     if (selectedCategory !== 'todos' && zone.category !== selectedCategory) {
       return false;
     }
     if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase().trim();
-    return (
-      zone.name.toLowerCase().includes(q) ||
-      zone.region.toLowerCase().includes(q) ||
-      zone.country.toLowerCase().includes(q) ||
-      zone.continent.toLowerCase().includes(q) ||
-      zone.categoryLabel.toLowerCase().includes(q) ||
-      zone.description.toLowerCase().includes(q) ||
-      zone.highlights.some((h) => h.toLowerCase().includes(q))
-    );
+    return matchesMultilingualSearch(searchQuery, [
+      zone.name,
+      zone.region,
+      zone.country,
+      translateCountry(zone.country, language),
+      zone.continent,
+      translateContinent(zone.continent, language),
+      zone.categoryLabel,
+      translateDarkSkyCategory(zone.categoryLabel, language),
+      zone.description,
+      ...zone.highlights,
+    ]);
   });
 
   // Sort by distance if enabled
@@ -160,13 +186,13 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
       <header className="py-4 md:py-6 max-w-4xl">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 text-xs font-bold uppercase tracking-wider mb-3 shadow-sm">
           <span className="material-symbols-outlined text-sm">public</span>
-          <span>DarkSky International (IDA) • Catálogo Mundial</span>
+          <span>{t('dsHeaderBadge')}</span>
         </div>
         <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-3 font-['Plus_Jakarta_Sans'] tracking-tight">
-          Zonas & Lugares DarkSky en el Mundo
+          {t('dsHeaderTitle')}
         </h1>
         <p className="text-base text-[#e1e3e4]/80 leading-relaxed font-['Plus_Jakarta_Sans']">
-          Localiza y explora santuarios, parques y reservas de cielo oscuro certificados en cualquier continente por DarkSky International (antigua IDA), con mapas de coordenadas, valores fotométricos SQM y guías de observación.
+          {t('dsHeaderDesc')}
         </p>
       </header>
 
@@ -178,10 +204,10 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
           </div>
           <div>
             <h3 className="text-sm font-extrabold text-cyan-200 font-['Plus_Jakarta_Sans']">
-              ¿Qué certifica DarkSky International (IDA)?
+              {t('dsEduTitle')}
             </h3>
             <p className="text-xs text-white/80 mt-0.5 leading-relaxed">
-              Territorios protegidos donde rige oscuridad absoluta (Bortle 1-3), auditorías científicas anuales y protección del cielo nocturno como patrimonio natural de la humanidad.
+              {t('dsEduDesc')}
             </p>
           </div>
         </div>
@@ -197,12 +223,12 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
                 ? 'bg-emerald-500 text-black border border-emerald-400'
                 : 'bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-400/40'
             }`}
-            title="Calcular distancias desde tu posición GPS actual"
+            title={t('dsNearMeBtn')}
           >
             <span className="material-symbols-outlined text-sm">
               {isLocating ? 'sync' : 'near_me'}
             </span>
-            <span>{isLocating ? 'Localizando...' : sortByDistance ? 'Ordenado por GPS' : 'Cercanos a Mí'}</span>
+            <span>{isLocating ? t('dsLocatingBtn') : sortByDistance ? t('dsSortedGpsBtn') : t('dsNearMeBtn')}</span>
           </button>
 
           <a
@@ -211,7 +237,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
             rel="noopener noreferrer"
             className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/90 border border-white/20 text-xs font-bold transition-all shrink-0 flex items-center gap-1"
           >
-            <span>IDA Oficial</span>
+            <span>{t('dsOfficialIdaBtn')}</span>
             <span className="material-symbols-outlined text-xs">open_in_new</span>
           </a>
         </div>
@@ -262,7 +288,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
           <div className="flex items-center gap-2 text-cyan-300">
             <span className="material-symbols-outlined text-2xl">travel_explore</span>
             <h2 className="text-base sm:text-lg font-extrabold font-['Plus_Jakarta_Sans']">
-              Localizador Mundial de Sitios DarkSky
+              {t('dsSearchPanelTitle')}
             </h2>
           </div>
 
@@ -277,7 +303,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
               }`}
             >
               <span className="material-symbols-outlined text-sm">grid_view</span>
-              <span>Fichas ({filteredZones.length})</span>
+              <span>{t('dsCardsTab')} ({filteredZones.length})</span>
             </button>
 
             <button
@@ -289,7 +315,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
               }`}
             >
               <span className="material-symbols-outlined text-sm">map</span>
-              <span>Mapa Mundial</span>
+              <span>{t('dsWorldMapTab')}</span>
             </button>
           </div>
         </div>
@@ -303,14 +329,14 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar por nombre, país, continente, parque o santuario (ej. Aiguamolls, Atacama, Grand Canyon, Aoraki, Namib)..."
+            placeholder={t('dsSearchPlaceholder')}
             className="w-full bg-black/40 text-white placeholder-white/40 pl-11 pr-10 py-3 rounded-2xl border border-white/20 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 text-sm sm:text-base font-['Plus_Jakarta_Sans'] transition-all shadow-inner"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors"
-              title="Limpiar búsqueda"
+              title={t('spotsClearSearch')}
             >
               <span className="material-symbols-outlined text-lg">close</span>
             </button>
@@ -322,17 +348,17 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
           {/* Country Selector */}
           <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/10">
             <span className="text-xs text-cyan-300 font-bold shrink-0 font-['JetBrains_Mono']">
-              País:
+              {t('dsCountryLabel')}
             </span>
             <select
               value={selectedCountry}
               onChange={(e) => setSelectedCountry(e.target.value)}
               className="bg-black/60 text-white text-xs font-bold rounded-lg px-2.5 py-1.5 border border-white/20 focus:outline-none focus:border-cyan-400 flex-1 cursor-pointer"
             >
-              <option value="todos">Todos los Países del Mundo ({countries.length - 1})</option>
+              <option value="todos">{t('dsAllCountriesWorld')} ({countries.length - 1})</option>
               {countries.filter((c) => c !== 'todos').map((c) => (
                 <option key={c} value={c}>
-                  {c}
+                  {translateCountry(c, language)}
                 </option>
               ))}
             </select>
@@ -341,18 +367,18 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
           {/* Category Selector */}
           <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-white/10">
             <span className="text-xs text-cyan-300 font-bold shrink-0 font-['JetBrains_Mono']">
-              Categoría DarkSky:
+              {t('dsCatLabel')}
             </span>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="bg-black/60 text-white text-xs font-bold rounded-lg px-2.5 py-1.5 border border-white/20 focus:outline-none focus:border-cyan-400 flex-1 cursor-pointer"
             >
-              <option value="todos">Todas las Categorías Oficiales</option>
-              <option value="International Dark Sky Sanctuary">Santuarios Internacionales (Máxima Pureza Bortle 1)</option>
-              <option value="International Dark Sky Reserve">Reservas Internacionales</option>
-              <option value="International Dark Sky Park">Parques Internacionales</option>
-              <option value="Dark Sky Community">Comunidades de Cielo Oscuro</option>
+              <option value="todos">{t('dsAllOfficialCats')}</option>
+              <option value="International Dark Sky Sanctuary">{t('dsCatSanctuaryOpt')}</option>
+              <option value="International Dark Sky Reserve">{t('dsCatReserveOpt')}</option>
+              <option value="International Dark Sky Park">{t('dsCatParkOpt')}</option>
+              <option value="Dark Sky Community">{t('dsCatCommunityOpt')}</option>
             </select>
           </div>
         </div>
@@ -370,26 +396,29 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
             for (const c of Object.keys(LEGENDARY_ENCLAVES_BY_COUNTRY)) {
               if (c !== 'global' && q.includes(c.toLowerCase())) return c;
             }
-            if (q.includes('chile') || q.includes('atacama') || q.includes('paranal') || q.includes('elqui') || q.includes('challes') || q.includes('fray')) return 'Chile';
-            if (q.includes('argentina') || q.includes('leoncito') || q.includes('villavicencio') || q.includes('mendoza') || q.includes('barreal')) return 'Argentina';
-            if (q.includes('españa') || q.includes('spain') || q.includes('aiguamolls') || q.includes('andaluc')) return 'España';
-            if (q.includes('portugal') || q.includes('alqueva')) return 'Portugal';
-            if (q.includes('eeuu') || q.includes('usa') || q.includes('canyon') || q.includes('death valley')) return 'Estados Unidos';
-            if (q.includes('canada') || q.includes('jasper') || q.includes('wood buffalo')) return 'Canadá';
-            if (q.includes('mexico') || q.includes('san pedro martir')) return 'México';
-            if (q.includes('colombia') || q.includes('tatacoa')) return 'Colombia';
-            if (q.includes('brasil') || q.includes('desengano')) return 'Brasil';
-            if (q.includes('reino unido') || q.includes('uk') || q.includes('england') || q.includes('scotland') || q.includes('wales')) return 'Reino Unido';
-            if (q.includes('alemania') || q.includes('germany') || q.includes('westhavelland')) return 'Alemania';
-            if (q.includes('austria') || q.includes('eisenwurzen')) return 'Austria';
-            if (q.includes('irlanda') || q.includes('kerry')) return 'Irlanda';
-            if (q.includes('japon') || q.includes('japan') || q.includes('bisei')) return 'Japón';
-            if (q.includes('china') || q.includes('huanglong')) return 'China';
+            if (q.includes('chile') || q.includes('chili') || q.includes('cile') || q.includes('atacama') || q.includes('paranal') || q.includes('elqui') || q.includes('challes') || q.includes('fray')) return 'Chile';
+            if (q.includes('argentina') || q.includes('argentine') || q.includes('argentinien') || q.includes('leoncito') || q.includes('villavicencio') || q.includes('mendoza') || q.includes('barreal')) return 'Argentina';
+            if (q.includes('españa') || q.includes('espana') || q.includes('spain') || q.includes('espagne') || q.includes('spanien') || q.includes('spagna') || q.includes('espanha') || q.includes('aiguamolls') || q.includes('andaluc')) return 'España';
+            if (q.includes('portugal') || q.includes('portogallo') || q.includes('alqueva')) return 'Portugal';
+            if (q.includes('eeuu') || q.includes('usa') || q.includes('united states') || q.includes('stati uniti') || q.includes('etats') || q.includes('vereinigte') || q.includes('canyon') || q.includes('death valley')) return 'Estados Unidos';
+            if (q.includes('canada') || q.includes('kanada') || q.includes('jasper') || q.includes('wood buffalo')) return 'Canadá';
+            if (q.includes('mexico') || q.includes('mexique') || q.includes('mexiko') || q.includes('messico') || q.includes('san pedro martir')) return 'México';
+            if (q.includes('colombia') || q.includes('colombie') || q.includes('tatacoa')) return 'Colombia';
+            if (q.includes('brasil') || q.includes('brazil') || q.includes('bresil') || q.includes('brasile') || q.includes('desengano')) return 'Brasil';
+            if (q.includes('reino unido') || q.includes('uk') || q.includes('united kingdom') || q.includes('royaume') || q.includes('england') || q.includes('scotland') || q.includes('wales')) return 'Reino Unido';
+            if (q.includes('alemania') || q.includes('germany') || q.includes('allemagne') || q.includes('deutschland') || q.includes('germania') || q.includes('westhavelland')) return 'Alemania';
+            if (q.includes('austria') || q.includes('autriche') || q.includes('osterreich') || q.includes('eisenwurzen')) return 'Austria';
+            if (q.includes('irlanda') || q.includes('ireland') || q.includes('irlande') || q.includes('irland') || q.includes('kerry')) return 'Irlanda';
+            if (q.includes('francia') || q.includes('france') || q.includes('frankreich') || q.includes('pic du midi')) return 'Francia';
+            if (q.includes('nueva zelanda') || q.includes('new zealand') || q.includes('neuseeland') || q.includes('aoraki')) return 'Nueva Zelanda';
+            if (q.includes('australia') || q.includes('australie') || q.includes('australien')) return 'Australia';
+            if (q.includes('japon') || q.includes('japan') || q.includes('giappone') || q.includes('bisei')) return 'Japón';
+            if (q.includes('china') || q.includes('chine') || q.includes('cina') || q.includes('huanglong')) return 'China';
             if (q.includes('taiwan') || q.includes('hehuan')) return 'Taiwán';
-            if (q.includes('india') || q.includes('hanle')) return 'India';
+            if (q.includes('india') || q.includes('inde') || q.includes('indien') || q.includes('hanle')) return 'India';
             if (q.includes('corea') || q.includes('korea') || q.includes('yeongyang')) return 'Corea del Sur';
-            if (q.includes('namibia') || q.includes('namibrand')) return 'Namibia';
-            if (q.includes('jordania') || q.includes('wadi rum')) return 'Jordania';
+            if (q.includes('namibia') || q.includes('namibie') || q.includes('namibrand')) return 'Namibia';
+            if (q.includes('jordania') || q.includes('jordan') || q.includes('jordanie') || q.includes('wadi rum')) return 'Jordania';
             if (selectedContinent === 'América del Sur') return 'Chile';
             return 'global';
           })();
@@ -399,7 +428,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
           return (
             <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
               <span className="text-white/60 text-[11px] font-semibold">
-                Enclaves Legendarios{activeEnclaveCountry !== 'global' ? ` (${activeEnclaveCountry})` : ''}:
+                {t('dsLegendaryEnclaves')}{activeEnclaveCountry !== 'global' ? ` (${translateCountry(activeEnclaveCountry, language)})` : ''}:
               </span>
               {currentEnclaves.map((tag) => (
                 <button
@@ -428,14 +457,14 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
             <div>
               <h3 className="text-lg font-extrabold text-white flex items-center gap-2 font-['Plus_Jakarta_Sans']">
                 <span className="material-symbols-outlined text-cyan-300">public</span>
-                Mapa de Coordenadas de Cielos Oscuros Mundiales
+                {t('dsMapTitle')}
               </h3>
               <p className="text-xs text-cyan-200/80">
-                Pasa el cursor o haz clic en cualquier enclave para consultar coordenadas, país y ficha oficial.
+                {t('dsMapDesc')}
               </p>
             </div>
             <span className="text-xs font-['JetBrains_Mono'] px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 font-bold self-start">
-              {filteredZones.length} Localizaciones en el Mapa
+              {filteredZones.length} {t('dsMapCountSuffix')}
             </span>
           </div>
 
@@ -482,7 +511,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
                       {zone.name}
                     </span>
                     <span className="text-[10px] text-cyan-300 font-bold">
-                      {zone.country} • Bortle {zone.bortleClass}
+                      {translateCountry(zone.country, language)} • Bortle {zone.bortleClass}
                     </span>
                   </div>
                 </div>
@@ -494,15 +523,15 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
-                  <span className="text-[11px]">Enclave DarkSky</span>
+                  <span className="text-[11px]">{t('dsMapPinEnclave')}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                  <span className="text-[11px]">Enclave Seleccionado</span>
+                  <span className="text-[11px]">{t('dsMapPinSelected')}</span>
                 </div>
               </div>
               <span className="text-[11px] text-cyan-200">
-                Haz clic en cualquier punto para abrir su ficha completa.
+                {t('dsMapClickHint')}
               </span>
             </div>
           </div>
@@ -523,26 +552,29 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
             }
           }
           if (!activeCountry) {
-            if (q.includes('chile') || q.includes('atacama') || q.includes('paranal') || q.includes('elqui') || q.includes('challes') || q.includes('fray')) activeCountry = 'Chile';
-            else if (q.includes('argentina') || q.includes('leoncito') || q.includes('villavicencio') || q.includes('mendoza') || q.includes('barreal')) activeCountry = 'Argentina';
-            else if (q.includes('españa') || q.includes('spain') || q.includes('aiguamolls') || q.includes('andaluc')) activeCountry = 'España';
-            else if (q.includes('portugal') || q.includes('alqueva')) activeCountry = 'Portugal';
-            else if (q.includes('eeuu') || q.includes('usa') || q.includes('canyon')) activeCountry = 'Estados Unidos';
-            else if (q.includes('canada') || q.includes('jasper')) activeCountry = 'Canadá';
-            else if (q.includes('mexico') || q.includes('san pedro martir')) activeCountry = 'México';
-            else if (q.includes('colombia') || q.includes('tatacoa')) activeCountry = 'Colombia';
-            else if (q.includes('brasil') || q.includes('desengano')) activeCountry = 'Brasil';
-            else if (q.includes('reino unido') || q.includes('uk')) activeCountry = 'Reino Unido';
-            else if (q.includes('alemania') || q.includes('germany')) activeCountry = 'Alemania';
-            else if (q.includes('austria')) activeCountry = 'Austria';
-            else if (q.includes('irlanda')) activeCountry = 'Irlanda';
-            else if (q.includes('japon')) activeCountry = 'Japón';
-            else if (q.includes('china')) activeCountry = 'China';
+            if (q.includes('chile') || q.includes('chili') || q.includes('cile') || q.includes('atacama') || q.includes('paranal') || q.includes('elqui') || q.includes('challes') || q.includes('fray')) activeCountry = 'Chile';
+            else if (q.includes('argentina') || q.includes('argentine') || q.includes('argentinien') || q.includes('leoncito') || q.includes('villavicencio') || q.includes('mendoza') || q.includes('barreal')) activeCountry = 'Argentina';
+            else if (q.includes('españa') || q.includes('espana') || q.includes('spain') || q.includes('espagne') || q.includes('spanien') || q.includes('spagna') || q.includes('aiguamolls') || q.includes('andaluc')) activeCountry = 'España';
+            else if (q.includes('portugal') || q.includes('portogallo') || q.includes('alqueva')) activeCountry = 'Portugal';
+            else if (q.includes('eeuu') || q.includes('usa') || q.includes('united states') || q.includes('stati uniti') || q.includes('etats') || q.includes('canyon')) activeCountry = 'Estados Unidos';
+            else if (q.includes('canada') || q.includes('kanada') || q.includes('jasper')) activeCountry = 'Canadá';
+            else if (q.includes('mexico') || q.includes('mexique') || q.includes('san pedro martir')) activeCountry = 'México';
+            else if (q.includes('colombia') || q.includes('colombie') || q.includes('tatacoa')) activeCountry = 'Colombia';
+            else if (q.includes('brasil') || q.includes('brazil') || q.includes('bresil') || q.includes('desengano')) activeCountry = 'Brasil';
+            else if (q.includes('reino unido') || q.includes('uk') || q.includes('united kingdom') || q.includes('royaume')) activeCountry = 'Reino Unido';
+            else if (q.includes('alemania') || q.includes('germany') || q.includes('allemagne') || q.includes('deutschland') || q.includes('germania')) activeCountry = 'Alemania';
+            else if (q.includes('austria') || q.includes('autriche') || q.includes('osterreich')) activeCountry = 'Austria';
+            else if (q.includes('irlanda') || q.includes('ireland') || q.includes('irlande')) activeCountry = 'Irlanda';
+            else if (q.includes('francia') || q.includes('france') || q.includes('frankreich')) activeCountry = 'Francia';
+            else if (q.includes('nueva zelanda') || q.includes('new zealand') || q.includes('neuseeland')) activeCountry = 'Nueva Zelanda';
+            else if (q.includes('australia') || q.includes('australie')) activeCountry = 'Australia';
+            else if (q.includes('japon') || q.includes('japan') || q.includes('giappone')) activeCountry = 'Japón';
+            else if (q.includes('china') || q.includes('chine')) activeCountry = 'China';
             else if (q.includes('taiwan')) activeCountry = 'Taiwán';
-            else if (q.includes('india')) activeCountry = 'India';
-            else if (q.includes('corea')) activeCountry = 'Corea del Sur';
-            else if (q.includes('namibia')) activeCountry = 'Namibia';
-            else if (q.includes('jordania')) activeCountry = 'Jordania';
+            else if (q.includes('india') || q.includes('inde')) activeCountry = 'India';
+            else if (q.includes('corea') || q.includes('korea')) activeCountry = 'Corea del Sur';
+            else if (q.includes('namibia') || q.includes('namibie')) activeCountry = 'Namibia';
+            else if (q.includes('jordania') || q.includes('jordan') || q.includes('jordanie')) activeCountry = 'Jordania';
             else if (filteredZones.length > 0) activeCountry = filteredZones[0].country;
           }
         }
@@ -558,12 +590,13 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
           }
         }
 
-        const activeRegionInfo = getRegionImage({
+        const rawRegionInfo = getRegionImage({
           country: activeCountry,
           region: activeRegion,
           category: 'DarkSky',
         });
-        if (!activeRegionInfo) return null;
+        if (!rawRegionInfo) return null;
+        const activeRegionInfo = translateRegionInfo(rawRegionInfo, language);
         return (
           <div className="rounded-3xl overflow-hidden border border-cyan-400/40 shadow-2xl bg-gradient-to-br from-[#120826] via-[#1a0f35] to-[#0c051a] mb-8 relative">
             <div className="relative h-60 sm:h-72 w-full overflow-hidden">
@@ -576,7 +609,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
               <div className="absolute inset-0 bg-gradient-to-t from-[#0c051a] via-[#0c051a]/50 to-transparent" />
               <div className="absolute top-4 left-4 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-cyan-400/40 text-[11px] font-extrabold text-cyan-300 shadow-lg flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-sm text-cyan-300">image</span>
-                Imagen Representativa: {activeRegionInfo.region || activeRegionInfo.pais}
+                {t('dsRepImgLabel')}: {activeRegionInfo.region || activeRegionInfo.pais}
               </div>
               <div className="absolute bottom-4 left-4 right-4 space-y-1">
                 <span className="text-xs uppercase font-extrabold text-cyan-300 tracking-wider block font-['JetBrains_Mono']">
@@ -593,10 +626,10 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
             <div className="px-5 py-3 bg-black/60 border-t border-cyan-400/20 flex flex-wrap items-center justify-between text-xs text-cyan-200 gap-2">
               <span className="flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-sm text-cyan-300">verified</span>
-                Imagen del territorio. Las localizaciones inferiores muestran su ficha técnica oficial sin fotos redundantes.
+                {t('dsTerritoryHint')}
               </span>
               <span className="font-['JetBrains_Mono'] font-bold text-amber-300 bg-black/50 px-2.5 py-0.5 rounded-lg border border-white/10">
-                {filteredZones.length} santuarios y parques DarkSky
+                {filteredZones.length} {t('dsSanctuariesSuffix')}
               </span>
             </div>
           </div>
@@ -621,7 +654,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <div className="flex flex-wrap items-center gap-1.5">
                       <span className="px-2.5 py-0.5 rounded-full bg-cyan-950/90 text-cyan-300 border border-cyan-400/50 text-[10px] font-extrabold tracking-wider uppercase shadow-sm">
-                        {zone.categoryLabel}
+                        {translateDarkSkyCategory(zone.categoryLabel, language)}
                       </span>
                       <span className="px-2.5 py-0.5 rounded-full bg-black/70 text-amber-300 border border-amber-400/40 text-[10px] font-extrabold">
                         Bortle {zone.bortleClass}
@@ -636,7 +669,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
 
                   <div>
                     <div className="flex items-center gap-1 text-[11px] text-cyan-300/90 font-bold mb-0.5 font-['JetBrains_Mono']">
-                      <span>{zone.region} • {zone.country}</span>
+                      <span>{zone.region} • {translateCountry(zone.country, language)}</span>
                     </div>
                     <h3 className="text-lg font-black text-white font-['Plus_Jakarta_Sans'] group-hover:text-cyan-200 transition-colors leading-tight">
                       {zone.name}
@@ -645,15 +678,15 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
 
                   <div className="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-white/10 text-xs font-['JetBrains_Mono']">
                     <div className="bg-black/50 p-2 rounded-xl border border-white/10">
-                      <span className="text-cyan-300 block text-[9px] uppercase font-bold">SQM Cielo</span>
+                      <span className="text-cyan-300 block text-[9px] uppercase font-bold">{t('dsSqmLabel')}</span>
                       <span className="text-white font-black text-sm">{zone.sqm.toFixed(2)}</span>
                     </div>
                     <div className="bg-black/50 p-2 rounded-xl border border-white/10">
-                      <span className="text-cyan-300 block text-[9px] uppercase font-bold">Área Protegida</span>
-                      <span className="text-white font-black text-[11px] truncate block">{zone.areaKm2 ? `${zone.areaKm2.toLocaleString()} km²` : 'Protegida'}</span>
+                      <span className="text-cyan-300 block text-[9px] uppercase font-bold">{t('dsProtectedAreaLabel')}</span>
+                      <span className="text-white font-black text-[11px] truncate block">{zone.areaKm2 ? `${zone.areaKm2.toLocaleString()} km²` : t('dsProtectedBadge')}</span>
                     </div>
                     <div className="bg-black/50 p-2 rounded-xl border border-white/10">
-                      <span className="text-cyan-300 block text-[9px] uppercase font-bold">Año Sello</span>
+                      <span className="text-cyan-300 block text-[9px] uppercase font-bold">{t('dsYearLabel')}</span>
                       <span className="text-white font-black text-sm">{zone.designationYear}</span>
                     </div>
                   </div>
@@ -665,7 +698,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
                     <div className="flex items-center gap-1.5 text-xs text-cyan-300/90 font-bold mb-1">
                       <span className="material-symbols-outlined text-sm">location_on</span>
                       <span>
-                        {zone.region} • {zone.country} ({zone.continent})
+                        {zone.region} • {translateCountry(zone.country, language)} ({translateContinent(zone.continent, language)})
                       </span>
                     </div>
                     <h3 className="text-lg font-extrabold text-white font-['Plus_Jakarta_Sans'] group-hover:text-cyan-200 transition-colors leading-snug">
@@ -697,7 +730,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
                   className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                 >
                   <span className="material-symbols-outlined text-sm">info</span>
-                  <span>Ficha e Información</span>
+                  <span>{t('dsSheetInfoBtn')}</span>
                 </button>
 
                 <a
@@ -705,7 +738,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all shrink-0 cursor-pointer"
-                  title="Ver localización en Google Maps"
+                  title={t('dsGMapsTitle')}
                 >
                   <span className="material-symbols-outlined text-base">map</span>
                 </a>
@@ -718,9 +751,9 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
       {filteredZones.length === 0 && (
         <div className="p-12 text-center rounded-3xl bg-white/5 border border-white/10 max-w-xl mx-auto my-8">
           <span className="material-symbols-outlined text-5xl text-cyan-400 mb-2">travel_explore</span>
-          <h3 className="text-lg font-bold text-white">No se encontraron zonas DarkSky</h3>
+          <h3 className="text-lg font-bold text-white">{t('dsEmptyTitle')}</h3>
           <p className="text-xs text-white/60 mt-1">
-            Prueba a buscar con otro término, cambia de continente o selecciona "Todo el Mundo".
+            {t('dsEmptyDesc')}
           </p>
           <button
             onClick={() => {
@@ -731,7 +764,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
             }}
             className="mt-4 px-4 py-2 rounded-xl bg-cyan-500 text-black font-extrabold text-xs cursor-pointer shadow-md"
           >
-            Restablecer Filtros
+            {t('dsResetBtn')}
           </button>
         </div>
       )}
@@ -751,17 +784,17 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-400/50 text-[10px] font-extrabold uppercase tracking-wider inline-block">
-                    {selectedZone.categoryLabel}
+                    {translateDarkSkyCategory(selectedZone.categoryLabel, language)}
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-black/60 text-white/80 border border-white/20 text-[10px] font-bold">
-                    {selectedZone.continent} • Designado en {selectedZone.designationYear}
+                    {translateContinent(selectedZone.continent, language)} • {t('dsDesignatedIn')} {selectedZone.designationYear}
                   </span>
                 </div>
                 <h2 className="text-xl sm:text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans']">
                   {selectedZone.name}
                 </h2>
                 <p className="text-xs text-cyan-200/90 font-bold mt-0.5">
-                  {selectedZone.region} ({selectedZone.country})
+                  {selectedZone.region} ({translateCountry(selectedZone.country, language)})
                 </p>
               </div>
 
@@ -778,7 +811,8 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
             <div className="overflow-y-auto space-y-4 py-4 pr-1 text-xs">
               {/* Image banner */}
               {(() => {
-                const regImg = getRegionImage(selectedZone);
+                const rawRegImg = getRegionImage(selectedZone);
+                const regImg = rawRegImg ? translateRegionInfo(rawRegImg, language) : null;
                 const displayImg = regImg?.imageUrl || selectedZone.imageUrl;
                 return (
                   <div className="relative h-56 rounded-2xl overflow-hidden border border-white/10 shadow-md bg-black">
@@ -791,7 +825,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
                     {regImg && (
                       <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-cyan-400/40 text-[10px] font-bold text-cyan-300">
-                        🌄 Territorio: {regImg.region || selectedZone.region} ({regImg.nombre_localizacion_principal})
+                        🌄 {t('dsTerritoryPrefix')} {regImg.region || selectedZone.region} ({regImg.nombre_localizacion_principal})
                       </div>
                     )}
                     <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white font-['JetBrains_Mono'] text-xs">
@@ -809,7 +843,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
               {/* Description */}
               <div className="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-1.5">
                 <h4 className="text-xs font-extrabold text-cyan-300 uppercase tracking-wider font-['JetBrains_Mono']">
-                  Descripción Oficial & Valor de Conservación
+                  {t('dsDescTitle')}
                 </h4>
                 <p className="text-xs text-white/90 leading-relaxed">{selectedZone.description}</p>
               </div>
@@ -817,7 +851,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
               {/* Key Highlights */}
               <div className="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-2">
                 <h4 className="text-xs font-extrabold text-cyan-300 uppercase tracking-wider font-['JetBrains_Mono']">
-                  Criterios Científicos Cumplidos (DarkSky IDA)
+                  {t('dsCriteriaTitle')}
                 </h4>
                 <ul className="space-y-1.5">
                   {selectedZone.highlights.map((h, idx) => (
@@ -834,7 +868,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
               {/* Observing Sites */}
               <div className="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-2">
                 <h4 className="text-xs font-extrabold text-cyan-300 uppercase tracking-wider font-['JetBrains_Mono']">
-                  Miradores y Puntos de Observación Dentro de la Zona
+                  {t('dsSitesTitle')}
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {selectedZone.keyObservingSites.map((site, idx) => (
@@ -851,7 +885,7 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
 
               {/* Best Season */}
               <div className="p-3 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between text-xs">
-                <span className="font-bold text-cyan-200">Mejor Época de Observación:</span>
+                <span className="font-bold text-cyan-200">{t('dsBestSeasonLabel')}:</span>
                 <span className="font-extrabold text-white">{selectedZone.bestSeason}</span>
               </div>
             </div>
@@ -865,19 +899,19 @@ export const DarkSkyView: React.FC<DarkSkyViewProps> = ({ onGoBack, onGoHome }) 
                   rel="noopener noreferrer"
                   className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5 transition-all"
                 >
-                  <span>Ficha DarkSky Oficial</span>
+                  <span>{t('dsOfficialSheetBtn')}</span>
                   <span className="material-symbols-outlined text-sm">open_in_new</span>
                 </a>
               )}
 
               <a
-                href={`https://www.google.com/maps/dir/?api=1&destination=${selectedZone.latitude},${selectedZone.longitude}`}
+                href={buildGoogleMapsDirectionsUrl(selectedZone.latitude, selectedZone.longitude, userCoords)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs flex items-center gap-1.5 transition-all shadow-md ml-auto cursor-pointer"
               >
                 <span className="material-symbols-outlined text-sm">navigation</span>
-                <span>Cómo Llegar (Ruta GPS Mundial)</span>
+                <span>{t('dsDirectionsBtn')}</span>
               </a>
             </div>
           </div>

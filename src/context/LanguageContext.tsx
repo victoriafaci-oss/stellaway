@@ -22,8 +22,15 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('stellaway_language') as SupportedLanguage;
       const validLangs: SupportedLanguage[] = ['es', 'en', 'de', 'fr', 'pt', 'it'];
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = params.get('lang') as SupportedLanguage | null;
+      if (urlLang && validLangs.includes(urlLang)) {
+        setLanguageState(urlLang);
+        localStorage.setItem('stellaway_language', urlLang);
+        return;
+      }
+      const saved = localStorage.getItem('stellaway_language') as SupportedLanguage;
       if (saved && validLangs.includes(saved)) {
         setLanguageState(saved);
       }
@@ -32,12 +39,21 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, []);
 
+  useEffect(() => {
+    try {
+      document.documentElement.lang = language;
+    } catch {
+      // ignore
+    }
+  }, [language]);
+
   const setLanguage = (lang: SupportedLanguage) => {
     const validLangs: SupportedLanguage[] = ['es', 'en', 'de', 'fr', 'pt', 'it'];
     if (validLangs.includes(lang)) {
       setLanguageState(lang);
       try {
         localStorage.setItem('stellaway_language', lang);
+        document.documentElement.lang = lang;
       } catch {
         // ignore
       }

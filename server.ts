@@ -2,6 +2,17 @@ import express from "express";
 import path from "path";
 import { GoogleGenAI } from "@google/genai";
 import { generateAstronomicalAnswer } from "./src/lib/astronomyKnowledge";
+import {
+  SupportedLanguage,
+  normalizeLanguage,
+  getStripeLocale,
+  withStripeLocale,
+  getLocalizedPlanName,
+} from "./src/lib/i18nHelpers";
+import {
+  assembleReportFromRawApis,
+  buildOpenMeteoForecastUrl,
+} from "./src/lib/weatherService";
 
 async function startServer() {
   const app = express();
@@ -30,47 +41,199 @@ async function startServer() {
     res.json({ status: "ok", app: "StellaWay" });
   });
 
-  // Astronomical Weather & Sky conditions API
-  app.get("/api/sky-conditions", (req, res) => {
-    res.json({
-      location: "Castellón & Arco Mediterráneo",
-      bortleClass: 3,
-      seeing: "Excelente",
-      seeingScore: 9.2,
-      cloudCover: {
-        low: 12,
-        mid: 4,
-        high: 0,
-      },
-      relativeHumidity: 42,
-      transparency: "Óptima (5.8 mag)",
-      windSpeedKmH: 7,
-      moonPhase: "Luna Nueva (2% iluminada)",
-      planetaryEnergy: {
-        planet: "Saturno en Tránsito",
-        summary: "Momento de introspección y calma. Ideal para observación profunda de cielo profundo.",
-        visibility: "Visibilidad excelente a partir de las 22:30h en dirección Sudeste."
-      },
-      eclipse2026Date: "2026-08-12T19:30:00Z"
-    });
+  // Real-Time Astronomical Weather & 7-Day Sky Conditions API (Open-Meteo + 7Timer! Astro)
+  app.get("/api/sky-conditions", async (req, res) => {
+    const lang = normalizeLanguage(req.query.lang);
+    try {
+      const rawLat = req.query.lat !== undefined ? Number(req.query.lat) : NaN;
+      const rawLon = req.query.lon !== undefined ? Number(req.query.lon) : NaN;
+      const cityQuery = typeof req.query.city === "string" ? req.query.city.trim() : "";
+
+      let lat = rawLat;
+      let lng = rawLon;
+      let locationName = typeof req.query.name === "string" ? req.query.name.trim() : "";
+      let region = typeof req.query.region === "string" ? req.query.region.trim() : "";
+      let country = typeof req.query.country === "string" ? req.query.country.trim() : "";
+      let elevationMeters: number | undefined;
+
+      if (Number.isFinite(lat) && Number.isFinite(lng)) {
+        if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+          return res.status(400).json({ error: "Invalid latitude or longitude range" });
+        }
+        if (!locationName) {
+          locationName = `${lat.toFixed(4)}°, ${lng.toFixed(4)}°`;
+        }
+      } else if (cityQuery) {
+        const geoRes = await fetch(
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
+            cityQuery
+          )}&count=1&language=${lang}&format=json`
+        );
+        if (!geoRes.ok) {
+          return res.status(502).json({ error: "Geocoding upstream unavailable" });
+        }
+        const geoJson = (await geoRes.json()) as any;
+        const first = Array.isArray(geoJson?.results) ? geoJson.results[0] : null;
+        if (!first) {
+          return res.status(404).json({ error: "Location not found" });
+        }
+        lat = Number(first.latitude);
+        lng = Number(first.longitude);
+        locationName = String(first.name || cityQuery);
+        region = first.admin1 ? String(first.admin1) : "";
+        country = first.country ? String(first.country) : "";
+        elevationMeters = typeof first.elevation === "number" ? Math.round(first.elevation) : undefined;
+      } else {
+        return res.status(400).json({ error: "Provide valid lat/lon coordinates or city query" });
+      }
+
+      const [omRes, stRes] = await Promise.all([
+        fetch(buildOpenMeteoForecastUrl(lat, lng), { signal: AbortSignal.timeout(8000) }),
+        fetch(
+          `https://www.7timer.info/bin/api.pl?lon=${lng.toFixed(3)}&lat=${lat.toFixed(
+            3
+          )}&product=astro&output=json`,
+          { signal: AbortSignal.timeout(4500) }
+        ).catch(() => null),
+      ]);
+
+      if (!omRes.ok) {
+        return res.status(502).json({ error: "Open-Meteo weather upstream unavailable" });
+      }
+      const omData = await omRes.json();
+      let sevenTimerData: any = null;
+      if (stRes && stRes.ok) {
+        try {
+          sevenTimerData = await stRes.json();
+        } catch {
+          sevenTimerData = null;
+        }
+      }
+
+      const report = assembleReportFromRawApis({
+        lat,
+        lng,
+        locationName,
+        region,
+        country,
+        elevationMeters,
+        openMeteoData: omData,
+        sevenTimerData,
+      });
+
+      return res.json(report);
+    } catch (err) {
+      console.error("Sky conditions upstream error:", err);
+      return res.status(502).json({ error: "Failed to retrieve real-time sky conditions" });
+    }
+  });
+
+  // Real-Time NOAA SWPC Planetary K-Index (Kp 0-9) for Auroras
+  app.get("/api/aurora-kp", async (_req, res) => {
+    try {
+      const noaaRes = await fetch(
+        "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json",
+        { signal: AbortSignal.timeout(5000) }
+      );
+      if (!noaaRes.ok) {
+        return res.status(502).json({ error: "NOAA SWPC upstream unavailable" });
+      }
+      const rows = (await noaaRes.json()) as any[];
+      if (!Array.isArray(rows) || rows.length < 2) {
+        return res.status(502).json({ error: "Invalid NOAA SWPC payload" });
+      }
+      const latest = rows[rows.length - 1];
+      const timeTag = Array.isArray(latest) ? String(latest[0] || "") : String(latest?.time_tag || "");
+      const kpRaw = Array.isArray(latest) ? Number(latest[1]) : Number(latest?.Kp);
+      if (!Number.isFinite(kpRaw)) {
+        return res.status(502).json({ error: "Invalid NOAA Kp reading" });
+      }
+      return res.json({
+        kpIndex: Number(kpRaw.toFixed(2)),
+        timeTagUTC: timeTag,
+        source: "NOAA Space Weather Prediction Center (SWPC)",
+      });
+    } catch (err) {
+      console.error("NOAA SWPC Kp error:", err);
+      return res.status(502).json({ error: "Failed to retrieve NOAA Kp index" });
+    }
   });
 
   // Payment Gateways Configuration & Status Verification API
   app.get("/api/payment-config", (req, res) => {
+    const lang = normalizeLanguage(req.query.lang);
     const stripeSecret = process.env.STRIPE_SECRET_KEY;
     const stripePublic = process.env.STRIPE_PUBLIC_KEY;
     const paypalId = process.env.PAYPAL_CLIENT_ID;
     const paypalSecret = process.env.PAYPAL_CLIENT_SECRET;
 
-    // Official Stripe Payment Links created on this account
+    // Official Stripe Payment Links with dynamic ?locale=<lang>
     const stripePaymentLinks: Record<string, string> = {
-      free48h: "https://buy.stripe.com/dRmcN7a3J5YTdZpcoV1ZS06",
-      mensual: "https://buy.stripe.com/8x28wR0t9drldZp9cJ1ZS04",
-      anual: "https://buy.stripe.com/8x24gBgs7bjd3kL0Gd1ZS05"
+      free48h: withStripeLocale("https://buy.stripe.com/dRmcN7a3J5YTdZpcoV1ZS06", lang),
+      mensual: withStripeLocale("https://buy.stripe.com/8x28wR0t9drldZp9cJ1ZS04", lang),
+      anual: withStripeLocale("https://buy.stripe.com/8x24gBgs7bjd3kL0Gd1ZS05", lang)
     };
+
+    const planCopy: Record<SupportedLanguage, {
+      freePeriod: string; freeDesc: string;
+      monPeriod: string; monDesc: string;
+      annPeriod: string; annDesc: string;
+    }> = {
+      es: {
+        freePeriod: "48 horas",
+        freeDesc: "Acceso total a mapas Bortle, telemetría y asistente IA con verificación telefónica o Stripe.",
+        monPeriod: "/ mes",
+        monDesc: "Suscripción recurrente mensual cancelable en cualquier momento.",
+        annPeriod: "/ año",
+        annDesc: "Ahorro del 58% para 12 meses completos de astroturismo y Eclipses 2026–2027."
+      },
+      en: {
+        freePeriod: "48 hours",
+        freeDesc: "Full access to Bortle maps, live telemetry & AI assistant via phone SMS or Stripe.",
+        monPeriod: "/ month",
+        monDesc: "Monthly recurring subscription, cancel anytime with zero fees.",
+        annPeriod: "/ year",
+        annDesc: "Save 58% for 12 full months of astrotourism and Solar Eclipses 2026–2027."
+      },
+      fr: {
+        freePeriod: "48 heures",
+        freeDesc: "Accès complet aux cartes Bortle, télémétrie et assistant IA via SMS ou Stripe.",
+        monPeriod: "/ mois",
+        monDesc: "Abonnement mensuel résiliable à tout moment sans frais.",
+        annPeriod: "/ an",
+        annDesc: "Économisez 58% sur 12 mois complets d'astrotourisme et Éclipses 2026–2027."
+      },
+      pt: {
+        freePeriod: "48 horas",
+        freeDesc: "Acesso total a mapas Bortle, telemetria e assistente IA via SMS ou Stripe.",
+        monPeriod: "/ mês",
+        monDesc: "Assinatura mensal cancelável a qualquer momento sem custos.",
+        annPeriod: "/ ano",
+        annDesc: "Poupe 58% por 12 meses completos de astroturismo e Eclipses 2026–2027."
+      },
+      it: {
+        freePeriod: "48 ore",
+        freeDesc: "Accesso totale a mappe Bortle, telemetria e assistente IA via SMS o Stripe.",
+        monPeriod: "/ mese",
+        monDesc: "Abbonamento mensile disdicibile in qualsiasi momento senza penali.",
+        annPeriod: "/ anno",
+        annDesc: "Risparmi il 58% per 12 mesi completi di astroturismo ed Eclissi 2026–2027."
+      },
+      de: {
+        freePeriod: "48 Stunden",
+        freeDesc: "Vollzugriff auf Bortle-Karten, Telemetrie & KI-Assistent per SMS oder Stripe.",
+        monPeriod: "/ Monat",
+        monDesc: "Monatliches Abo, jederzeit ohne Gebühren kündbar.",
+        annPeriod: "/ Jahr",
+        annDesc: "58% sparen für volle 12 Monate Astrotourismus & Sonnenfinsternisse 2026–2027."
+      },
+    };
+    const copy = planCopy[lang];
 
     res.json({
       status: "ready",
+      language: lang,
+      locale: getStripeLocale(lang),
       gateways: {
         stripe: {
           connected: Boolean(stripeSecret || stripePublic),
@@ -91,27 +254,27 @@ async function startServer() {
       plans: [
         {
           id: "free2days",
-          name: "Prueba Gratuita 48 Horas",
+          name: getLocalizedPlanName("free2days", lang),
           priceEur: 0,
-          period: "48 horas",
-          description: "Acceso total a mapas Bortle, telemetría y asistente IA con verificación telefónica o registro en Stripe.",
+          period: copy.freePeriod,
+          description: copy.freeDesc,
           requiresPhoneVerification: true,
           stripePaymentLink: stripePaymentLinks.free48h
         },
         {
           id: "mensual",
-          name: "Plan Mensual Starlight Pro",
+          name: getLocalizedPlanName("mensual", lang),
           priceEur: 3.99,
-          period: "/ mes",
-          description: "Suscripción recurrente mensual cancelable en cualquier momento.",
+          period: copy.monPeriod,
+          description: copy.monDesc,
           stripePaymentLink: stripePaymentLinks.mensual
         },
         {
           id: "anual",
-          name: "Plan Anual Starlight Pass",
+          name: getLocalizedPlanName("anual", lang),
           priceEur: 19.99,
-          period: "/ año",
-          description: "Ahorro del 58% para 12 meses completos de astroturismo y Gran Eclipse 2026.",
+          period: copy.annPeriod,
+          description: copy.annDesc,
           stripePaymentLink: stripePaymentLinks.anual
         }
       ]
@@ -120,36 +283,55 @@ async function startServer() {
 
   // Stripe Checkout Session & Direct Payment API
   app.post("/api/create-stripe-checkout", async (req, res) => {
+    const lang = normalizeLanguage(req.body?.language);
     try {
-      const { planId, customerEmail, customerName } = req.body;
+      const { planId, customerEmail } = req.body || {};
       const stripeSecret = process.env.STRIPE_SECRET_KEY;
+      const stripeLocale = getStripeLocale(lang);
 
-      const priceMap: Record<string, { amount: number; name: string; priceId: string; paymentLink: string; mode: "payment" | "subscription" }> = {
+      const priceMap: Record<string, { amount: number; priceId: string; paymentLink: string; mode: "payment" | "subscription" }> = {
         free2days: {
           amount: 0,
-          name: "Prueba Gratuita 48 Horas (0,00 €)",
           priceId: "price_1U1PIWQ89S9ikvKueNnPq4yI",
           paymentLink: "https://buy.stripe.com/dRmcN7a3J5YTdZpcoV1ZS06",
           mode: "payment"
         },
         mensual: {
           amount: 399,
-          name: "Plan Mensual Starlight Pro (3,99 €)",
           priceId: "price_1U1nTbQ89S9ikvKuVViJ2ajL",
           paymentLink: "https://buy.stripe.com/8x28wR0t9drldZp9cJ1ZS04",
           mode: "subscription"
         },
         anual: {
           amount: 1999,
-          name: "Plan Anual Starlight Pass (19,99 €)",
           priceId: "price_1U1nTbQ89S9ikvKuZwdY0YZK",
           paymentLink: "https://buy.stripe.com/8x24gBgs7bjd3kL0Gd1ZS05",
           mode: "subscription"
         }
       };
 
-      const plan = priceMap[planId] || priceMap.anual;
+      const resolvedPlanId = priceMap[planId] ? planId : "anual";
+      const plan = priceMap[resolvedPlanId];
+      const localizedPlanName = getLocalizedPlanName(resolvedPlanId, lang);
+      const localizedPaymentLink = withStripeLocale(plan.paymentLink, lang);
       const transactionId = "st_txn_" + Math.random().toString(36).substring(2, 12).toUpperCase();
+
+      const sessionCreatedMsg: Record<SupportedLanguage, string> = {
+        es: `Sesión de Stripe Checkout generada para ${localizedPlanName}.`,
+        en: `Stripe Checkout session generated for ${localizedPlanName}.`,
+        fr: `Session Stripe Checkout générée pour ${localizedPlanName}.`,
+        pt: `Sessão Stripe Checkout gerada para ${localizedPlanName}.`,
+        it: `Sessione Stripe Checkout creata per ${localizedPlanName}.`,
+        de: `Stripe-Checkout-Sitzung für ${localizedPlanName} erstellt.`,
+      };
+      const directSuccessMsg: Record<SupportedLanguage, string> = {
+        es: `Suscripción ${localizedPlanName} procesada y activada con éxito mediante Stripe.`,
+        en: `Subscription ${localizedPlanName} processed and activated via Stripe.`,
+        fr: `Abonnement ${localizedPlanName} traité et activé via Stripe.`,
+        pt: `Assinatura ${localizedPlanName} processada e ativada via Stripe.`,
+        it: `Abbonamento ${localizedPlanName} elaborato e attivato tramite Stripe.`,
+        de: `Abonnement ${localizedPlanName} erfolgreich über Stripe aktiviert.`,
+      };
 
       // If Stripe secret key is available, create a real Stripe Checkout Session
       if (stripeSecret) {
@@ -159,8 +341,9 @@ async function startServer() {
           params.append("line_items[0][price]", plan.priceId);
           params.append("line_items[0][quantity]", "1");
           params.append("mode", plan.mode);
-          params.append("success_url", `${appUrl}/?pago=exito&plan=${planId}&session_id={CHECKOUT_SESSION_ID}`);
-          params.append("cancel_url", `${appUrl}/?pago=cancelado`);
+          params.append("locale", stripeLocale);
+          params.append("success_url", `${appUrl}/?pago=exito&plan=${resolvedPlanId}&lang=${lang}&session_id={CHECKOUT_SESSION_ID}`);
+          params.append("cancel_url", `${appUrl}/?pago=cancelado&lang=${lang}`);
           if (customerEmail) {
             params.append("customer_email", customerEmail);
           }
@@ -180,16 +363,18 @@ async function startServer() {
             return res.json({
               success: true,
               provider: "Stripe",
+              locale: stripeLocale,
               checkoutUrl: sessionData.url,
-              paymentLink: plan.paymentLink,
+              paymentLink: localizedPaymentLink,
               sessionId: sessionData.id,
               transactionId,
-              planId,
+              planId: resolvedPlanId,
+              planName: localizedPlanName,
               amountEur: plan.amount / 100,
               customerEmail: customerEmail || "usuario@stellaway.org",
               status: "pending_checkout",
               activatedAt: new Date().toISOString(),
-              message: `Sesión de Stripe Checkout generada para ${plan.name}.`
+              message: sessionCreatedMsg[lang]
             });
           }
         } catch (stripeErr) {
@@ -201,18 +386,28 @@ async function startServer() {
       res.json({
         success: true,
         provider: "Stripe",
-        paymentLink: plan.paymentLink,
+        locale: stripeLocale,
+        paymentLink: localizedPaymentLink,
         transactionId,
-        planId,
+        planId: resolvedPlanId,
+        planName: localizedPlanName,
         amountEur: plan.amount / 100,
         customerEmail: customerEmail || "usuario@stellaway.org",
         status: "succeeded",
         activatedAt: new Date().toISOString(),
-        message: `Suscripción ${plan.name} procesada y activada con éxito mediante Stripe.`
+        message: directSuccessMsg[lang]
       });
     } catch (error) {
       console.error("Error creating Stripe checkout:", error);
-      res.status(500).json({ error: "Error procesando el pago con Stripe" });
+      const errMsg: Record<SupportedLanguage, string> = {
+        es: "Error procesando el pago con Stripe",
+        en: "Error processing payment with Stripe",
+        fr: "Erreur lors du traitement du paiement Stripe",
+        pt: "Erro ao processar pagamento na Stripe",
+        it: "Errore nell'elaborazione del pagamento Stripe",
+        de: "Fehler bei der Stripe-Zahlungsverarbeitung",
+      };
+      res.status(500).json({ error: errMsg[lang] });
     }
   });
 
@@ -223,7 +418,7 @@ async function startServer() {
       const stripeSecret = process.env.STRIPE_SECRET_KEY;
 
       if (!sessionId || !stripeSecret) {
-        return res.json({ success: false, message: "Sesión o clave no configurada" });
+        return res.json({ success: false, message: "Session or key not configured" });
       }
 
       const stripeRes = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`, {
@@ -242,15 +437,16 @@ async function startServer() {
       }
 
       res.json({ success: false });
-    } catch (err) {
+    } catch {
       res.json({ success: false });
     }
   });
 
   // PayPal Order Creation & Capture
   app.post("/api/create-paypal-order", async (req, res) => {
+    const lang = normalizeLanguage(req.body?.language);
     try {
-      const { planId, customerEmail } = req.body;
+      const { planId, customerEmail } = req.body || {};
       const orderId = "PAYPAL-ORD-" + Math.random().toString(36).substring(2, 10).toUpperCase();
 
       const priceMap: Record<string, number> = {
@@ -259,60 +455,111 @@ async function startServer() {
       };
 
       const amount = priceMap[planId] || 19.99;
+      const msgMap: Record<SupportedLanguage, string> = {
+        es: `Pago completado con éxito mediante PayPal (${amount} €). Suscripción StellaWay activada.`,
+        en: `Payment completed successfully via PayPal (€${amount}). StellaWay subscription activated.`,
+        fr: `Paiement effectué avec succès via PayPal (${amount} €). Abonnement StellaWay activé.`,
+        pt: `Pagamento concluído com sucesso via PayPal (€ ${amount}). Assinatura StellaWay ativada.`,
+        it: `Pagamento completato con successo tramite PayPal (€ ${amount}). Abbonamento StellaWay attivato.`,
+        de: `Zahlung erfolgreich über PayPal abgeschlossen (${amount} €). StellaWay-Abo aktiviert.`,
+      };
 
       res.json({
         success: true,
         provider: "PayPal",
+        locale: lang,
         orderId,
         status: "COMPLETED",
         amountEur: amount,
         customerEmail: customerEmail || "usuario@paypal.com",
         activatedAt: new Date().toISOString(),
-        message: `Pago completado con éxito mediante PayPal (${amount} €). Suscripción StellaWay activada.`
+        message: msgMap[lang]
       });
     } catch (error) {
       console.error("Error creating PayPal order:", error);
-      res.status(500).json({ error: "Error procesando orden PayPal" });
+      const errMap: Record<SupportedLanguage, string> = {
+        es: "Error procesando orden PayPal",
+        en: "Error processing PayPal order",
+        fr: "Erreur lors du traitement de la commande PayPal",
+        pt: "Erro ao processar ordem PayPal",
+        it: "Errore nell'elaborazione dell'ordine PayPal",
+        de: "Fehler bei der PayPal-Bestellung",
+      };
+      res.status(500).json({ error: errMap[lang] });
     }
   });
 
   // Phone SMS verification for 48h Free Trial
   app.post("/api/verify-trial-phone", (req, res) => {
-    const { phone, code } = req.body;
-    const cleanPhone = phone ? phone.trim().replace(/\s+/g, "") : "";
+    const lang = normalizeLanguage(req.body?.language);
+    const { phone, code } = req.body || {};
+    const cleanPhone = phone ? String(phone).trim().replace(/\s+/g, "") : "";
     if (!cleanPhone || cleanPhone.length < 7) {
-      return res.status(400).json({ error: "Número de teléfono inválido." });
+      const invalidErr: Record<SupportedLanguage, string> = {
+        es: "Número de teléfono inválido.",
+        en: "Invalid mobile phone number.",
+        fr: "Numéro de téléphone invalide.",
+        pt: "Número de telefone inválido.",
+        it: "Numero di telefono non valido.",
+        de: "Ungültige Telefonnummer.",
+      };
+      return res.status(400).json({ error: invalidErr[lang] });
     }
 
-    // Mock SMS 4-digit code generator / verification
     if (code) {
-      if (code.length >= 4) {
+      if (String(code).length >= 4) {
+        const verifiedMsg: Record<SupportedLanguage, string> = {
+          es: "Número verificado con éxito. Disfruta de 48 horas de acceso completo a StellaWay.",
+          en: "Phone number verified! Enjoy 48 hours of unlimited access to StellaWay.",
+          fr: "Numéro vérifié avec succès. Profitez de 48 heures d'accès illimité à StellaWay.",
+          pt: "Número verificado com sucesso. Aproveite 48 horas de acesso completo ao StellaWay.",
+          it: "Numero verificato con successo. Goditi 48 ore di accesso completo a StellaWay.",
+          de: "Nummer erfolgreich verifiziert! Genieße 48 Stunden Vollzugriff auf StellaWay.",
+        };
         return res.json({
           success: true,
           verified: true,
+          language: lang,
           phone: cleanPhone,
           trialHours: 48,
           expiresAt: new Date(Date.now() + 48 * 3600 * 1000).toISOString(),
-          message: "Número verificado con éxito. Disfruta de 48 horas de acceso completo a StellaWay."
+          message: verifiedMsg[lang]
         });
       } else {
-        return res.status(400).json({ error: "Código de verificación SMS incorrecto." });
+        const badCodeErr: Record<SupportedLanguage, string> = {
+          es: "Código de verificación SMS incorrecto.",
+          en: "Invalid SMS verification code.",
+          fr: "Code de vérification SMS incorrect.",
+          pt: "Código de verificação SMS incorreto.",
+          it: "Codice di verifica SMS non valido.",
+          de: "Ungültiger SMS-Bestätigungscode.",
+        };
+        return res.status(400).json({ error: badCodeErr[lang] });
       }
     }
 
-    // Sending SMS code step
+    const smsSentMsg: Record<SupportedLanguage, string> = {
+      es: `Código SMS enviado al ${cleanPhone}. Introduce el código para activar las 48 horas de prueba.`,
+      en: `SMS code sent to ${cleanPhone}. Enter the code to activate your 48-hour free trial.`,
+      fr: `Code SMS envoyé au ${cleanPhone}. Saisissez le code pour activer vos 48 heures d'essai.`,
+      pt: `Código SMS enviado para ${cleanPhone}. Introduza o código para ativar as 48 horas de teste.`,
+      it: `Codice SMS inviato a ${cleanPhone}. Inserisci il codice per attivare le 48 ore di prova.`,
+      de: `SMS-Code an ${cleanPhone} gesendet. Gib den Code ein, um deinen 48h-Test zu aktivieren.`,
+    };
     return res.json({
       success: true,
       smsSent: true,
+      language: lang,
       phone: cleanPhone,
-      message: `Código SMS enviado al ${cleanPhone}. Introduce el código para activar las 48 horas de prueba.`
+      message: smsSentMsg[lang]
     });
   });
 
   // Official Subscription Cancellation / Unsubscribe API (Direct Stripe Integration & Consumer Protection)
   app.post("/api/cancel-subscription", async (req, res) => {
+    const lang = normalizeLanguage(req.body?.language);
     try {
-      const { contact, reason, reference, timestamp, plan, subscriptionId } = req.body;
+      const { contact, reason, reference, timestamp, plan, subscriptionId } = req.body || {};
       const cancelRef = reference || ("BAJA-" + Date.now().toString(36).toUpperCase() + "-" + Math.floor(1000 + Math.random() * 9000));
       const cancelDate = timestamp || new Date().toISOString();
       const stripeSecret = process.env.STRIPE_SECRET_KEY;
@@ -321,10 +568,8 @@ async function startServer() {
       const stripeSubscriptionIds: string[] = [];
       let stripeNote = "";
 
-      // 1. If Stripe Secret Key is present, communicate directly with Stripe API
       if (stripeSecret) {
         try {
-          // Direct subscription ID cancellation if provided (e.g. sub_12345)
           if (subscriptionId && typeof subscriptionId === "string" && subscriptionId.startsWith("sub_")) {
             const delRes = await fetch(`https://api.stripe.com/v1/subscriptions/${subscriptionId}`, {
               method: "DELETE",
@@ -337,11 +582,10 @@ async function startServer() {
             if (delData && (delData.status === "canceled" || delData.id)) {
               stripeCancelled = true;
               stripeSubscriptionIds.push(delData.id);
-              stripeNote = `Suscripción ${delData.id} cancelada de forma inmediata en la pasarela Stripe.`;
+              stripeNote = `Stripe ID: ${delData.id}`;
             }
           }
 
-          // Search Stripe by email if contact is an email address
           const emailQuery = (contact && typeof contact === "string" && contact.includes("@")) ? contact.trim() : null;
           if (emailQuery) {
             const custRes = await fetch(`https://api.stripe.com/v1/customers?email=${encodeURIComponent(emailQuery)}`, {
@@ -351,7 +595,6 @@ async function startServer() {
 
             if (custData && custData.data && Array.isArray(custData.data)) {
               for (const cust of custData.data) {
-                // Fetch active subscriptions for this customer in Stripe
                 const subRes = await fetch(`https://api.stripe.com/v1/subscriptions?customer=${cust.id}&status=active`, {
                   headers: { "Authorization": `Bearer ${stripeSecret}` }
                 });
@@ -359,7 +602,6 @@ async function startServer() {
 
                 if (subData && subData.data && Array.isArray(subData.data)) {
                   for (const sub of subData.data) {
-                    // Cancel active subscription in Stripe
                     const delRes = await fetch(`https://api.stripe.com/v1/subscriptions/${sub.id}`, {
                       method: "DELETE",
                       headers: { "Authorization": `Bearer ${stripeSecret}` }
@@ -374,7 +616,7 @@ async function startServer() {
               }
 
               if (stripeSubscriptionIds.length > 0) {
-                stripeNote = `Se han cancelado ${stripeSubscriptionIds.length} suscripciones activas en Stripe (${stripeSubscriptionIds.join(", ")}).`;
+                stripeNote = `Stripe IDs cancelled: ${stripeSubscriptionIds.join(", ")}`;
               }
             }
           }
@@ -383,32 +625,81 @@ async function startServer() {
         }
       }
 
-      console.log(`[Subscription Cancellation] Ref: ${cancelRef}, Contact: ${contact}, Plan: ${plan}, StripeCancelled: ${stripeCancelled}, StripeSubIds: ${stripeSubscriptionIds.join(", ")}, Reason: ${reason}`);
+      const defaultNotes: Record<SupportedLanguage, { yesStripe: string; noStripe: string; msgStripe: string; msgLocal: string }> = {
+        es: {
+          yesStripe: "Cancelación efectiva en Stripe. No habrá cobros futuros.",
+          noStripe: "Baja registrada en sistema y acceso revocado inmediatamente.",
+          msgStripe: "Tu suscripción ha sido dada de baja directamente en Stripe sin cobros futuros.",
+          msgLocal: "Tu suscripción o prueba gratuita ha sido dada de baja de forma inmediata. No se realizará ningún cargo futuro.",
+        },
+        en: {
+          yesStripe: "Cancellation confirmed on Stripe. Zero future charges.",
+          noStripe: "Cancellation recorded in system and access revoked immediately.",
+          msgStripe: "Your subscription has been cancelled directly on Stripe with no future billing.",
+          msgLocal: "Your subscription or free trial has been cancelled immediately. No future charges will occur.",
+        },
+        fr: {
+          yesStripe: "Résiliation confirmée sur Stripe. Aucun prélèvement futur.",
+          noStripe: "Résiliation enregistrée dans le système et accès révoqué immédiatement.",
+          msgStripe: "Votre abonnement a été résilié directement sur Stripe sans frais futurs.",
+          msgLocal: "Votre abonnement ou essai gratuit a été résilié immédiatement. Aucun frais futur ne sera prélevé.",
+        },
+        pt: {
+          yesStripe: "Cancelamento confirmado na Stripe. Sem cobranças futuras.",
+          noStripe: "Cancelamento registrado no sistema e acesso revogado imediatamente.",
+          msgStripe: "Sua assinatura foi cancelada diretamente na Stripe sem cobranças futuras.",
+          msgLocal: "Sua assinatura ou teste gratuito foi cancelado imediatamente. Não haverá cobranças futuras.",
+        },
+        it: {
+          yesStripe: "Disdetta confermata su Stripe. Nessun addebito futuro.",
+          noStripe: "Disdetta registrata nel sistema e accesso revocato immediatamente.",
+          msgStripe: "Il tuo abbonamento è stato disdetto direttamente su Stripe senza addebiti futuri.",
+          msgLocal: "Il tuo abbonamento o prova gratuita è stato annullato immediatamente. Nessun addebito futuro.",
+        },
+        de: {
+          yesStripe: "Kündigung bei Stripe bestätigt. Keine künftigen Abbuchungen.",
+          noStripe: "Kündigung im System erfasst und Zugang sofort beendet.",
+          msgStripe: "Dein Abonnement wurde direkt bei Stripe ohne weitere Kosten gekündigt.",
+          msgLocal: "Dein Abo oder Gratis-Test wurde sofort gekündigt. Es erfolgen keine weiteren Abbuchungen.",
+        },
+      };
+
+      const locNotes = defaultNotes[lang];
+      console.log(`[Subscription Cancellation] Ref: ${cancelRef}, Contact: ${contact}, Plan: ${plan}, Lang: ${lang}, StripeCancelled: ${stripeCancelled}, Reason: ${reason}`);
 
       return res.json({
         success: true,
+        language: lang,
         reference: cancelRef,
         status: "cancelled",
         effectiveImmediately: true,
         noFutureCharges: true,
         stripeCancelled,
         stripeSubscriptionIds,
-        stripeNote: stripeNote || (stripeCancelled ? "Cancelación efectiva en Stripe. No habrá cobros futuros." : "Baja registrada en sistema y acceso revocado inmediatamente."),
+        stripeNote: stripeNote || (stripeCancelled ? locNotes.yesStripe : locNotes.noStripe),
         timestamp: cancelDate,
-        message: stripeCancelled
-          ? "Tu suscripción ha sido dada de baja directamente en Stripe. Se han cancelado todos los cobros recurrentes de forma automática y definitiva."
-          : "Tu suscripción o prueba gratuita ha sido dada de baja de forma inmediata. No se realizará ningún cargo futuro."
+        message: stripeCancelled ? locNotes.msgStripe : locNotes.msgLocal
       });
     } catch (err) {
       console.error("Error processing cancellation:", err);
-      res.status(500).json({ error: "Error procesando la solicitud de baja" });
+      const errMap: Record<SupportedLanguage, string> = {
+        es: "Error procesando la solicitud de baja",
+        en: "Error processing cancellation request",
+        fr: "Erreur lors du traitement de la résiliation",
+        pt: "Erro ao processar solicitação de cancelamento",
+        it: "Errore nell'elaborazione della richiesta di disdetta",
+        de: "Fehler bei der Verarbeitung der Kündigung",
+      };
+      res.status(500).json({ error: errMap[lang] });
     }
   });
 
   // Stripe Customer Portal Session API (Direct self-service management on billing.stripe.com)
   app.post("/api/create-stripe-portal-session", async (req, res) => {
+    const lang = normalizeLanguage(req.body?.language);
+    const fallbackPortalUrl = withStripeLocale("https://billing.stripe.com/", lang);
     try {
-      const { email } = req.body;
+      const { email } = req.body || {};
       const stripeSecret = process.env.STRIPE_SECRET_KEY;
       const appUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
 
@@ -429,12 +720,13 @@ async function startServer() {
               },
               body: new URLSearchParams({
                 customer: customerId,
-                return_url: `${appUrl}/`
+                locale: getStripeLocale(lang),
+                return_url: `${appUrl}/?lang=${lang}`
               }).toString()
             });
             const portalData = await portalRes.json() as any;
             if (portalData && portalData.url) {
-              return res.json({ success: true, url: portalData.url });
+              return res.json({ success: true, locale: getStripeLocale(lang), url: portalData.url });
             }
           }
         } catch (portalErr) {
@@ -442,22 +734,22 @@ async function startServer() {
         }
       }
 
-      // Default official customer billing portal
-      return res.json({ success: true, url: "https://billing.stripe.com/" });
-    } catch (err) {
-      return res.json({ success: false, url: "https://billing.stripe.com/" });
+      return res.json({ success: true, locale: getStripeLocale(lang), url: fallbackPortalUrl });
+    } catch {
+      return res.json({ success: false, locale: getStripeLocale(lang), url: fallbackPortalUrl });
     }
   });
 
-  // Stargazing AI Assistant Route using Gemini 3.7 Flash with robust fallback connector
+  // Stargazing AI Assistant Route using Gemini 4 Hydrogen with 6-language fallback connector
   app.post("/api/assistant", async (req, res) => {
+    const lang = normalizeLanguage(req.body?.language);
     try {
-      const { message, conversationHistory = [], language = "es" } = req.body;
+      const { message, conversationHistory = [] } = req.body || {};
       if (!message || typeof message !== "string" || !message.trim()) {
-        return res.status(400).json({ error: "Mensaje requerido" });
+        return res.status(400).json({ error: "Message required" });
       }
 
-      const langMap: Record<string, string> = {
+      const langMap: Record<SupportedLanguage, string> = {
         es: "Spanish (Español)",
         en: "English",
         de: "German (Deutsch)",
@@ -465,90 +757,55 @@ async function startServer() {
         pt: "Portuguese (Português)",
         it: "Italian (Italiano)",
       };
-      const responseLanguage = langMap[language] || "Spanish (Español)";
-      const isEnglish = language === "en";
-      const isGerman = language === "de";
+      const responseLanguage = langMap[lang];
 
       const systemInstruction = `You are "Stella", the premier astronomical and astrotourism AI assistant from StellaWay (official Starlight reserve partner app).
 Your mission is to guide stargazers, astrophotographers, and travelers with accurate, passionate, and scientifically rigorous astronomical advice.
-IMPORTANT: You MUST reply in ${responseLanguage}.
+CRITICAL LANGUAGE RULE: You MUST reply strictly in ${responseLanguage} matching the user's selected app language (${lang}).
 
 Key Expertise:
-- Telescopes & Optics: Newtonians, Dobsonians, Refractors (ED/APO), Schmidt-Cassegrain (SCT), Maksutov, eyepieces (Plössl, Wide Field), Barlow lenses, solar filters (Baader AstroSolar safety film ISO 12312-2).
-- The Great Total Solar Eclipses in Spain:
-  * August 12, 2026: Total solar eclipse crossing northern/eastern Spain (Castellón, Teruel, Zaragoza, Burgos, Oviedo, A Coruña, Mallorca). Max duration ~1m45s at sunset.
-  * August 2, 2027: Total solar eclipse in southern Spain (Cádiz, Málaga, Tarifa, Ceuta, Melilla, Almería) with >4.5 minutes of totality.
-- Certified Starlight Destinations in Spain (Fundación Starlight):
-  * Zaragoza (Aragón) - 3 Official Certified Starlight Territories:
-    1. Comarca del Aranda (Destino Turístico Starlight acreditado en 2022) - Red de 11 miradores estelares, Illueca, Purujosa, Calcena, Jarque.
-    2. Sierra de Vicort (Destino Turístico Starlight acreditado en julio de 2025) - Sediles, El Frasno, Mara, Miedes, Villalba Perejil, Pico del Rayo (1.427m).
-    3. Ariza (Municipio Starlight acreditado en 2026) - Mirador del Castillo y cuenca del río Jalón.
-    (Complementarios de alta montaña: Parque Natural del Moncayo / Lituénigo, y Campo de Daroca / Laguna de Gallocanta).
-  * Galicia - 7 Certified Starlight Spaces:
-    1. Pena Trevinca - A Veiga (Ourense, 2015) - Primer Destino Starlight de Galicia, cumbre a 2.127m con observatorio y planetario.
-    2. Parque Nacional das Illas Atlánticas de Galicia (Pontevedra / A Coruña, 2016) - Islas Cíes, Isla de Ons, Sálvora y Cortegada.
-    3. Muras - Serra do Xistral (Lugo, 2020) - Concello Starlight en valles limpios y turberas.
-    4. Costa da Morte (A Coruña, 2023) - Fisterra, Muxía, Carnota y Camariñas con horizonte oeste oceánico.
-    5. Mariñas Coruñesas e Terras do Mandeo (A Coruña, 2023) - Reserva de la Biosfera Starlight.
-    6. Lalín (Pontevedra, 2023) - Municipio Starlight con Observatorio do Castro y Serra do Candán.
-    7. Ancares Lucenses, Cervantes y Navia (Lugo, 2023) - Reserva de la Biosfera con cielos de montaña puros.
-- Dark Sky Spots & Bortle Scale (Bortle 1-9): Montsec, Gúdar-Javalambre, Serranía de Cuenca, Alto Turia, Sierra Nevada, La Palma, Monfragüe.
-- Polar Auroras (Aurora Borealis & Aurora Australis) & StellaWay Auroras Atlas:
-  * Science & Space Weather: Geomagnetic storms, Kp Index (0 to 9; Kp 2-3 sufficient in auroral oval zones, Kp 5+ for mid-latitudes), Interplanetary Magnetic Field (IMF) Bz component (crucial: negative/southward Bz connects with Earth's magnetosphere letting solar particles in), solar wind speed (>400-800 km/s), solar cycle 25 solar maximum (intense CME / solar flare activity). Emission altitudes and colors: atomic oxygen green (~100-150 km) and high-altitude red (>200 km), molecular nitrogen purple/blue (<100 km).
-  * Major Worldwide Aurora Locations cataloged in StellaWay:
-    - Norway: Tromsø, Kvaløya, Lofoten Islands (Reine, Hamnøy), Senja, Alta, Lyngen Alps, Svalbard (polar night daytime auroras).
-    - Sweden: Abisko National Park (Aurora Sky Station, famous for the dry microclimate "Blue Hole"), Kiruna, Jukkasjärvi.
-    - Finland: Inari, Rovaniemi (Arctic Circle), Saariselkä, Utsjoki.
-    - Iceland: Þingvellir, Snæfellsnes / Kirkjufell, Vík, Reykjanes, Akureyri.
-    - Greenland: Kangerlussuaq (>300 clear nights/yr), Ilulissat (Disko Bay icebergs).
-    - Canada: Yellowknife (Aurora capital with teepees), Whitehorse (Yukon), Churchill (Manitoba).
-    - Alaska (USA): Fairbanks, Chena Hot Springs, Denali, Coldfoot (Dalton Highway).
-    - Southern Hemisphere (Aurora Australis / Southern Lights): Tasmania (Bruny Island, Cockle Creek), New Zealand (Stewart Island / Rakiura Dark Sky Sanctuary, Lake Tekapo / Aoraki Mackenzie), South America (Ushuaia, Tierra del Fuego, Puerto Williams).
-  * Astrophotography & Practical Observing:
-    - Fast wide lens (f/1.4 to f/2.8), manual focus pin-sharp on bright star.
-    - Shutter speed: fast 1s - 5s for dynamic dancing corona/curtains to prevent motion blur; 6s - 12s for faint stationary green arcs.
-    - ISO 1600 - 6400, sturdy tripod, spare batteries in inner warm pocket, lens dew heater.
-    - Recommend checking the dedicated "Auroras" tab in the StellaWay app for interactive GPS navigation, Kp data, and exact coordinates.
-- Astrophotography: Milky Way techniques, 500/NPF rule, ISO settings, star trackers (Sky-Watcher Star Adventurer), stacking (Siril, DeepSkyStacker), light pollution filters.
-- Celestial events: Moon phases, planetary oppositions, meteor showers (Perseids, Geminids).
-Tone: Warm, inspiring, knowledgeable, clear, structured with bullet points and emojis where appropriate.`;
+- Telescopes & Optics: Newtonians, Dobsonians, Refractors (ED/APO), Schmidt-Cassegrain (SCT), Maksutov, eyepieces (Plössl, Wide Field), Barlow lenses, solar filters (ISO 12312-2).
+- Great Total Solar Eclipses in Spain: August 12, 2026 (Galicia, Aragon/Zaragoza/Teruel, Castellón, Mallorca) and August 2, 2027 (Southern Spain: Andalusia, Tarifa, Cádiz, Málaga, Gibraltar, Ceuta, up to 6m23s totality).
+- Starlight Destinations (Zaragoza: Aranda, Vicort, Ariza; Galicia: Pena Trevinca, Cíes, Muras, Costa da Morte, Mariñas, Lalín, Ancares; Canarias, Menorca, Teruel, Sierra Morena, Cuenca, Monfragüe).
+- DarkSky International Parks, Reserves & Sanctuaries worldwide and Polar Auroras (Aurora Borealis & Australis, Kp index, southward IMF Bz, northern & southern aurora ovals).
+- Bortle Dark Sky Scale (1–9), Moon phases, meteor showers & Milky Way NPF rule astrophotography.
+Tone: Warm, inspiring, knowledgeable, concise, structured with bullet points and emojis where appropriate.`;
 
       const ai = getAiClient();
       if (ai) {
         try {
+          const safeHistory = Array.isArray(conversationHistory) ? conversationHistory : [];
           const contents = [
-            ...conversationHistory.map((item: { role: string; content: string }) => ({
+            ...safeHistory.map((item: { role: string; content: string }) => ({
               role: item.role === "user" ? "user" : "model",
-              parts: [{ text: item.content }],
+              parts: [{ text: String(item.content || "") }],
             })),
             { role: "user", parts: [{ text: message }] },
           ];
 
           const response = await ai.models.generateContent({
-            model: "gemini-3.8-flash",
+            model: "gemini-4-hydrogen",
             contents,
             config: {
               systemInstruction,
-              temperature: 0.7,
             },
           });
 
           const reply = response.text;
           if (reply && reply.trim().length > 0) {
-            return res.json({ reply });
+            return res.json({ reply, language: lang });
           }
         } catch (apiError) {
           console.warn("Gemini API call failed, invoking intelligent astronomical fallback engine:", apiError);
         }
       }
 
-      // Intelligent Astronomical Knowledge Engine (guarantees instant, expert answers under any connectivity or quota status)
-      const fallbackReply = generateAstronomicalAnswer(message, language);
-      return res.json({ reply: fallbackReply });
+      const fallbackReply = generateAstronomicalAnswer(message, lang);
+      return res.json({ reply: fallbackReply, language: lang });
     } catch (error) {
       console.error("Error in AI Assistant:", error);
-      const safeReply = generateAstronomicalAnswer(req.body?.message || "", req.body?.language || "es");
-      return res.json({ reply: safeReply });
+      const safeReply = generateAstronomicalAnswer(req.body?.message || "", lang);
+      return res.json({ reply: safeReply, language: lang });
     }
   });
 

@@ -53,6 +53,8 @@ export function getRegionImage(item: {
   if (!effectiveCountry) {
     if (
       combined.includes('chile') ||
+      combined.includes('chili') ||
+      combined.includes('cile') ||
       combined.includes('atacama') ||
       combined.includes('paranal') ||
       combined.includes('fray jorge') ||
@@ -64,6 +66,8 @@ export function getRegionImage(item: {
       effectiveCountry = 'chile';
     } else if (
       combined.includes('argentina') ||
+      combined.includes('argentine') ||
+      combined.includes('argentinien') ||
       combined.includes('mendoza') ||
       combined.includes('villavicencio') ||
       combined.includes('leoncito') ||
@@ -74,35 +78,60 @@ export function getRegionImage(item: {
       combined.includes('ushuaia')
     ) {
       effectiveCountry = 'argentina';
-    } else if (combined.includes('colombia') || combined.includes('tatacoa') || combined.includes('villa de leyva')) {
+    } else if (
+      combined.includes('colombia') ||
+      combined.includes('colombie') ||
+      combined.includes('kolumbien') ||
+      combined.includes('tatacoa') ||
+      combined.includes('villa de leyva')
+    ) {
       effectiveCountry = 'colombia';
     } else if (
       combined.includes('mexico') ||
+      combined.includes('mexique') ||
+      combined.includes('mexiko') ||
+      combined.includes('messico') ||
       combined.includes('san pedro martir') ||
       combined.includes('espiritu santo') ||
       combined.includes('joya-la barreta') ||
       combined.includes('queretaro')
     ) {
       effectiveCountry = 'mexico';
-    } else if (combined.includes('peru') || combined.includes('colca')) {
+    } else if (combined.includes('peru') || combined.includes('perou') || combined.includes('colca')) {
       effectiveCountry = 'peru';
-    } else if (combined.includes('bolivia') || combined.includes('uyuni')) {
+    } else if (combined.includes('bolivia') || combined.includes('bolivie') || combined.includes('bolivien') || combined.includes('uyuni')) {
       effectiveCountry = 'bolivia';
-    } else if (combined.includes('brasil') || combined.includes('desengano') || combined.includes('rio de janeiro')) {
+    } else if (
+      combined.includes('brasil') ||
+      combined.includes('brazil') ||
+      combined.includes('bresil') ||
+      combined.includes('brasile') ||
+      combined.includes('desengano') ||
+      combined.includes('rio de janeiro')
+    ) {
       effectiveCountry = 'brasil';
     } else if (
       combined.includes('portugal') ||
+      combined.includes('portogallo') ||
       combined.includes('alqueva') ||
       combined.includes('xisto') ||
       combined.includes('tua') ||
       combined.includes('geres')
     ) {
       effectiveCountry = 'portugal';
-    } else if (combined.includes('andorra') || combined.includes('sorteny') || combined.includes('ordino') || combined.includes('comapedrosa')) {
+    } else if (
+      combined.includes('andorra') ||
+      combined.includes('andorre') ||
+      combined.includes('sorteny') ||
+      combined.includes('ordino') ||
+      combined.includes('comapedrosa')
+    ) {
       effectiveCountry = 'andorra';
     } else if (
       combined.includes('francia') ||
       combined.includes('france') ||
+      combined.includes('franca') ||
+      combined.includes('frankreich') ||
       combined.includes('pic du midi') ||
       combined.includes('cevennes') ||
       combined.includes('millevaches') ||
@@ -112,8 +141,14 @@ export function getRegionImage(item: {
     } else if (
       combined.includes('estados unidos') ||
       combined.includes('eeuu') ||
+      combined.includes('ee.uu.') ||
       combined.includes('usa') ||
+      combined.includes('eua') ||
       combined.includes('united states') ||
+      combined.includes('etats-unis') ||
+      combined.includes('etats unis') ||
+      combined.includes('stati uniti') ||
+      combined.includes('vereinigte staaten') ||
       combined.includes('grand canyon') ||
       combined.includes('death valley') ||
       combined.includes('arches') ||
@@ -124,6 +159,7 @@ export function getRegionImage(item: {
       effectiveCountry = 'estados unidos';
     } else if (
       combined.includes('canada') ||
+      combined.includes('kanada') ||
       combined.includes('jasper') ||
       combined.includes('wood buffalo') ||
       combined.includes('mont-megantic') ||
@@ -133,6 +169,10 @@ export function getRegionImage(item: {
     } else if (
       combined.includes('nueva zelanda') ||
       combined.includes('new zealand') ||
+      combined.includes('nouvelle-zelande') ||
+      combined.includes('nova zelandia') ||
+      combined.includes('nuova zelanda') ||
+      combined.includes('neuseeland') ||
       combined.includes('aoraki') ||
       combined.includes('tekapo') ||
       combined.includes('rakiura') ||
@@ -141,29 +181,75 @@ export function getRegionImage(item: {
       effectiveCountry = 'nueva zelanda';
     } else if (
       combined.includes('australia') ||
+      combined.includes('australie') ||
+      combined.includes('australien') ||
       combined.includes('warrumbungle') ||
       combined.includes('cradle mountain') ||
       combined.includes('tasmania')
     ) {
       effectiveCountry = 'australia';
-    } else if (combined.includes('japon') || combined.includes('japan') || combined.includes('bisei')) {
+    } else if (
+      combined.includes('japon') ||
+      combined.includes('japan') ||
+      combined.includes('japao') ||
+      combined.includes('giappone') ||
+      combined.includes('bisei')
+    ) {
       effectiveCountry = 'japon';
-    } else if (combined.includes('china') || combined.includes('huanglong') || combined.includes('xichong')) {
+    } else if (
+      combined.includes('china') ||
+      combined.includes('chine') ||
+      combined.includes('cina') ||
+      combined.includes('huanglong') ||
+      combined.includes('xichong')
+    ) {
       effectiveCountry = 'china';
-    } else if (combined.includes('rusia') || combined.includes('russia') || combined.includes('murmansk')) {
+    } else if (
+      combined.includes('rusia') ||
+      combined.includes('russia') ||
+      combined.includes('russie') ||
+      combined.includes('russland') ||
+      combined.includes('murmansk')
+    ) {
       effectiveCountry = 'rusia';
+    } else if (
+      combined.includes('reino unido') ||
+      combined.includes('united kingdom') ||
+      combined.includes('royaume-uni') ||
+      combined.includes('regno unito') ||
+      combined.includes('vereinigtes konigreich')
+    ) {
+      effectiveCountry = 'reino unido';
+    } else if (
+      combined.includes('irlanda') ||
+      combined.includes('ireland') ||
+      combined.includes('irlande') ||
+      combined.includes('irland')
+    ) {
+      effectiveCountry = 'irlanda';
     } else if (
       combined.includes('espana') ||
       combined.includes('spain') ||
+      combined.includes('espagne') ||
+      combined.includes('espanha') ||
+      combined.includes('spagna') ||
+      combined.includes('spanien') ||
       combined.includes('andalucia') ||
+      combined.includes('andalusia') ||
       combined.includes('aragon') ||
       combined.includes('zaragoza') ||
+      combined.includes('saragossa') ||
+      combined.includes('saragosse') ||
       combined.includes('teruel') ||
       combined.includes('canarias') ||
+      combined.includes('canary') ||
       combined.includes('teide') ||
       combined.includes('la palma') ||
       combined.includes('galicia') ||
+      combined.includes('galice') ||
+      combined.includes('galiza') ||
       combined.includes('cataluna') ||
+      combined.includes('catalonia') ||
       combined.includes('montsec') ||
       combined.includes('culla') ||
       combined.includes('cuenca') ||
@@ -186,51 +272,51 @@ export function getRegionImage(item: {
       const m = REGION_CONFIG.find((e) => e.imagen_referencia.includes('malvinas'));
       if (m) return m;
     }
-    if (combined.includes('rusia') || combined.includes('murmansk') || combined.includes('kola') || combined.includes('siberia')) {
+    if (combined.includes('rusia') || combined.includes('russia') || combined.includes('russie') || combined.includes('russland') || combined.includes('murmansk') || combined.includes('kola') || combined.includes('siberia')) {
       const r = REGION_CONFIG.find((e) => e.imagen_referencia.includes('murmansk'));
       if (r) return r;
     }
-    if (combined.includes('antartida') || combined.includes('ohiggins') || combined.includes('antart')) {
+    if (combined.includes('antartida') || combined.includes('antarctica') || combined.includes('antarctique') || combined.includes('antarktis') || combined.includes('ohiggins') || combined.includes('antart')) {
       const ant = REGION_CONFIG.find((e) => e.imagen_referencia.includes('antartida'));
       if (ant) return ant;
     }
-    if (combined.includes('chile') || combined.includes('patagonia') || combined.includes('punta arenas')) {
+    if (combined.includes('chile') || combined.includes('chili') || combined.includes('cile') || combined.includes('patagonia') || combined.includes('punta arenas')) {
       const ch = REGION_CONFIG.find((e) => e.imagen_referencia.includes('chile_patagonia'));
       if (ch) return ch;
     }
-    if (combined.includes('argentina') || combined.includes('ushuaia') || combined.includes('tierra del fuego')) {
+    if (combined.includes('argentina') || combined.includes('argentine') || combined.includes('argentinien') || combined.includes('ushuaia') || combined.includes('tierra del fuego')) {
       const ar = REGION_CONFIG.find((e) => e.imagen_referencia.includes('argentina_tierradelfuego'));
       if (ar) return ar;
     }
-    if (combined.includes('australia') || combined.includes('tasmania') || combined.includes('hobart')) {
+    if (combined.includes('australia') || combined.includes('australie') || combined.includes('australien') || combined.includes('tasmania') || combined.includes('hobart')) {
       const au = REGION_CONFIG.find((e) => e.imagen_referencia.includes('australia_tasmania'));
       if (au) return au;
     }
-    if (combined.includes('nueva zelanda') || combined.includes('rakiura') || combined.includes('stewart')) {
+    if (combined.includes('nueva zelanda') || combined.includes('new zealand') || combined.includes('nouvelle-zelande') || combined.includes('neuseeland') || combined.includes('rakiura') || combined.includes('stewart')) {
       const nz = REGION_CONFIG.find((e) => e.imagen_referencia.includes('nuevazelanda'));
       if (nz) return nz;
     }
-    if (combined.includes('suecia') || combined.includes('abisko') || combined.includes('kiruna')) {
+    if (combined.includes('suecia') || combined.includes('sweden') || combined.includes('suede') || combined.includes('schweden') || combined.includes('svezia') || combined.includes('abisko') || combined.includes('kiruna')) {
       const se = REGION_CONFIG.find((e) => e.imagen_referencia.includes('abisko'));
       if (se) return se;
     }
-    if (combined.includes('finlandia') || combined.includes('laponia') || combined.includes('rovaniemi') || combined.includes('inari')) {
+    if (combined.includes('finlandia') || combined.includes('finland') || combined.includes('finlande') || combined.includes('finnland') || combined.includes('laponia') || combined.includes('lapland') || combined.includes('laponie') || combined.includes('lappland') || combined.includes('rovaniemi') || combined.includes('inari')) {
       const fi = REGION_CONFIG.find((e) => e.imagen_referencia.includes('finlandia'));
       if (fi) return fi;
     }
-    if (combined.includes('islandia') || combined.includes('reykjavik') || combined.includes('groenlandia') || combined.includes('greenland')) {
+    if (combined.includes('islandia') || combined.includes('iceland') || combined.includes('islande') || combined.includes('islanda') || combined.includes('reykjavik') || combined.includes('groenlandia') || combined.includes('greenland') || combined.includes('groenland') || combined.includes('gronland')) {
       const is = REGION_CONFIG.find((e) => e.imagen_referencia.includes('islandia'));
       if (is) return is;
     }
-    if (combined.includes('canada') || combined.includes('yellowknife') || combined.includes('yukon') || combined.includes('churchill')) {
+    if (combined.includes('canada') || combined.includes('kanada') || combined.includes('yellowknife') || combined.includes('yukon') || combined.includes('churchill')) {
       const ca = REGION_CONFIG.find((e) => e.imagen_referencia.includes('yellowknife'));
       if (ca) return ca;
     }
-    if (combined.includes('alaska') || combined.includes('fairbanks') || combined.includes('estados unidos') || combined.includes('eeuu')) {
+    if (combined.includes('alaska') || combined.includes('fairbanks') || combined.includes('estados unidos') || combined.includes('eeuu') || combined.includes('united states') || combined.includes('etats-unis') || combined.includes('stati uniti') || combined.includes('vereinigte staaten')) {
       const us = REGION_CONFIG.find((e) => e.imagen_referencia.includes('alaska'));
       if (us) return us;
     }
-    if (combined.includes('noruega') || combined.includes('tromso') || combined.includes('alta') || combined.includes('lofot') || combined.includes('senja') || combined.includes('svalbard')) {
+    if (combined.includes('noruega') || combined.includes('norway') || combined.includes('norvege') || combined.includes('norwegen') || combined.includes('norvegia') || combined.includes('tromso') || combined.includes('alta') || combined.includes('lofot') || combined.includes('senja') || combined.includes('svalbard')) {
       const no = REGION_CONFIG.find((e) => e.imagen_referencia.includes('noruega_tromso'));
       if (no) return no;
     }

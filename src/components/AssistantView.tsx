@@ -16,10 +16,10 @@ export const AssistantView: React.FC = () => {
           'assistantWelcome',
           '¡Hola! Soy Stella, tu asistente de astronomía de StellaWay. Puedo guiarte sobre auroras boreales y australes, telescopios, la observación de eclipses solares, fotografía nocturna o efemérides. ¿En qué te ayudo hoy?'
         ),
-        timestamp: 'Ahora'
+        timestamp: t('assistantNow', 'Ahora')
       }
     ]);
-  }, [language]);
+  }, [language, t]);
 
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -103,14 +103,14 @@ export const AssistantView: React.FC = () => {
           </div>
           <div>
             <h1 className="text-xl font-black text-white font-['Plus_Jakarta_Sans'] flex items-center gap-2">
-              <span>Asistente IA Starlight</span>
+              <span>{t('assistantTitle', 'Asistente IA Starlight')}</span>
               <span className="px-2 py-0.5 rounded-full bg-[#0284C7]/30 border border-[#38BDF8]/50 text-[10px] text-[#7DD3FC] font-mono uppercase">
-                Stella AI
+                {t('assistantBadge', 'Stella AI')}
               </span>
             </h1>
             <p className="text-xs text-[#7DD3FC] flex items-center gap-1.5 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Conexión Activa 24/7 • Experta en Auroras, Astroturismo, Eclipses y Óptica</span>
+              <span>{t('assistantLiveStatus', 'Conexión Activa 24/7 • Experta en Auroras, Astroturismo, Eclipses y Óptica')}</span>
             </p>
           </div>
         </div>
@@ -121,58 +121,54 @@ export const AssistantView: React.FC = () => {
         <button
           onClick={() =>
             handleSend(
-              language === 'de'
-                ? 'Wo und wie kann ich Polarlichter (Nord- und Südlichter) am besten beobachten und fotografieren, und welchen Kp-Index brauche ich?'
-                : language === 'en'
-                ? 'Where and how can I best observe and photograph Northern & Southern Lights (Auroras), and what Kp index is needed?'
-                : '¿Dónde y cómo puedo ver y fotografiar auroras boreales y australes, y qué índice Kp necesito?'
+              t(
+                'assistantPromptAuroras',
+                '¿Dónde puedo ver auroras boreales o australes esta temporada y qué índice Kp necesito?'
+              )
             )
           }
           className="text-xs px-3 py-1.5 rounded-full bg-sky-500/15 hover:bg-[#38BDF8] hover:text-black border border-sky-400/40 text-sky-300 transition-all font-semibold cursor-pointer flex items-center gap-1 shadow-[0_0_12px_rgba(56,189,248,0.2)]"
         >
-          ✨ {language === 'de' ? 'Polarlichter & Kp-Index' : language === 'en' ? 'Auroras & Kp Guide' : 'Auroras & Índice Kp'}
+          ✨ {t('assistantBtnAuroras', 'Auroras & Índice Kp')}
         </button>
         <button
           onClick={() =>
             handleSend(
-              language === 'de'
-                ? 'Was brauche ich, um die totale Sonnenfinsternis 2026/2027 in Spanien zu beobachten?'
-                : language === 'en'
-                ? 'What do I need to observe the Total Solar Eclipse in Spain?'
-                : '¿Qué necesito para ver el Eclipse Solar Total en España?'
+              t(
+                'assistantPromptEclipse',
+                'Explícame los mejores puntos, duración y precauciones para ver el Gran Eclipse Solar Total de 2027 en España.'
+              )
             )
           }
           className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FEE685] hover:text-black border border-white/10 text-white/90 transition-all font-semibold cursor-pointer"
         >
-          🌑 {language === 'de' ? 'Tipps Sonnenfinsternis' : language === 'en' ? 'Eclipse Advice' : 'Consejos Eclipse'}
+          🌑 {t('assistantBtnEclipse', 'Consejos Eclipse')}
         </button>
         <button
           onClick={() =>
             handleSend(
-              language === 'de'
-                ? 'Empfiehl mir ein Teleskop für Deep-Sky-Beobachtungen in Bortle-2-Zonen'
-                : language === 'en'
-                ? 'Recommend a telescope for deep sky in Bortle 2 zones'
-                : 'Recomiéndame un telescopio para espacio profundo en zonas Bortle 2'
+              t(
+                'assistantPromptTelescope',
+                '¿Qué telescopio o prismáticos me recomiendas para empezar a observar cielo profundo y planetas?'
+              )
             )
           }
           className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FEE685] hover:text-black border border-white/10 text-white/90 transition-all font-semibold cursor-pointer"
         >
-          🔭 {language === 'de' ? 'Teleskop-Empfehlung' : language === 'en' ? 'Telescope Guide' : 'Recomendación Telescopio'}
+          🔭 {t('assistantBtnTelescope', 'Recomendación Telescopio')}
         </button>
         <button
           onClick={() =>
             handleSend(
-              language === 'de'
-                ? 'Wie starte ich am besten mit Milchstraßen-Astrofotografie?'
-                : language === 'en'
-                ? 'How can I get started with Milky Way astrophotography?'
-                : '¿Cómo puedo empezar en astrofotografía de la Vía Láctea?'
+              t(
+                'assistantPromptPhoto',
+                '¿Qué ajustes necesito en mi móvil o cámara para fotografiar la Vía Láctea?'
+              )
             )
           }
           className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-[#FEE685] hover:text-black border border-white/10 text-white/90 transition-all font-semibold cursor-pointer"
         >
-          📷 {language === 'de' ? 'Milchstraße Astrofotografie' : language === 'en' ? 'Milky Way Photography' : 'Astrofotografía Vía Láctea'}
+          📷 {t('assistantBtnPhoto', 'Astrofotografía Vía Láctea')}
         </button>
       </div>
 
@@ -205,7 +201,7 @@ export const AssistantView: React.FC = () => {
         {loading && (
           <div className="flex items-center gap-2 text-white/70 text-xs p-3 glass-panel rounded-xl max-w-xs border border-white/10">
             <span className="material-symbols-outlined text-[#FFD700] animate-spin">progress_activity</span>
-            Stella está consultando las efemérides...
+            {t('assistantLoading', 'Stella está consultando las efemérides...')}
           </div>
         )}
         <div ref={chatEndRef} />
