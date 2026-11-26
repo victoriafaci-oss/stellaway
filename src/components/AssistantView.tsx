@@ -40,39 +40,92 @@ export const AssistantView: React.FC = () => {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
+    const historyToSend = messages
+      .filter((m) => m.id !== 'welcome' && !m.isError)
+      .slice(-8)
+      .map((m) => ({
+        role: m.role,
+        content: m.content
+      }));
+
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInput('');
     setLoading(true);
 
     try {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        const offlineReply = generateAstronomicalAnswer(text, language);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: offlineReply,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isOffline: true
+          }
+        ]);
+        return;
+      }
+
       const response = await fetch('/api/assistant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
           language,
-          conversationHistory: messages.slice(-6).map((m) => ({
-            role: m.role,
-            content: m.content
-          }))
+          conversationHistory: historyToSend
         })
       });
 
-      let replyText = '';
-      if (response.ok) {
-        const data = await response.json();
-        replyText = data.reply;
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const errorText =
+          (typeof data?.error === 'string' && data.error.trim()) ||
+          t(
+            'assistantUnavailable',
+            'El asistente IA en la nube no está disponible temporalmente. Inténtalo de nuevo en unos momentos.'
+          );
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: errorText,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isError: true
+          }
+        ]);
+        return;
       }
 
-      if (!replyText || replyText.trim().length === 0) {
-        replyText = generateAstronomicalAnswer(text, language);
+      const replyText = typeof data?.reply === 'string' ? data.reply.trim() : '';
+      const sources = Array.isArray(data?.sources) ? data.sources : [];
+
+      if (!replyText) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: t(
+              'assistantEmptyReply',
+              'No se recibió respuesta del asistente. Inténtalo de nuevo.'
+            ),
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isError: true
+          }
+        ]);
+        return;
       }
 
       const botMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: replyText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        sources
       };
 
       setMessages((prev) => [...prev, botMsg]);
@@ -85,7 +138,8 @@ export const AssistantView: React.FC = () => {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content: offlineReply,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isOffline: true
         }
       ]);
     } finally {
@@ -183,10 +237,33 @@ export const AssistantView: React.FC = () => {
               className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 text-sm leading-relaxed ${
                 m.role === 'user'
                   ? 'bg-[#FEE685] text-black font-extrabold rounded-br-none shadow-lg shadow-[#FEE685]/10'
+                  : m.isError
+                  ? 'glass-panel text-amber-100 border border-amber-400/40 rounded-bl-none bg-amber-950/50'
                   : 'glass-panel text-white/95 border border-white/15 rounded-bl-none bg-[#2D1B4E]/80'
               }`}
             >
+              {m.isOffline && (
+                <div className="text-[10px] uppercase tracking-wider font-bold text-sky-300 mb-1.5">
+                  {t('assistantOfflineBadge', 'Guía Rápida Sin Conexión')}
+                </div>
+              )}
               <p className="whitespace-pre-wrap">{m.content}</p>
+              {m.sources && m.sources.length > 0 && (
+                <div className="mt-3 pt-2 border-t border-white/10 flex flex-wrap gap-1.5">
+                  {m.sources.map((src, idx) => (
+                    <a
+                      key={`${src.uri}-${idx}`}
+                      href={src.uri}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-[#7DD3FC] underline-offset-2 hover:underline truncate max-w-[220px]"
+                      title={src.title}
+                    >
+                      {src.title}
+                    </a>
+                  ))}
+                </div>
+              )}
               <span
                 className={`block text-[10px] mt-2 text-right ${
                   m.role === 'user' ? 'text-black/70 font-semibold' : 'text-white/50'

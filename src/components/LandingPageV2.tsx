@@ -1301,44 +1301,53 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
       </section>
 
       {/* ═══════════════════ QUIET FOOTER ═══════════════════ */}
-      <footer className="relative z-10 border-t border-white/10 bg-[#05070D] py-10 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-slate-400">
-          <div className="flex items-center gap-4">
-            <StellaLogo size="sm" />
-            <span className="hidden sm:inline text-slate-600">·</span>
-            <span>{t('landingFooterTagline', 'Astronomía · Astroturismo · Eclipse Total 2027')}</span>
+      <footer className="relative z-10 border-t border-white/10 bg-[#05070D] pt-8 pb-5 px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-5 pb-5 border-b border-white/[0.06] text-xs text-slate-400">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
+              <StellaLogo size="sm" />
+              <span className="hidden sm:inline text-slate-700" aria-hidden="true">·</span>
+              <span className="text-slate-400">
+                {t('landingFooterTagline', 'Astronomía · Astroturismo · Eclipse Total 2027')}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-6 gap-y-2">
+              <a
+                href="/terminos.html"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setLegalModal('terminos');
+                }}
+                className="text-slate-300 hover:text-amber-300 transition-colors underline underline-offset-4 cursor-pointer whitespace-nowrap"
+              >
+                {t('termsAndConditions', 'Términos y Condiciones')}
+              </a>
+              <a
+                href="/privacidad.html"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setLegalModal('privacidad');
+                }}
+                className="text-slate-300 hover:text-amber-300 transition-colors underline underline-offset-4 cursor-pointer whitespace-nowrap"
+              >
+                {t('privacyPolicy', 'Política de Privacidad')}
+              </a>
+              <span className="text-slate-500 whitespace-nowrap">
+                © {new Date().getFullYear()} StellaWay
+              </span>
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-5">
-            <a
-              href="/terminos.html"
-              onClick={(e) => {
-                e.preventDefault();
-                setLegalModal('terminos');
-              }}
-              className="hover:text-amber-300 transition-colors underline underline-offset-4 cursor-pointer"
-            >
-              {t('termsAndConditions', 'Términos y Condiciones')}
-            </a>
-            <a
-              href="/privacidad.html"
-              onClick={(e) => {
-                e.preventDefault();
-                setLegalModal('privacidad');
-              }}
-              className="hover:text-amber-300 transition-colors underline underline-offset-4 cursor-pointer"
-            >
-              {t('privacyPolicy', 'Política de Privacidad')}
-            </a>
+          <div className="pt-3 flex justify-center">
             <a
               href={withStripeLocale('https://buy.stripe.com/aFadRb3Flfzt9J91Kh1ZS07', language)}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-[10px] tracking-wide text-slate-500/25 hover:text-slate-400/50 transition-colors"
             >
               {t('promoLink', 'promoción')}
             </a>
-            <span>© {new Date().getFullYear()} StellaWay</span>
           </div>
         </div>
       </footer>
@@ -1394,7 +1403,7 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
                 </p>
                 <div>
                   <h4 className="font-semibold text-white mb-1">{t('landingLegalPriv1Title', '1. Datos tratados')}</h4>
-                  <p>{t('landingLegalPriv1Body', 'Solo procesamos los datos necesarios para tu sesión, verificación SMS antifraude de 48h, favoritos offline y pasarela de pago Stripe/PayPal.')}</p>
+                  <p>{t('landingLegalPriv1Body', 'Solo procesamos los datos necesarios para tu sesión, verificación por email antifraude de 48h, favoritos offline y pasarela de pago Stripe/PayPal.')}</p>
                 </div>
                 <div>
                   <h4 className="font-semibold text-white mb-1">{t('landingLegalPriv2Title', '2. Ubicación GPS y almacenamiento local')}</h4>

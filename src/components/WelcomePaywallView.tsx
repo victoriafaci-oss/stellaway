@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ActiveTab } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { StellaLogo } from './StellaLogo';
-import { WORLD_DIAL_CODES } from '../data/countryDialCodes';
 import { SubscriptionCancellationModal } from './SubscriptionCancellationModal';
 import { withStripeLocale, getLocalizedPlanName } from '../lib/i18nHelpers';
 import heroNebulaImg from '../assets/images/v2_hero_nebula_sky_1795505139848.jpg';
@@ -32,15 +31,16 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
     }
   }, [selectedPlanDefault]);
 
-  // Phone SMS verification state for 48h Free Trial
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [countryCode, setCountryCode] = useState('+34');
-  const [smsCode, setSmsCode] = useState('');
-  const [smsStep, setSmsStep] = useState<'phone' | 'code' | 'verified'>('phone');
+  // Email + Name verification state for 48h Free Trial (no phone required)
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [trialEmail, setTrialEmail] = useState('');
+  const [emailCode, setEmailCode] = useState('');
+  const [emailStep, setEmailStep] = useState<'form' | 'code' | 'verified'>('form');
   const [simulatedCode, setSimulatedCode] = useState('1234');
   const [trialError, setTrialError] = useState('');
-  const [isVerifyingSms, setIsVerifyingSms] = useState(false);
-  const [activeTrialPhone, setActiveTrialPhone] = useState<string | null>(null);
+  const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
+  const [activeTrialEmail, setActiveTrialEmail] = useState<string | null>(null);
 
   // Payment gateways status & payment state (Stripe & PayPal)
   const [gatewaysStatus, setGatewaysStatus] = useState<{
@@ -86,11 +86,12 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 
-    const savedPhone = localStorage.getItem('stellaway_trial_phone');
+    const savedTrialContact =
+      localStorage.getItem('stellaway_trial_email') || localStorage.getItem('stellaway_trial_phone');
     const trialExpires = localStorage.getItem('stellaway_trial_expires');
-    if (savedPhone && trialExpires && Number(trialExpires) > Date.now()) {
-      setActiveTrialPhone(savedPhone);
-      setSmsStep('verified');
+    if (savedTrialContact && trialExpires && Number(trialExpires) > Date.now()) {
+      setActiveTrialEmail(savedTrialContact);
+      setEmailStep('verified');
     }
   }, []);
 
@@ -134,22 +135,30 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
     }
   };
 
-  // Handle phone SMS submission for 48-hour free trial
-  const handleSendSms = async (e: React.FormEvent) => {
+  // Handle Name + Email submission for 48-hour free trial
+  const handleSendEmailCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setTrialError('');
-    const fullPhone = `${countryCode} ${phoneNumber}`.trim().replace(/\s+/g, '');
-    const cleanDigits = phoneNumber.trim().replace(/\s+/g, '');
-    if (cleanDigits.length < 6) {
-      setTrialError(t('welcomeErrInvalidPhone', 'Por favor introduce un número de teléfono móvil válido.'));
+    const cleanFirst = firstName.trim();
+    const cleanLast = lastName.trim();
+    const cleanEmail = trialEmail.trim().toLowerCase();
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail);
+
+    if (cleanFirst.length < 2 || cleanLast.length < 2) {
+      setTrialError(t('welcomeErrInvalidName', 'Por favor introduce tu nombre y apellidos.'));
       return;
     }
 
-    const usedPhones = JSON.parse(localStorage.getItem('stellaway_used_trial_phones') || '[]');
+    if (!isValidEmail) {
+      setTrialError(t('welcomeErrInvalidPhone', 'Por favor introduce un correo electrónico válido.'));
+      return;
+    }
+
+    const usedEmails = JSON.parse(localStorage.getItem('stellaway_used_trial_emails') || '[]');
     const deviceUsed = localStorage.getItem('stellaway_device_trial_used');
 
-    if (usedPhones.includes(fullPhone) || deviceUsed === 'true') {
-      setTrialError(t('welcomeErrPhoneUsed', 'Este teléfono o dispositivo ya utilizó la prueba gratuita de 48h. Selecciona el Plan Mensual o Anual.'));
+    if (usedEmails.includes(cleanEmail) || deviceUsed === 'true') {
+      setTrialError(t('welcomeErrPhoneUsed', 'Este email o dispositivo ya utilizó la prueba gratuita de 48h. Selecciona el Plan Mensual o Anual.'));
       return;
     }
 
@@ -157,87 +166,76 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
     const generatedCode = String(Math.floor(1000 + Math.random() * 9000));
     setSimulatedCode(generatedCode);
 
-    setIsVerifyingSms(true);
+    setIsVerifyingEmail(true);
     try {
-      const res = await fetch('/api/verify-trial-phone', {
+      const res = await fetch('/api/verify-trial-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: fullPhone, language }),
+        body: JSON.stringify({ firstName: cleanFirst, lastName: cleanLast, email: cleanEmail, language }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        setSmsStep('code');
+        setEmailStep('code');
       } else {
-        setSmsStep('code');
+        setEmailStep('code');
       }
     } catch {
       // Fallback in client mode
-      setSmsStep('code');
+      setEmailStep('code');
     } finally {
-      setIsVerifyingSms(false);
+      setIsVerifyingEmail(false);
     }
   };
 
-  // Handle SMS code confirmation
-  const handleVerifySmsCode = async (e: React.FormEvent) => {
+  // Handle Email verification code confirmation
+  const handleVerifyEmailCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setTrialError('');
-    if (smsCode.trim().length < 4) {
-      setTrialError(t('welcomeErrCodeLength', 'El código SMS debe tener al menos 4 dígitos (Ej: 1234).'));
+    if (emailCode.trim().length < 4) {
+      setTrialError(t('welcomeErrCodeLength', 'El código de verificación debe tener al menos 4 dígitos (Ej: 1234).'));
       return;
     }
 
-    const fullPhone = `${countryCode} ${phoneNumber}`.trim().replace(/\s+/g, '');
-    setIsVerifyingSms(true);
+    const cleanFirst = firstName.trim();
+    const cleanLast = lastName.trim();
+    const cleanEmail = trialEmail.trim().toLowerCase();
+    setIsVerifyingEmail(true);
 
-    try {
-      const res = await fetch('/api/verify-trial-phone', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: fullPhone, code: smsCode, language }),
-      });
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        const usedPhones = JSON.parse(localStorage.getItem('stellaway_used_trial_phones') || '[]');
-        if (!usedPhones.includes(fullPhone)) {
-          usedPhones.push(fullPhone);
-          localStorage.setItem('stellaway_used_trial_phones', JSON.stringify(usedPhones));
-        }
-        localStorage.setItem('stellaway_device_trial_used', 'true');
-        localStorage.setItem('stellaway_trial_phone', fullPhone);
-        localStorage.setItem('stellaway_trial_expires', String(Date.now() + 48 * 3600 * 1000));
-        localStorage.setItem('stellaway_subscription_active', 'true');
-        localStorage.setItem('stellaway_active_plan', 'free2days');
-
-        setActiveTrialPhone(fullPhone);
-        setSmsStep('verified');
-      } else {
-        // In case of mock testing or code acceptance
-        const usedPhones = JSON.parse(localStorage.getItem('stellaway_used_trial_phones') || '[]');
-        if (!usedPhones.includes(fullPhone)) {
-          usedPhones.push(fullPhone);
-          localStorage.setItem('stellaway_used_trial_phones', JSON.stringify(usedPhones));
-        }
-        localStorage.setItem('stellaway_device_trial_used', 'true');
-        localStorage.setItem('stellaway_trial_phone', fullPhone);
-        localStorage.setItem('stellaway_trial_expires', String(Date.now() + 48 * 3600 * 1000));
-        localStorage.setItem('stellaway_subscription_active', 'true');
-        localStorage.setItem('stellaway_active_plan', 'free2days');
-
-        setActiveTrialPhone(fullPhone);
-        setSmsStep('verified');
+    const persistTrialActivation = () => {
+      const usedEmails = JSON.parse(localStorage.getItem('stellaway_used_trial_emails') || '[]');
+      if (!usedEmails.includes(cleanEmail)) {
+        usedEmails.push(cleanEmail);
+        localStorage.setItem('stellaway_used_trial_emails', JSON.stringify(usedEmails));
       }
-    } catch {
-      // Offline fallback
-      localStorage.setItem('stellaway_trial_phone', fullPhone);
+      localStorage.setItem('stellaway_device_trial_used', 'true');
+      localStorage.setItem('stellaway_trial_email', cleanEmail);
+      localStorage.setItem('stellaway_user_email', cleanEmail);
+      localStorage.setItem('stellaway_user_name', `${cleanFirst} ${cleanLast}`.trim());
       localStorage.setItem('stellaway_trial_expires', String(Date.now() + 48 * 3600 * 1000));
       localStorage.setItem('stellaway_subscription_active', 'true');
       localStorage.setItem('stellaway_active_plan', 'free2days');
-      setActiveTrialPhone(fullPhone);
-      setSmsStep('verified');
+
+      setActiveTrialEmail(cleanEmail);
+      setEmailStep('verified');
+    };
+
+    try {
+      await fetch('/api/verify-trial-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: cleanFirst,
+          lastName: cleanLast,
+          email: cleanEmail,
+          code: emailCode,
+          language,
+        }),
+      });
+      persistTrialActivation();
+    } catch {
+      persistTrialActivation();
     } finally {
-      setIsVerifyingSms(false);
+      setIsVerifyingEmail(false);
     }
   };
 
@@ -585,7 +583,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
             {t('welcomePlansTitle', 'Elige tu Plan de Acceso StellaWay')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            {t('welcomePlansDesc', 'Selecciona la opción que prefieras: activa tu prueba de 48 horas gratis mediante verificación telefónica o suscríbete a los planes Pro mediante Stripe o PayPal.')}
+            {t('welcomePlansDesc', 'Selecciona la opción que prefieras: activa tu prueba de 48 horas gratis mediante verificación por email o suscríbete a los planes Pro mediante Stripe o PayPal.')}
           </p>
         </div>
 
@@ -627,7 +625,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                   <span className="text-xs text-slate-400">{t('welcomePlanFreeUnit', '/ 48 horas')}</span>
                 </div>
                 <p className="text-xs text-amber-300/90 font-medium mt-1.5">
-                  {t('welcomePlanFreeNote', 'Requiere verificación por SMS (1 uso por móvil).')}
+                  {t('welcomePlanFreeNote', 'Requiere nombre, apellidos y verificación por email (1 uso por cuenta).')}
                 </p>
               </div>
 
@@ -660,7 +658,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                     : 'bg-white/10 hover:bg-white/15 text-white border-white/20'
                 }`}
               >
-                {activeTrialPhone ? t('welcomePlanFreeBtnActive', '✓ Prueba Ya Activa') : t('welcomePlanFreeBtn', 'Seleccionar 48h Gratis')}
+                {activeTrialEmail ? t('welcomePlanFreeBtnActive', '✓ Prueba Ya Activa') : t('welcomePlanFreeBtn', 'Seleccionar 48h Gratis')}
               </button>
             </div>
           </div>
@@ -819,29 +817,29 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
           id="checkout-action-section"
           className="rounded-2xl p-6 sm:p-8 bg-[#0B0F1A] border border-white/15 shadow-2xl scroll-mt-6"
         >
-          {/* SECTION A: WHEN 48H FREE TRIAL IS SELECTED -> PHONE VERIFICATION */}
+          {/* SECTION A: WHEN 48H FREE TRIAL IS SELECTED -> EMAIL + NAME VERIFICATION */}
           {selectedPlan === 'free2days' && (
             <div className="space-y-5 max-w-xl mx-auto">
               <div className="text-center space-y-1.5">
                 <div className="w-11 h-11 rounded-xl bg-sky-400/15 border border-sky-400/35 text-sky-300 mx-auto flex items-center justify-center">
-                  <span className="material-symbols-outlined text-2xl">smartphone</span>
+                  <span className="material-symbols-outlined text-2xl">mail</span>
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                  {t('welcomePhoneTitle', 'Verificación Telefónica para 48 Horas Gratis')}
+                  {t('welcomePhoneTitle', 'Verificación por Email para 48 Horas Gratis')}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  {t('welcomePhoneDesc', 'Introduce tu número móvil para recibir un SMS gratuito con tu código de activación. Se permite 1 prueba gratuita por número y dispositivo.')}
+                  {t('welcomePhoneDesc', 'Introduce tu nombre, apellidos y correo electrónico para recibir tu código de activación por email. Se permite 1 prueba gratuita por email y dispositivo.')}
                 </p>
               </div>
 
-              {smsStep === 'verified' || activeTrialPhone ? (
+              {emailStep === 'verified' || activeTrialEmail ? (
                 <div className="p-5 sm:p-6 rounded-2xl bg-emerald-950/40 border border-emerald-400/40 space-y-4 text-center">
                   <div className="flex items-center justify-center gap-2 text-emerald-300">
                     <span className="material-symbols-outlined text-2xl">verified</span>
                     <span className="text-base font-bold">{t('welcomeTrialActive', '¡Prueba Gratuita de 48 Horas Activa!')}</span>
                   </div>
                   <p className="text-xs sm:text-sm text-slate-200">
-                    {t('welcomeTrialNumVerified', 'Número verificado:')} <strong className="text-white">{activeTrialPhone || phoneNumber}</strong>{t('welcomeTrialAccessNotice', '. Tienes acceso completo e ilimitado a todas las funciones de StellaWay.')}
+                    {t('welcomeTrialNumVerified', 'Email verificado:')} <strong className="text-white">{activeTrialEmail || trialEmail}</strong>{t('welcomeTrialAccessNotice', '. Tienes acceso completo e ilimitado a todas las funciones de StellaWay.')}
                   </p>
 
                   <div className="pt-1">
@@ -885,67 +883,58 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                     </button>
                   </div>
                 </div>
-              ) : smsStep === 'phone' ? (
-                <form onSubmit={handleSendSms} className="space-y-4 bg-[#06080F] p-5 sm:p-6 rounded-2xl border border-white/15">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-2">
-                      {t('welcomePhoneLabel', 'Número de Teléfono Móvil')}
-                    </label>
-                    <div className="flex gap-2">
-                      <select
-                        value={countryCode}
-                        onChange={(e) => setCountryCode(e.target.value)}
-                        className="bg-[#0D111C] border border-white/20 rounded-xl px-2.5 py-2.5 text-white text-xs font-semibold focus:border-amber-300 outline-none max-w-[170px] sm:max-w-[220px] cursor-pointer"
-                      >
-                        <optgroup label={t('welcomeOptgroupHispanic', '🌟 Hispanohablantes')}>
-                          {WORLD_DIAL_CODES.filter((c) => c.region === 'hispanic').map((c) => (
-                            <option key={`${c.region}-${c.code}-${c.name}`} value={c.code}>
-                              {c.flag} {c.code} {c.name}
-                            </option>
-                          ))}
-                        </optgroup>
-                        <optgroup label={t('welcomeOptgroupAmericas', '🌎 América')}>
-                          {WORLD_DIAL_CODES.filter((c) => c.region === 'americas').map((c) => (
-                            <option key={`${c.region}-${c.code}-${c.name}`} value={c.code}>
-                              {c.flag} {c.code} {c.name}
-                            </option>
-                          ))}
-                        </optgroup>
-                        <optgroup label={t('welcomeOptgroupEurope', '🇪🇺 Europa')}>
-                          {WORLD_DIAL_CODES.filter((c) => c.region === 'europe').map((c) => (
-                            <option key={`${c.region}-${c.code}-${c.name}`} value={c.code}>
-                              {c.flag} {c.code} {c.name}
-                            </option>
-                          ))}
-                        </optgroup>
-                        <optgroup label={t('welcomeOptgroupAsiaOceania', '🌏 Asia y Oceanía')}>
-                          {WORLD_DIAL_CODES.filter((c) => c.region === 'asia_oceania').map((c) => (
-                            <option key={`${c.region}-${c.code}-${c.name}`} value={c.code}>
-                              {c.flag} {c.code} {c.name}
-                            </option>
-                          ))}
-                        </optgroup>
-                        <optgroup label={t('welcomeOptgroupAfrica', '🌍 África')}>
-                          {WORLD_DIAL_CODES.filter((c) => c.region === 'africa').map((c) => (
-                            <option key={`${c.region}-${c.code}-${c.name}`} value={c.code}>
-                              {c.flag} {c.code} {c.name}
-                            </option>
-                          ))}
-                        </optgroup>
-                      </select>
-
+              ) : emailStep === 'form' ? (
+                <form onSubmit={handleSendEmailCode} className="space-y-4 bg-[#06080F] p-5 sm:p-6 rounded-2xl border border-white/15">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                        {t('welcomeFirstNameLabel', 'Nombre')}
+                      </label>
                       <input
-                        type="tel"
+                        type="text"
                         required
-                        value={phoneNumber}
+                        value={firstName}
                         onChange={(e) => {
-                          setPhoneNumber(e.target.value);
+                          setFirstName(e.target.value);
                           setTrialError('');
                         }}
-                        placeholder={t('welcomePhonePlaceholder', '612 345 678')}
-                        className="flex-1 bg-[#0D111C] border border-white/20 rounded-xl px-3.5 py-2.5 text-white text-sm font-medium placeholder-slate-500 focus:border-amber-300 outline-none"
+                        placeholder={t('welcomeFirstNamePlaceholder', 'Tu nombre')}
+                        className="w-full bg-[#0D111C] border border-white/20 rounded-xl px-3.5 py-2.5 text-white text-sm font-medium placeholder-slate-500 focus:border-amber-300 outline-none"
                       />
                     </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                        {t('welcomeLastNameLabel', 'Apellidos')}
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={lastName}
+                        onChange={(e) => {
+                          setLastName(e.target.value);
+                          setTrialError('');
+                        }}
+                        placeholder={t('welcomeLastNamePlaceholder', 'Tus apellidos')}
+                        className="w-full bg-[#0D111C] border border-white/20 rounded-xl px-3.5 py-2.5 text-white text-sm font-medium placeholder-slate-500 focus:border-amber-300 outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      {t('welcomePhoneLabel', 'Correo Electrónico')}
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={trialEmail}
+                      onChange={(e) => {
+                        setTrialEmail(e.target.value);
+                        setTrialError('');
+                      }}
+                      placeholder={t('welcomePhonePlaceholder', 'tu@email.com')}
+                      className="w-full bg-[#0D111C] border border-white/20 rounded-xl px-3.5 py-2.5 text-white text-sm font-medium placeholder-slate-500 focus:border-amber-300 outline-none"
+                    />
                   </div>
 
                   {trialError && (
@@ -956,40 +945,40 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
 
                   <button
                     type="submit"
-                    disabled={isVerifyingSms}
+                    disabled={isVerifyingEmail}
                     className="w-full py-3 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer transition-colors disabled:opacity-50"
                   >
-                    {isVerifyingSms ? (
+                    {isVerifyingEmail ? (
                       <>
                         <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
-                        <span>{t('welcomeSendingSms', 'Enviando código SMS...')}</span>
+                        <span>{t('welcomeSendingSms', 'Enviando código por email...')}</span>
                       </>
                     ) : (
                       <>
-                        <span className="material-symbols-outlined text-base">send_to_mobile</span>
-                        <span>{t('welcomeSendSmsBtn', 'Enviar Código SMS de Activación')}</span>
+                        <span className="material-symbols-outlined text-base">mark_email_read</span>
+                        <span>{t('welcomeSendSmsBtn', 'Enviar Código de Activación por Email')}</span>
                       </>
                     )}
                   </button>
                 </form>
               ) : (
-                <form onSubmit={handleVerifySmsCode} className="space-y-4 bg-[#06080F] p-5 sm:p-6 rounded-2xl border border-white/15 animate-fadeIn">
+                <form onSubmit={handleVerifyEmailCode} className="space-y-4 bg-[#06080F] p-5 sm:p-6 rounded-2xl border border-white/15 animate-fadeIn">
                   <div className="text-center space-y-1">
                     <p className="text-xs text-emerald-300 font-semibold">
-                      {t('welcomeSmsSentTo', '✓ Código SMS enviado al')} {countryCode} {phoneNumber}
+                      {t('welcomeSmsSentTo', '✓ Código de verificación enviado a')} {trialEmail}
                     </p>
                     <p className="text-xs text-slate-300">
-                      {t('welcomeSmsPrompt', 'Introduce el código recibido por SMS para activar tus 48 horas:')}
+                      {t('welcomeSmsPrompt', 'Introduce el código enviado a tu email para activar tus 48 horas:')}
                     </p>
 
                     <div className="mt-2 p-3 rounded-xl bg-amber-300/10 border border-amber-300/30 text-amber-200 text-xs flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 text-left">
-                        <span className="material-symbols-outlined text-base text-amber-300">sms</span>
-                        <span>{t('welcomeSmsReceived', 'SMS recibido: Código')} <strong className="font-mono">{simulatedCode}</strong></span>
+                        <span className="material-symbols-outlined text-base text-amber-300">mail</span>
+                        <span>{t('welcomeSmsReceived', 'Email recibido: Código')} <strong className="font-mono">{simulatedCode}</strong></span>
                       </div>
                       <button
                         type="button"
-                        onClick={() => setSmsCode(simulatedCode)}
+                        onClick={() => setEmailCode(simulatedCode)}
                         className="px-2.5 py-1 rounded-lg bg-amber-300 text-slate-950 font-bold text-[11px] hover:bg-amber-200 transition-colors cursor-pointer"
                       >
                         {t('welcomeAutoFill', 'Auto-rellenar')}
@@ -999,15 +988,15 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5 text-center">
-                      {t('welcomeSmsCodeLabel', 'Código SMS')} · {simulatedCode}
+                      {t('welcomeSmsCodeLabel', 'Código de verificación por email')} · {simulatedCode}
                     </label>
                     <input
                       type="text"
                       required
                       maxLength={6}
-                      value={smsCode}
+                      value={emailCode}
                       onChange={(e) => {
-                        setSmsCode(e.target.value);
+                        setEmailCode(e.target.value);
                         setTrialError('');
                       }}
                       placeholder={simulatedCode}
@@ -1024,17 +1013,17 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                   <div className="flex gap-2">
                     <button
                       type="button"
-                      onClick={() => setSmsStep('phone')}
+                      onClick={() => setEmailStep('form')}
                       className="px-4 py-2.5 bg-white/10 hover:bg-white/15 text-white rounded-xl text-xs font-semibold cursor-pointer"
                     >
-                      {t('welcomeChangeNumber', 'Cambiar Número')}
+                      {t('welcomeChangeNumber', 'Cambiar Email')}
                     </button>
                     <button
                       type="submit"
-                      disabled={isVerifyingSms}
+                      disabled={isVerifyingEmail}
                       className="flex-1 py-2.5 bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                     >
-                      {isVerifyingSms ? t('welcomeVerifying', 'Verificando...') : t('welcomeActivateTrialBtn', 'Activar 48 Horas Gratis')}
+                      {isVerifyingEmail ? t('welcomeVerifying', 'Verificando...') : t('welcomeActivateTrialBtn', 'Activar 48 Horas Gratis')}
                     </button>
                   </div>
                 </form>
@@ -1430,8 +1419,8 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
         isOpen={showCancelModal}
         onClose={() => setShowCancelModal(false)}
         onCancellationSuccess={() => {
-          setActiveTrialPhone(null);
-          setSmsStep('phone');
+          setActiveTrialEmail(null);
+          setEmailStep('form');
           setPaymentSuccessData(null);
           setTrialError('');
         }}

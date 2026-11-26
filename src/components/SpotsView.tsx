@@ -22,10 +22,16 @@ import {
 interface SpotsViewProps {
   onGoBack?: () => void;
   onGoHome?: () => void;
-  onNavigateToDarkSky?: () => void;
+  onNavigateToWeather?: () => void;
+  initialSubTab?: 'name' | 'coords' | 'nearby' | 'offline';
 }
 
-export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavigateToDarkSky }) => {
+export const SpotsView: React.FC<SpotsViewProps> = ({
+  onGoBack,
+  onGoHome,
+  onNavigateToWeather,
+  initialSubTab = 'name',
+}) => {
   const { t, language } = useLanguage();
   const {
     savedSpots,
@@ -35,7 +41,7 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
     removeSpot,
     stats,
   } = useOfflineStorage();
-  const [activeSubTab, setActiveSubTab] = useState<'name' | 'coords' | 'nearby' | 'offline'>('name');
+  const [activeSubTab, setActiveSubTab] = useState<'name' | 'coords' | 'nearby' | 'offline'>(initialSubTab);
   const [savedBatchCount, setSavedBatchCount] = useState<number | null>(null);
   const [confirmClearBackpack, setConfirmClearBackpack] = useState<boolean>(false);
   const [mapMode, setMapMode] = useState<'certified' | 'free_location'>('certified');
@@ -480,8 +486,8 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
           </div>
         )}
 
-        {/* Modalidad Buttons: Starlight vs DarkSky Internacional vs Localización Libre */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+        {/* Modalidad Buttons: Starlight vs Cielo Óptimo (Clima y Previsión en Tiempo Real) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
           {/* Modalidad 1: Starlight */}
           <button
             onClick={() => {
@@ -511,64 +517,31 @@ export const SpotsView: React.FC<SpotsViewProps> = ({ onGoBack, onGoHome, onNavi
             </div>
           </button>
 
-          {/* Modalidad 2: DarkSky Internacional */}
+          {/* Modalidad 2: Cielo Óptimo (Clima y Previsión en Tiempo Real) */}
           <button
             onClick={() => {
-              if (onNavigateToDarkSky) {
-                onNavigateToDarkSky();
+              if (onNavigateToWeather) {
+                onNavigateToWeather();
               }
             }}
-            className="p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer bg-gradient-to-r from-cyan-950/60 to-blue-950/60 border-cyan-400/50 hover:border-cyan-300 text-white shadow-lg hover:shadow-cyan-500/20 group"
-            id="btn-modality-darksky"
-          >
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-300 group-hover:scale-105 transition-transform flex items-center justify-center text-xl shrink-0 border border-cyan-400/30">
-              🌌
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="block text-xs font-extrabold uppercase text-cyan-300 tracking-wider font-['JetBrains_Mono']">
-                  {t('spotsModality2GlobalBadge')}
-                </span>
-                <span className="px-1.5 py-0.2 rounded bg-cyan-400/20 text-cyan-200 text-[9px] font-bold">
-                  {t('spotsModality2GlobalPill')}
-                </span>
-              </div>
-              <span className="block text-sm font-bold font-['Plus_Jakarta_Sans'] group-hover:text-cyan-200 transition-colors">
-                {t('spotsModality2DarkSkyTitle')}
-              </span>
-              <span className="block text-[11px] text-cyan-100/70">
-                {t('spotsModality2DarkSkyDesc')}
-              </span>
-            </div>
-          </button>
-
-          {/* Modalidad 3: Localización Libre */}
-          <button
-            onClick={() => {
-              setSelectedType('optimal_free');
-              setActiveSubTab('name');
-            }}
-            className={`p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
-              selectedType === 'optimal_free'
-                ? 'bg-emerald-500/20 border-emerald-400 text-white shadow-lg'
-                : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/80'
-            }`}
+            className="p-3.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer bg-emerald-950/40 border-emerald-400/50 hover:border-emerald-300 hover:bg-emerald-900/40 text-white shadow-lg group"
             id="btn-modality-free"
           >
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shrink-0">
-              🌄
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <span className="material-symbols-outlined text-xl">cloud_sync</span>
             </div>
-            <div>
+            <div className="flex-1 min-w-0">
               <span className="block text-xs font-extrabold uppercase text-emerald-400 tracking-wider font-['JetBrains_Mono']">
-                {t('spotsOptimalBadge')}
+                {t('spotsOptimalBadge', 'Cielo Óptimo')}
               </span>
-              <span className="block text-sm font-bold font-['Plus_Jakarta_Sans']">
-                {t('modality2Title', 'Localización Libre (Puntos Accesibles)')}
+              <span className="block text-sm font-bold font-['Plus_Jakarta_Sans'] group-hover:text-emerald-200 transition-colors">
+                {t('modality2Title', 'Cielo Óptimo en Tiempo Real')}
               </span>
-              <span className="block text-[11px] text-white/60">
-                {t('modality2Desc', 'Ermitas, Castillos y Miradores de Montaña')}
+              <span className="block text-[11px] text-white/70">
+                {t('modality2Desc', 'Clima astronómico, nubosidad, seeing y previsión en vivo')}
               </span>
             </div>
+            <span className="material-symbols-outlined text-emerald-300 text-lg shrink-0">arrow_forward</span>
           </button>
         </div>
 

@@ -19,6 +19,12 @@ import { OfflineBanner } from './components/OfflineBanner';
 import { useLanguage } from './context/LanguageContext';
 import { getLocalizedPlanName } from './lib/i18nHelpers';
 
+const isLocalOrAiStudioPreview =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    (window.location.hostname.startsWith('ais-') && window.location.hostname.endsWith('.run.app')));
+
 export default function App() {
   const { language } = useLanguage();
   // Show landing page by default unless returning from a Stripe payment
@@ -123,7 +129,10 @@ export default function App() {
           // Strict 48h access
           const expiresAt = Date.now() + 48 * 3600 * 1000;
           localStorage.setItem('stellaway_trial_expires', expiresAt.toString());
-          localStorage.setItem('stellaway_trial_phone', 'Stripe (48h)');
+          localStorage.setItem(
+            'stellaway_trial_email',
+            localStorage.getItem('stellaway_user_email') || 'Stripe (48h)'
+          );
           localStorage.removeItem('stellaway_subscription_active'); // Not lifetime/infinite
           setActivePlanId('free2days');
         } else {
@@ -172,10 +181,10 @@ export default function App() {
     const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
     const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
     const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
-    const hasAccess = isSubscribed || isTrialValid;
+    const hasAccess = isSubscribed || isTrialValid || isLocalOrAiStudioPreview;
 
-    // Once subscribed/trial active, user never sees welcome/paywall page again
-    if (hasAccess && newTab === 'welcome') {
+    // Once subscribed/trial active, user never sees welcome/paywall page again (in preview they can inspect it)
+    if (!isLocalOrAiStudioPreview && hasAccess && newTab === 'welcome') {
       setActiveTab('dashboard');
       setTabHistory(['dashboard']);
       return;
@@ -211,7 +220,7 @@ export default function App() {
       const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
       const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
       const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
-      if ((isSubscribed || isTrialValid) && prevTab === 'welcome') {
+      if ((isSubscribed || isTrialValid || isLocalOrAiStudioPreview) && prevTab === 'welcome') {
         setTabHistory(['dashboard']);
         setActiveTab('dashboard');
         return;
@@ -235,7 +244,7 @@ export default function App() {
           const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
           const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
 
-          if (isSubscribed || isTrialValid) {
+          if (isSubscribed || isTrialValid || isLocalOrAiStudioPreview) {
             setActiveTab('dashboard');
             setTabHistory(['dashboard']);
           } else {
@@ -253,7 +262,7 @@ export default function App() {
 
   return (
     <div
-      className={`min-h-screen flex flex-col md:pl-80 relative transition-all duration-300 ${
+      className={`min-h-screen flex flex-col relative transition-all duration-300 ${
         nightVision ? 'night-vision-mode bg-[#0b0202] text-[#FFA3A3]' : ''
       }`}
     >
@@ -348,7 +357,7 @@ export default function App() {
           <SpotsView
             onGoBack={handleGoBack}
             onGoHome={() => navigateTo('dashboard')}
-            onNavigateToDarkSky={() => navigateTo('darksky')}
+            onNavigateToWeather={() => navigateTo('weather')}
           />
         )}
 

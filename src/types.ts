@@ -140,4 +140,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
+  sources?: { title: string; uri: string }[];
+  isError?: boolean;
+  isOffline?: boolean;
 }

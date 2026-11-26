@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ModalType, ActiveTab } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { WORLD_DIAL_CODES } from '../data/countryDialCodes';
 import { SubscriptionCancellationModal } from './SubscriptionCancellationModal';
 import { withStripeLocale } from '../lib/i18nHelpers';
 import {
@@ -82,18 +81,20 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
     }, 3000);
   };
 
-  // Phone verification state for free trial (2 Días Gratis)
-  const [modalCountryCode, setModalCountryCode] = useState('+34');
-  const [phoneInput, setPhoneInput] = useState('');
-  const [smsCodeInput, setSmsCodeInput] = useState('');
-  const [smsSentStep, setSmsSentStep] = useState(false);
+  // Name + Email verification state for free trial (2 Días Gratis)
+  const [trialFirstName, setTrialFirstName] = useState('');
+  const [trialLastName, setTrialLastName] = useState('');
+  const [trialEmailInput, setTrialEmailInput] = useState('');
+  const [emailCodeInput, setEmailCodeInput] = useState('');
+  const [emailSentStep, setEmailSentStep] = useState(false);
   const [trialErrorMsg, setTrialErrorMsg] = useState('');
-  const [registeredTrialPhone, setRegisteredTrialPhone] = useState<string | null>(null);
+  const [registeredTrialEmail, setRegisteredTrialEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedPhone = localStorage.getItem('stellaway_trial_phone');
-    if (savedPhone) {
-      setRegisteredTrialPhone(savedPhone);
+    const savedTrialContact =
+      localStorage.getItem('stellaway_trial_email') || localStorage.getItem('stellaway_trial_phone');
+    if (savedTrialContact) {
+      setRegisteredTrialEmail(savedTrialContact);
     }
   }, []);
 
@@ -226,7 +227,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                 </div>
 
                 <div className="space-y-3">
-                  {/* Plan 1: 48 Horas Gratis (Única opción con verificación por número de teléfono) */}
+                  {/* Plan 1: 48 Horas Gratis (Verificación por nombre y email) */}
                   <div
                     onClick={() => {
                       setSelectedPlan('free2days');
@@ -257,7 +258,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                           {t('mcPlan48Desc', 'Acceso total a todas las herramientas durante 48 horas sin coste.')}
                         </p>
                         <span className="inline-block mt-1.5 text-[10px] font-black text-amber-900 bg-amber-100 px-2.5 py-1 rounded-md border border-amber-300">
-                          {t('mcTrialDeviceTag', '📱 Verificación única por número de teléfono móvil (1 prueba por dispositivo).')}
+                          {t('mcTrialDeviceTag', '✉️ Verificación única por email y nombre (1 prueba por dispositivo).')}
                         </span>
                       </div>
 
@@ -347,119 +348,126 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                   </div>
                 </div>
 
-                {/* Single Verification Box for Phone Number when 48h Free Trial is Selected */}
+                {/* Single Verification Box for Email + Name when 48h Free Trial is Selected */}
                 {selectedPlan === 'free2days' && (
                   <div className="p-4 bg-white rounded-2xl border-2 border-[#38BDF8] space-y-3 my-2 shadow-sm text-[#082F49]">
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[#0284C7] text-lg">smartphone</span>
+                      <span className="material-symbols-outlined text-[#0284C7] text-lg">mail</span>
                       <h5 className="text-xs font-black text-[#082F49] uppercase tracking-wider">
-                        {t('mcVerifyPhoneBoxTitle', 'Verificación por Número de Teléfono (48 Horas Gratis)')}
+                        {t('mcVerifyPhoneBoxTitle', 'Verificación por Email (48 Horas Gratis)')}
                       </h5>
                     </div>
 
                     <p className="text-xs text-[#334155] leading-relaxed font-medium">
-                      {t('mcVerifyPhoneBoxDesc', 'Para garantizar 1 sola prueba de 48 horas por persona y dispositivo, introduce tu número de teléfono móvil para recibir un código SMS gratuito.')}
+                      {t('mcVerifyPhoneBoxDesc', 'Introduce tu nombre, apellidos y correo electrónico para recibir tu código de verificación gratuito (1 prueba por cuenta).')}
                     </p>
 
-                    {registeredTrialPhone ? (
+                    {registeredTrialEmail ? (
                       <div className="p-3 bg-emerald-100 border border-emerald-300 rounded-xl flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-emerald-700 text-lg">verified</span>
                           <div>
                             <span className="font-black text-[#082F49] block">{t('mcTrialActiveTitle', 'Prueba de 48 Horas Activa')}</span>
-                            <span className="text-[11px] text-emerald-900 font-['JetBrains_Mono'] font-bold">{t('mcPhonePrefix', 'Teléfono:')} {registeredTrialPhone}</span>
+                            <span className="text-[11px] text-emerald-900 font-['JetBrains_Mono'] font-bold">{t('mcPhonePrefix', 'Email:')} {registeredTrialEmail}</span>
                           </div>
                         </div>
                         <span className="px-2.5 py-1 bg-emerald-600 text-white font-black text-[10px] rounded-full uppercase">{t('mcFullAccessPill', 'Acceso Total')}</span>
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        {!smsSentStep ? (
+                        {!emailSentStep ? (
                           <form
                             onSubmit={(e) => {
                               e.preventDefault();
                               setTrialErrorMsg('');
-                              const cleanDigits = phoneInput.trim().replace(/\s+/g, '');
-                              if (cleanDigits.length < 6) {
-                                setTrialErrorMsg(t('mcSettingsErrPhone', 'Ingresa un número de teléfono móvil válido.'));
+                              const cleanFirst = trialFirstName.trim();
+                              const cleanLast = trialLastName.trim();
+                              const cleanEmail = trialEmailInput.trim().toLowerCase();
+                              const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail);
+
+                              if (cleanFirst.length < 2 || cleanLast.length < 2) {
+                                setTrialErrorMsg(t('welcomeErrInvalidName', 'Introduce tu nombre y apellidos.'));
                                 return;
                               }
-                              const cleanPhone = `${modalCountryCode}${cleanDigits}`;
 
-                              const usedPhones = JSON.parse(localStorage.getItem('stellaway_used_trial_phones') || '[]');
+                              if (!isValidEmail) {
+                                setTrialErrorMsg(t('mcSettingsErrPhone', 'Ingresa un correo electrónico válido.'));
+                                return;
+                              }
+
+                              const usedEmails = JSON.parse(localStorage.getItem('stellaway_used_trial_emails') || '[]');
                               const deviceUsed = localStorage.getItem('stellaway_device_trial_used');
 
-                              if (usedPhones.includes(cleanPhone) || deviceUsed === 'true') {
-                                setTrialErrorMsg(t('mcErrUsedDevice', '⚠️ Este teléfono o dispositivo ya ha disfrutado de los 2 Días Gratis. Selecciona el Plan Mensual (3,99 €) o Anual (19,99 €).'));
+                              if (usedEmails.includes(cleanEmail) || deviceUsed === 'true') {
+                                setTrialErrorMsg(t('mcErrUsedDevice', '⚠️ Este email o dispositivo ya ha disfrutado de los 2 Días Gratis. Selecciona el Plan Mensual (3,99 €) o Anual (19,99 €).'));
                                 return;
                               }
 
-                              setSmsSentStep(true);
+                              fetch('/api/verify-trial-email', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ firstName: cleanFirst, lastName: cleanLast, email: cleanEmail, language }),
+                              }).catch(() => {});
+
+                              setEmailSentStep(true);
                             }}
                             className="space-y-2"
                           >
-                            <div>
-                              <label className="text-[11px] font-black text-[#082F49] block mb-1">
-                                {t('mcPlan48PhoneLabel', 'Número de Teléfono Móvil')}
-                              </label>
-                              <div className="flex gap-2">
-                                <select
-                                  value={modalCountryCode}
-                                  onChange={(e) => setModalCountryCode(e.target.value)}
-                                  className="px-2 py-2 bg-[#F0F9FF] border border-[#38BDF8] rounded-xl text-[#082F49] text-xs font-bold focus:outline-none focus:border-[#0284C7] max-w-[135px] sm:max-w-[160px] cursor-pointer"
-                                >
-                                  <optgroup label={t('welcomeOptgroupHispanic', '🌟 Hispanohablantes')}>
-                                    {WORLD_DIAL_CODES.filter((c) => c.region === 'hispanic').map((c) => (
-                                      <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
-                                        {c.flag} {c.code} {c.name}
-                                      </option>
-                                    ))}
-                                  </optgroup>
-                                  <optgroup label={t('welcomeOptgroupAmericas', '🌎 América')}>
-                                    {WORLD_DIAL_CODES.filter((c) => c.region === 'americas').map((c) => (
-                                      <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
-                                        {c.flag} {c.code} {c.name}
-                                      </option>
-                                    ))}
-                                  </optgroup>
-                                  <optgroup label={t('welcomeOptgroupEurope', '🇪🇺 Europa')}>
-                                    {WORLD_DIAL_CODES.filter((c) => c.region === 'europe').map((c) => (
-                                      <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
-                                        {c.flag} {c.code} {c.name}
-                                      </option>
-                                    ))}
-                                  </optgroup>
-                                  <optgroup label={t('welcomeOptgroupAsiaOceania', '🌏 Asia y Oceanía')}>
-                                    {WORLD_DIAL_CODES.filter((c) => c.region === 'asia_oceania').map((c) => (
-                                      <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
-                                        {c.flag} {c.code} {c.name}
-                                      </option>
-                                    ))}
-                                  </optgroup>
-                                  <optgroup label={t('welcomeOptgroupAfrica', '🌍 África')}>
-                                    {WORLD_DIAL_CODES.filter((c) => c.region === 'africa').map((c) => (
-                                      <option key={`m-${c.region}-${c.code}-${c.name}`} value={c.code}>
-                                        {c.flag} {c.code} {c.name}
-                                      </option>
-                                    ))}
-                                  </optgroup>
-                                </select>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              <div>
+                                <label className="text-[11px] font-black text-[#082F49] block mb-1">
+                                  {t('welcomeFirstNameLabel', 'Nombre')}
+                                </label>
                                 <input
-                                  type="tel"
+                                  type="text"
                                   required
-                                  value={phoneInput}
+                                  value={trialFirstName}
                                   onChange={(e) => {
-                                    setPhoneInput(e.target.value);
+                                    setTrialFirstName(e.target.value);
                                     setTrialErrorMsg('');
                                   }}
-                                  placeholder={t('mcPlan48PhonePlaceholder', '612 345 678')}
+                                  placeholder={t('welcomeFirstNamePlaceholder', 'Tu nombre')}
+                                  className="w-full px-3 py-2 bg-[#F0F9FF] border border-[#38BDF8] rounded-xl text-[#082F49] text-xs placeholder-[#64748B] focus:outline-none focus:border-[#0284C7] font-bold"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[11px] font-black text-[#082F49] block mb-1">
+                                  {t('welcomeLastNameLabel', 'Apellidos')}
+                                </label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={trialLastName}
+                                  onChange={(e) => {
+                                    setTrialLastName(e.target.value);
+                                    setTrialErrorMsg('');
+                                  }}
+                                  placeholder={t('welcomeLastNamePlaceholder', 'Tus apellidos')}
+                                  className="w-full px-3 py-2 bg-[#F0F9FF] border border-[#38BDF8] rounded-xl text-[#082F49] text-xs placeholder-[#64748B] focus:outline-none focus:border-[#0284C7] font-bold"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label className="text-[11px] font-black text-[#082F49] block mb-1">
+                                {t('mcPlan48PhoneLabel', 'Correo Electrónico')}
+                              </label>
+                              <div className="flex gap-2">
+                                <input
+                                  type="email"
+                                  required
+                                  value={trialEmailInput}
+                                  onChange={(e) => {
+                                    setTrialEmailInput(e.target.value);
+                                    setTrialErrorMsg('');
+                                  }}
+                                  placeholder={t('mcPlan48PhonePlaceholder', 'tu@email.com')}
                                   className="flex-1 px-3 py-2 bg-[#F0F9FF] border border-[#38BDF8] rounded-xl text-[#082F49] text-xs placeholder-[#64748B] focus:outline-none focus:border-[#0284C7] font-bold"
                                 />
                                 <button
                                   type="submit"
                                   className="px-4 py-2 bg-[#0284C7] hover:bg-[#0369A1] text-white font-black rounded-xl text-xs uppercase cursor-pointer transition-all shrink-0 shadow-md"
                                 >
-                                  {t('mcPlan48BtnSend', 'Enviar SMS')}
+                                  {t('mcPlan48BtnSend', 'Enviar Código')}
                                 </button>
                               </div>
                             </div>
@@ -468,43 +476,52 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                           <form
                             onSubmit={(e) => {
                               e.preventDefault();
-                              const cleanDigits = phoneInput.trim().replace(/\s+/g, '');
-                              const cleanPhone = `${modalCountryCode}${cleanDigits}`;
-                              const usedPhones = JSON.parse(localStorage.getItem('stellaway_used_trial_phones') || '[]');
-                              if (!usedPhones.includes(cleanPhone)) {
-                                usedPhones.push(cleanPhone);
-                                localStorage.setItem('stellaway_used_trial_phones', JSON.stringify(usedPhones));
+                              const cleanFirst = trialFirstName.trim();
+                              const cleanLast = trialLastName.trim();
+                              const cleanEmail = trialEmailInput.trim().toLowerCase();
+                              const usedEmails = JSON.parse(localStorage.getItem('stellaway_used_trial_emails') || '[]');
+                              if (!usedEmails.includes(cleanEmail)) {
+                                usedEmails.push(cleanEmail);
+                                localStorage.setItem('stellaway_used_trial_emails', JSON.stringify(usedEmails));
                               }
                               localStorage.setItem('stellaway_device_trial_used', 'true');
-                              localStorage.setItem('stellaway_trial_phone', cleanPhone);
+                              localStorage.setItem('stellaway_trial_email', cleanEmail);
+                              localStorage.setItem('stellaway_user_email', cleanEmail);
+                              localStorage.setItem('stellaway_user_name', `${cleanFirst} ${cleanLast}`.trim());
                               localStorage.setItem('stellaway_trial_expires', String(Date.now() + 172800000));
                               localStorage.setItem('stellaway_subscription_active', 'true');
                               localStorage.setItem('stellaway_active_plan', 'free2days');
 
-                              fetch('/api/verify-trial-phone', {
+                              fetch('/api/verify-trial-email', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ phone: cleanPhone, code: smsCodeInput, language }),
+                                body: JSON.stringify({
+                                  firstName: cleanFirst,
+                                  lastName: cleanLast,
+                                  email: cleanEmail,
+                                  code: emailCodeInput,
+                                  language,
+                                }),
                               }).catch(() => {});
 
-                              setRegisteredTrialPhone(cleanPhone);
-                              setSmsSentStep(false);
+                              setRegisteredTrialEmail(cleanEmail);
+                              setEmailSentStep(false);
                               setTrialErrorMsg('');
                             }}
                             className="space-y-2 bg-[#F0F9FF] p-3.5 rounded-xl border border-[#38BDF8]"
                           >
                             <p className="text-xs text-emerald-800 font-bold flex items-center gap-1">
-                              <span className="material-symbols-outlined text-sm">sms</span>
-                              {t('mcPlan48SmsSent', 'Código de verificación SMS enviado a')} {modalCountryCode} {phoneInput}.
+                              <span className="material-symbols-outlined text-sm">mail</span>
+                              {t('mcPlan48SmsSent', 'Código de verificación enviado a')} {trialEmailInput}.
                             </p>
                             <div>
-                              <label className="text-[10px] text-[#082F49] font-bold block mb-0.5">{t('mcSmsLabelHint', 'Código SMS (Ej: 1234)')}</label>
+                              <label className="text-[10px] text-[#082F49] font-bold block mb-0.5">{t('mcSmsLabelHint', 'Código de verificación (Ej: 1234)')}</label>
                               <div className="flex gap-2">
                                 <input
                                   type="text"
                                   required
-                                  value={smsCodeInput}
-                                  onChange={(e) => setSmsCodeInput(e.target.value)}
+                                  value={emailCodeInput}
+                                  onChange={(e) => setEmailCodeInput(e.target.value)}
                                   placeholder="1234"
                                   className="flex-1 px-3 py-1.5 bg-white border border-[#38BDF8] rounded-lg text-[#082F49] text-xs font-mono font-bold focus:outline-none focus:border-[#0284C7]"
                                 />
@@ -635,7 +652,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                   <div className="bg-white/70 p-3.5 rounded-2xl border border-[#E6CA65]">
                     <span className="text-[#594A70] block font-['JetBrains_Mono'] uppercase text-[10px] font-bold">{t('mcSelectedActiveSub', 'Estado de Acceso')}</span>
                     <span className="text-xs font-extrabold text-[#120D1C] mt-0.5 block truncate">
-                      {registeredTrialPhone ? `${t('mcTrialActiveTitle', 'Prueba 48h')}: ${registeredTrialPhone}` : t('mcFullAccessReady', 'Configurado en Ajustes')}
+                      {registeredTrialEmail ? `${t('mcTrialActiveTitle', 'Prueba 48h')}: ${registeredTrialEmail}` : t('mcFullAccessReady', 'Configurado en Ajustes')}
                     </span>
                   </div>
                 </div>
@@ -660,9 +677,9 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                     </h4>
                     <p className="text-[11px] text-[#594A70] font-bold">
                       {selectedPlan === 'free2days'
-                        ? registeredTrialPhone
-                          ? `${t('mcPhoneVerifiedDesc', 'Verificado por teléfono (48h de acceso ilimitado):')} ${registeredTrialPhone}`
-                          : t('mcPhoneReqDesc', 'Requiere verificación por número de móvil (1 uso por usuario/dispositivo)')
+                        ? registeredTrialEmail
+                          ? `${t('mcPhoneVerifiedDesc', 'Verificado por email (48h de acceso ilimitado):')} ${registeredTrialEmail}`
+                          : t('mcPhoneReqDesc', 'Requiere nombre, apellidos y verificación por email (1 uso por cuenta/dispositivo)')
                         : t('mcPaidPlanDesc', 'Telemetría en tiempo real, mapas HD y acceso ilimitado sin restricciones')}
                     </p>
                   </div>
@@ -1540,8 +1557,11 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
         isOpen={showCancelModal}
         onClose={() => setShowCancelModal(false)}
         onCancellationSuccess={() => {
-          setRegisteredTrialPhone(null);
-          setPhoneInput('');
+          setRegisteredTrialEmail(null);
+          setTrialEmailInput('');
+          setTrialFirstName('');
+          setTrialLastName('');
+          setEmailSentStep(false);
         }}
       />
     </div>

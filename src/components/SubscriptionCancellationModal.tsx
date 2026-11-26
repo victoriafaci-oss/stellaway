@@ -33,14 +33,16 @@ export const SubscriptionCancellationModal: React.FC<SubscriptionCancellationMod
   useEffect(() => {
     if (isOpen) {
       const plan = localStorage.getItem('stellaway_active_plan');
+      const trialEmail = localStorage.getItem('stellaway_trial_email');
       const phone = localStorage.getItem('stellaway_trial_phone');
       const savedEmail = localStorage.getItem('stellaway_user_email') || localStorage.getItem('stellaway_customer_email') || '';
       const isSubscribed = localStorage.getItem('stellaway_subscription_active') === 'true';
 
-      if (phone && phone.startsWith('+')) {
+      if (trialEmail || (phone && phone.startsWith('+'))) {
+        const contact = trialEmail || phone || savedEmail;
         setActivePlan(t('cancelPlan48h', 'Prueba Gratuita 48 Horas'));
-        setActivePhone(phone);
-        setEmailOrPhone(phone);
+        setActivePhone(contact);
+        if (contact) setEmailOrPhone(contact);
       } else if (plan === 'mensual') {
         setActivePlan(t('cancelPlanMensual', 'Plan Mensual Starlight Pro (3,99 € / mes)'));
         if (savedEmail) setEmailOrPhone(savedEmail);
@@ -106,6 +108,7 @@ export const SubscriptionCancellationModal: React.FC<SubscriptionCancellationMod
     // Immediate local unsubscription
     localStorage.removeItem('stellaway_subscription_active');
     localStorage.removeItem('stellaway_trial_phone');
+    localStorage.removeItem('stellaway_trial_email');
     localStorage.removeItem('stellaway_trial_expires');
     localStorage.removeItem('stellaway_active_plan');
     localStorage.removeItem('stellaway_payment_provider');
@@ -282,7 +285,7 @@ export const SubscriptionCancellationModal: React.FC<SubscriptionCancellationMod
                   </span>
                   {activePhone && (
                     <span className="text-[11px] text-emerald-300 block font-mono">
-                      {t('cancelPhoneRegLabel', 'Teléfono registrado:')} {activePhone}
+                      {t('cancelPhoneRegLabel', 'Email de prueba registrado:')} {activePhone}
                     </span>
                   )}
                 </div>
@@ -291,17 +294,17 @@ export const SubscriptionCancellationModal: React.FC<SubscriptionCancellationMod
                 </span>
               </div>
 
-              {/* Contact identification (Email or Phone) */}
+              {/* Contact identification (Email) */}
               <div>
                 <label className="block text-xs font-bold text-[#BAE6FD] mb-1">
-                  {t('cancelContactLabel', 'Email o teléfono asociado a la suscripción')}
+                  {t('cancelContactLabel', 'Email asociado a la suscripción o prueba')}
                 </label>
                 <input
                   type="text"
                   required
                   value={emailOrPhone}
                   onChange={(e) => setEmailOrPhone(e.target.value)}
-                  placeholder={t('cancelContactPlaceholder', 'ejemplo@correo.com o +34612345678')}
+                  placeholder={t('cancelContactPlaceholder', 'ejemplo@correo.com')}
                   className="w-full bg-[#041E30] border border-[#38BDF8]/50 rounded-xl px-3.5 py-2.5 text-white text-xs font-bold focus:border-rose-400 outline-none"
                 />
                 <span className="text-[10px] text-[#94A3B8] mt-1 block">

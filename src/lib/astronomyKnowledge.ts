@@ -178,19 +178,92 @@ export function generateAstronomicalAnswer(message: string, language: string = '
     });
   }
 
-  // 4. TELESCOPIOS & EQUIPO
-  if (
+  const mentionsAurora =
+    q.includes('aurora') ||
+    q.includes('aurore') ||
+    q.includes('boreal') ||
+    q.includes('austral') ||
+    q.includes('northern lights') ||
+    q.includes('southern lights') ||
+    q.includes('polarlicht') ||
+    q.includes('tromso') ||
+    q.includes('abisko') ||
+    q.includes('rakiura') ||
+    q.includes('fairbanks') ||
+    q.includes('ushuaia') ||
+    q.includes('kp') ||
+    q.includes('geomagnet');
+
+  const mentionsOpticsOrSimpleEye =
     q.includes('telescop') ||
     q.includes('prismatic') ||
     q.includes('binocular') ||
     q.includes('jumell') ||
     q.includes('fernglas') ||
-    q.includes('comprar') ||
-    q.includes('equipo') ||
-    q.includes('ocular') ||
-    q.includes('dobson') ||
-    q.includes('refractor') ||
-    q.includes('maksutov')
+    q.includes('simple vista') ||
+    q.includes('ojo desnudo') ||
+    q.includes('naked eye') ||
+    q.includes('oeil nu') ||
+    q.includes('olho nu') ||
+    q.includes('occhio nudo') ||
+    q.includes('blossem auge') ||
+    q.includes('hace falta') ||
+    q.includes('necesit') ||
+    q.includes('need') ||
+    q.includes('equip');
+
+  // 3b. AURORAS: ¿SE NECESITA TELESCOPIO? (OBSERVACIÓN A SIMPLE VISTA)
+  if (mentionsAurora && mentionsOpticsOrSimpleEye) {
+    return pick(l, {
+      es: `🌌 **No, para ver auroras boreales o australes NO hace falta telescopio (de hecho, es contraproducente).**
+
+Las auroras ocupan grandes arcos o todo el cielo, y un telescopio tiene un campo de visión muy reducido:
+- 👀 **Cómo se ven:** **A simple vista**. Solo necesitas que sea de noche cerrada, cielo despejado (sin nubes), poca contaminación lumínica y mirar hacia el horizonte Norte (boreal) o Sur (austral).
+- 🔭 **¿Y prismáticos?** No son necesarios, aunque unos gran angular (7x35 o 8x42) pueden ayudar si la aurora es muy tenue en el horizonte.
+- 📱 **Cámara/Móvil:** El sensor capta colores más intensos que el ojo humano; usa trípode, gran angular f/1.4–f/2.8, **1–5 s** e **ISO 1600–6400**.`,
+      en: `🌌 **No — you do NOT need a telescope to see Northern or Southern Lights (a telescope actually restricts your view).**
+
+Auroras stretch across wide arcs or the entire sky, while telescopes zoom into a tiny patch:
+- 👀 **Best way to see them:** **With the naked eye.** You only need full night darkness, clear cloudless skies, low light pollution, a clear polar horizon (North or South), and geomagnetic activity.
+- 🔭 **Binoculars?** Not required, though wide-field 7x35 or 8x42 binoculars can reveal faint horizon glow.
+- 📱 **Camera/Phone:** Sensors pick up vivid colors better than human night vision — use a tripod, wide lens f/1.4–f/2.8, **1–5s** shutter, **ISO 1600–6400**.`,
+      fr: `🌌 **Non, il ne faut PAS de télescope pour voir les aurores boréales ou australes.**
+
+Les aurores s'étendent sur de larges pans du ciel, alors qu'un télescope a un champ trop étroit :
+- 👀 **Observation idéale :** **À l'œil nu.** Il suffit qu'il fasse nuit noire, que le ciel soit dégagé, avec peu de pollution lumineuse et une activité géomagnétique suffisante.
+- 📱 **Photo :** Trépied, grand angle f/1.4–f/2.8, **1 à 5 s**, **ISO 1600–6400**.`,
+      pt: `🌌 **Não, NÃO precisa de telescópio para ver auroras boreais ou austrais.**
+
+As auroras cobrem grande parte do céu e o telescópio fecha demasiado o campo de visão:
+- 👀 **Como observar:** **A olho nu.** Só precisa de noite escura, céu limpo sem nuvens, pouca poluição luminosa e horizonte polar desimpedido.
+- 📱 **Fotografia:** Tripé, grande angular f/1.4–f/2.8, **1–5 s**, **ISO 1600–6400**.`,
+      it: `🌌 **No, NON serve un telescopio per vedere le aurore boreali o australi.**
+
+Le aurore coprono ampie porzioni di cielo e un telescopio ha un campo troppo stretto:
+- 👀 **Come osservarle:** **A occhio nudo.** Servono solo notte fonda, cielo sereno senza nuvole, scarso inquinamento luminoso e orizzonte libero verso il polo.
+- 📱 **Foto:** Treppiede, grandangolo f/1.4–f/2.8, **1–5 s**, **ISO 1600–6400**.`,
+      de: `🌌 **Nein, für Polarlichter braucht man KEIN Teleskop — sie werden mit bloßem Auge beobachtet.**
+
+Polarlichter spannen sich über weite Teile des Himmels; ein Teleskop hat ein viel zu kleines Sichtfeld:
+- 👀 **Was du wirklich brauchst:** Dunkle Nacht, klarer Himmel ohne Wolken, wenig Lichtverschmutzung, freier Horizont nach Norden (bzw. Süden) und geomagnetische Aktivität.
+- 📱 **Kamera/Handy:** Stativ, Weitwinkel f/1.4–f/2.8, **1–5 s**, **ISO 1600–6400**.`,
+    });
+  }
+
+  // 4. TELESCOPIOS & EQUIPO (solo cuando NO se pregunta por auroras)
+  if (
+    !mentionsAurora &&
+    (q.includes('telescop') ||
+      q.includes('prismatic') ||
+      q.includes('binocular') ||
+      q.includes('jumell') ||
+      q.includes('fernglas') ||
+      q.includes('comprar') ||
+      q.includes('equipo') ||
+      q.includes('ocular') ||
+      q.includes('dobson') ||
+      q.includes('refractor') ||
+      q.includes('maksutov'))
   ) {
     return pick(l, {
       es: `🔭 **Recomendaciones de Telescopios y Óptica StellaWay**:
@@ -580,67 +653,50 @@ Im Tab **DarkSky®** findest du Parks, Reservate & Schutzgebiete wie *Greater Bi
     });
   }
 
-  // 10. BIENVENIDA / GENERAL (6 IDIOMAS)
+  // 10. SALUDO EXPLÍCITO VS CONSULTA FUERA DE GUÍA OFFLINE
+  const isGreeting = /^(hola|buenas|hello|hi|hey|bonjour|salut|ola|ciao|hallo|ayuda|help|aide)\b/i.test(
+    q.trim()
+  );
+
+  if (isGreeting) {
+    return pick(l, {
+      es: `✨ **¡Hola! Soy Stella (modo guía rápida sin conexión).**
+
+Puedo consultar temas rápidos offline sobre:
+- 🌌 **Auroras** (observación a simple vista, índice Kp, Bz y destinos)
+- 🔭 **Telescopios y prismáticos**
+- 🌑 **Eclipses 2026 y 2027**
+- 🏛️ **Destinos Starlight y DarkSky®** (Escala Bortle 1–9)
+- 📸 **Astrofotografía de Vía Láctea**`,
+      en: `✨ **Hello! I'm Stella (offline quick-guide mode).**
+
+Offline topics available:
+- 🌌 **Auroras** (naked-eye viewing, Kp index, Bz & locations)
+- 🔭 **Telescopes & binoculars**
+- 🌑 **Solar Eclipses 2026 & 2027**
+- 🏛️ **Starlight & DarkSky® Reserves** (Bortle 1–9)
+- 📸 **Milky Way Astrophotography**`,
+      fr: `✨ **Bonjour ! Je suis Stella (mode guide hors ligne).**
+
+Thèmes disponibles hors ligne : aurores, télescopes, éclipses 2026–2027, sites Starlight/DarkSky® et astrophotographie.`,
+      pt: `✨ **Olá! Sou a Stella (modo guia offline).**
+
+Tópicos disponíveis offline: auroras, telescópios, eclipses 2026–2027, zonas Starlight/DarkSky® e astrofotografia.`,
+      it: `✨ **Ciao! Sono Stella (modalità guida offline).**
+
+Argomenti offline: aurore, telescopi, eclissi 2026–2027, riserve Starlight/DarkSky® e astrofotografia.`,
+      de: `✨ **Hallo! Ich bin Stella (Offline-Kurzführer).**
+
+Offline-Themen: Polarlichter, Teleskope, Sonnenfinsternisse 2026–2027, Starlight/DarkSky®-Gebiete & Astrofotografie.`,
+    });
+  }
+
   return pick(l, {
-    es: `✨ **¡Hola! Soy Stella, tu Asistente Astronómica experta de StellaWay.**
-
-Estoy lista para guiarte en tu idioma sobre cualquier tema celeste:
-- 🌌 **Atlas Mundial de Auroras Boreales y Australes** (índice Kp, orientación Bz y mejores enclaves).
-- 🔭 **Telescopios, oculares y prismáticos** según tu presupuesto.
-- 🌑 **Eclipses Solares Totales 2026 y 2027 en España** (totalidad en Tarifa, Málaga, Aragón y Galicia + filtros ISO 12312-2).
-- 🏛️ **Zonas Starlight & Santuarios DarkSky®** (Escala Bortle 1–9).
-- 📸 **Astrofotografía de la Vía Láctea** (regla NPF, RAW y apilado).
-
-¿Qué quieres consultar para tu próxima noche de observación?`,
-    en: `✨ **Hello! I'm Stella, your Starlight Astronomical AI Assistant from StellaWay.**
-
-I can assist you right now in English with:
-- 🌌 **Worldwide Aurora Atlas (Northern & Southern Lights)** — Kp index, southward Bz & top viewing spots.
-- 🔭 **Telescopes, eyepieces & binoculars** tailored to your level.
-- 🌑 **Great Total Solar Eclipses of 2026 & 2027 in Spain** — totality corridors & ISO 12312-2 filters.
-- 🏛️ **Starlight Reserves & DarkSky® Sanctuaries** (Bortle Scale 1–9).
-- 📸 **Milky Way Astrophotography** — NPF rule, RAW & stacking.
-
-What would you like to explore in the night sky today?`,
-    fr: `✨ **Bonjour ! Je suis Stella, votre Assistante Astronomique experte de StellaWay.**
-
-Je suis prête à vous guider en français sur :
-- 🌌 **Atlas Mondial des Aurores (Boréales & Australes)** — indice Kp, Bz négatif et meilleurs sites.
-- 🔭 **Télescopes, oculaires et jumelles** adaptés à votre budget.
-- 🌑 **Éclipses Solaires Totales 2026 & 2027 en Espagne** — bandes de totalité et filtres ISO 12312-2.
-- 🏛️ **Destinations Starlight & Sanctuaires DarkSky®** (Échelle de Bortle 1–9).
-- 📸 **Astrophotographie de la Voie Lactée** — règle NPF, RAW et empilement.
-
-Que souhaitez-vous préparer pour votre prochaine nuit d'observation ?`,
-    pt: `✨ **Olá! Sou a Stella, sua Assistente Astronómica especialista do StellaWay.**
-
-Estou pronta para ajudar em português sobre:
-- 🌌 **Atlas Mundial de Auroras (Boreais & Austrais)** — índice Kp, Bz negativo e melhores destinos.
-- 🔭 **Telescópios, oculares e binóculos** para o seu nível.
-- 🌑 **Grandes Eclipses Solares Totais de 2026 & 2027 em Espanha** — faixas de totalidade e filtros ISO 12312-2.
-- 🏛️ **Zonas Starlight & Santuários DarkSky®** (Escala Bortle 1–9).
-- 📸 **Astrofotografia da Via Láctea** — regra NPF, RAW e empilhamento.
-
-O que gostaria de explorar no céu noturno hoje?`,
-    it: `✨ **Ciao! Sono Stella, la tua Assistente Astronomica esperta di StellaWay.**
-
-Posso guidarti subito in italiano su:
-- 🌌 **Atlante Mondiale delle Aurore (Boreali & Australi)** — indice Kp, Bz negativo e migliori località.
-- 🔭 **Telescopi, oculari e binocoli** adatti al tuo livello.
-- 🌑 **Grandi Eclissi Solari Totali 2026 & 2027 in Spagna** — fasce di totalità e filtri ISO 12312-2.
-- 🏛️ **Territori Starlight & Santuari DarkSky®** (Scala Bortle 1–9).
-- 📸 **Astrofotografia della Via Lattea** — regola NPF, scatti RAW e stacking.
-
-Cosa vorresti esplorare stanotte sotto le stelle?`,
-    de: `✨ **Hallo! Ich bin Stella, deine astronomische KI-Assistentin von StellaWay.**
-
-Ich helfe dir jederzeit auf Deutsch bei:
-- 🌌 **Weltweiter Polarlicht-Atlas (Nord & Süd)** — Kp-Index, negativer Bz-Wert & Top-Orte.
-- 🔭 **Teleskope, Okulare & Ferngläser** passend zu deinem Budget.
-- 🌑 **Totale Sonnenfinsternisse 2026 & 2027 in Spanien** — Totalitätszonen & ISO 12312-2 Schutzfilter.
-- 🏛️ **Starlight-Zonen & DarkSky®-Schutzgebiete** (Bortle-Skala 1–9).
-- 📸 **Astrofotografie der Milchstraße** — NPF-Regel, RAW & Stacking.
-
-Wobei darf ich dich für deine nächste Beobachtungsnacht unterstützen?`,
+    es: `📡 **Sin conexión al motor IA en la nube.** No tengo una ficha específica offline para esa pregunta concreta. Conéctate a internet para respuestas abiertas en tiempo real o prueba en offline con términos como: *auroras*, *telescopios*, *eclipse 2027*, *Bortle*, *Vía Láctea* o *Zaragoza / Canarias / Galicia*.`,
+    en: `📡 **Offline mode:** I don't have a specific offline entry for that exact question. Connect online for full AI answers, or ask offline about: *auroras*, *telescopes*, *eclipse 2027*, *Bortle*, *Milky Way*, or *DarkSky*.`,
+    fr: `📡 **Mode hors ligne :** Je n'ai pas de fiche précise hors ligne pour cette question. Connectez-vous pour l'IA complète ou demandez des sujets comme *aurores*, *télescopes*, *éclipse*, *Bortle* ou *Voie lactée*.`,
+    pt: `📡 **Modo offline:** Não tenho uma ficha offline específica para essa pergunta. Ligue-se à internet para respostas completas ou consulte offline sobre *auroras*, *telescópios*, *eclipse*, *Bortle* ou *Via Láctea*.`,
+    it: `📡 **Modalità offline:** Non ho una scheda offline specifica per questa domanda. Connettiti per l'IA completa oppure chiedi di *aurore*, *telescopi*, *eclissi*, *Bortle* o *Via Lattea*.`,
+    de: `📡 **Offline-Modus:** Für diese konkrete Frage liegt kein Offline-Eintrag vor. Verbinde dich online für die vollständige KI oder frage offline nach *Polarlichtern*, *Teleskopen*, *Finsternis*, *Bortle* oder *Milchstraße*.`,
   });
 }
