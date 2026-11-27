@@ -1,4 +1,6 @@
 const ACCESS_COOKIE_NAME = 'stellaway_access_v1';
+const INSTALLED_STORAGE_KEY = 'stellaway_app_installed';
+const INSTALLED_COOKIE_NAME = 'stellaway_installed_v1';
 
 interface AccessCookiePayload {
   planId?: string;
@@ -45,6 +47,72 @@ function deleteAccessCookie(): void {
   } catch {
     // Ignore
   }
+}
+
+export function isPwaShortcutLaunch(): boolean {
+  if (typeof window === 'undefined') return false;
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('source') === 'pwa') return true;
+  const isStandalone =
+    window.matchMedia?.('(display-mode: standalone)').matches ||
+    window.matchMedia?.('(display-mode: fullscreen)').matches ||
+    window.matchMedia?.('(display-mode: minimal-ui)').matches ||
+    Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone);
+  const isAndroidAppReferrer =
+    typeof document !== 'undefined' && document.referrer.startsWith('android-app://');
+  return isStandalone || isAndroidAppReferrer;
+}
+
+export function markAppInstalled(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(INSTALLED_STORAGE_KEY, 'true');
+  } catch {
+    // Ignore storage errors
+  }
+  try {
+    const maxAge = 60 * 60 * 24 * 365;
+    const secureFlag = window.location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `${INSTALLED_COOKIE_NAME}=1; max-age=${maxAge}; path=/; SameSite=Lax${secureFlag}`;
+  } catch {
+    // Ignore cookie errors
+  }
+}
+
+export function isAppInstalledOnDevice(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (isPwaShortcutLaunch()) {
+    markAppInstalled();
+    return true;
+  }
+  try {
+    if (localStorage.getItem(INSTALLED_STORAGE_KEY) === 'true') {
+      return true;
+    }
+  } catch {
+    // Ignore storage errors
+  }
+  if (typeof document !== 'undefined') {
+    const hasCookie = document.cookie
+      .split('; ')
+      .some((row) => row === `${INSTALLED_COOKIE_NAME}=1`);
+    if (hasCookie) {
+      try {
+        localStorage.setItem(INSTALLED_STORAGE_KEY, 'true');
+      } catch {
+        // Ignore
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
+export function shouldSkipLanding(): boolean {
+  if (typeof window === 'undefined') return false;
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('view') === 'landing') return false;
+  return isPwaShortcutLaunch() || isAppInstalledOnDevice() || hasRegisteredAccess();
 }
 
 function hydrateAccessFromCookie(): void {
@@ -95,16 +163,16 @@ export function isPreviewOrLocalAccess(): boolean {
 
   const host = window.location.hostname;
   const isLocal = host === 'localhost' || host === '127.0.0.1';
-  const isAiStudioPreview =
-    (host.startsWith('ais-') && host.endsWith('.run.app')) ||
+  const isAiStudioDevPreview =
+    (host.startsWith('ais-dev-') && host.endsWith('.run.app')) ||
     host.endsWith('.aistudio.google.com');
 
-  return isLocal || isAiStudioPreview;
+  return isLocal || isAiStudioDevPreview;
 }
 
 /**
  * Returns true ONLY when the user has a real persisted registration,
- * active 48h trial, or paid subscription (ignoring localhost/AI Studio preview bypass).
+ * active 48h trial, or paid subscription (ignoring localhost/AI Studio dev preview bypass).
  */
 export function hasRegisteredAccess(): boolean {
   if (typeof window === 'undefined') return false;

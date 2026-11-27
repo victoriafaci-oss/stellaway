@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useOfflineStorage } from '../lib/offlineStorage';
 import { StellaLogo } from './StellaLogo';
+import { hasAppAccess, shouldSkipLanding } from '../lib/previewAccess';
 
 interface TopBarProps {
   activeTab: ActiveTab;
@@ -47,6 +48,10 @@ export const TopBar: React.FC<TopBarProps> = ({
     };
   }, []);
 
+  const showBackButton =
+    activeTab !== 'dashboard' &&
+    !(activeTab === 'welcome' && shouldSkipLanding() && !hasAppAccess());
+
   return (
     <div className="w-full bg-[#130B22]/95 backdrop-blur-xl border-b border-[#FEE685]/20 px-2 sm:px-4 md:px-6 py-2 sm:py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-lg shadow-black/40">
       {/* Left Area: Unified 3-Bars Menu Button + (Atrás on Subpages) */}
@@ -62,7 +67,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         </button>
 
         {/* ONLY ON SUBPAGES: Atrás */}
-        {activeTab !== 'dashboard' && (
+        {showBackButton && (
           <button
             onClick={onGoBack}
             className="w-8 h-8 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-lg flex items-center justify-center transition-all cursor-pointer active:scale-95 shadow-sm shrink-0"

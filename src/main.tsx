@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { markAppInstalled } from './lib/previewAccess';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -23,6 +24,7 @@ if (typeof window !== 'undefined') {
   });
   window.addEventListener('appinstalled', () => {
     (window as Window & { __stellawayDeferredPrompt?: Event | null }).__stellawayDeferredPrompt = null;
+    markAppInstalled();
   });
 }
 

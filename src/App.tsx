@@ -24,33 +24,28 @@ import {
   hasAppAccess,
   hasRegisteredAccess,
   isPreviewOrLocalAccess,
+  isPwaShortcutLaunch,
+  markAppInstalled,
   persistAppAccess,
+  shouldSkipLanding,
 } from './lib/previewAccess';
 
 const isLocalOrAiStudioPreview = isPreviewOrLocalAccess();
 
-function isPwaShortcutLaunch(): boolean {
-  if (typeof window === 'undefined') return false;
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('source') === 'pwa') return true;
-  const isStandalone =
-    window.matchMedia?.('(display-mode: standalone)').matches ||
-    window.matchMedia?.('(display-mode: fullscreen)').matches ||
-    window.matchMedia?.('(display-mode: minimal-ui)').matches ||
-    Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone);
-  return isStandalone;
-}
-
 export default function App() {
   const { language } = useLanguage();
   const { user, userProfileData, saveUserProfileData } = useAuth();
-  // Installed PWA / phone home-screen launches skip landing (direct to 'dashboard' if registered,
-  // or 'welcome' if not yet registered). Regular browser opens always show 'landing' first.
+  // Once downloaded/installed as PWA or registered, never show landing on startup
+  // (direct to 'dashboard' if access active, or 'welcome' if not yet registered).
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('view') === 'landing') {
         return 'landing';
+      }
+
+      if (isPwaShortcutLaunch()) {
+        markAppInstalled();
       }
 
       const isSuccessPayment =
@@ -68,7 +63,7 @@ export default function App() {
         return 'dashboard';
       }
 
-      if (isPwaShortcutLaunch()) {
+      if (shouldSkipLanding()) {
         return hasAppAccess() ? 'dashboard' : 'welcome';
       }
     }
@@ -125,9 +120,29 @@ export default function App() {
     const handleAppInstalled = () => {
       (window as Window & { __stellawayDeferredPrompt?: Event | null }).__stellawayDeferredPrompt = null;
       setDeferredInstallPrompt(null);
+      markAppInstalled();
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('view') !== 'landing') {
+        const nextTab: ActiveTab = hasAppAccess() ? 'dashboard' : 'welcome';
+        setActiveTab((prev) => (prev === 'landing' ? nextTab : prev));
+        setTabHistory((prev) => (prev.length === 1 && prev[0] === 'landing' ? [nextTab] : prev));
+      }
+    };
+    const standaloneMedia = window.matchMedia?.('(display-mode: standalone)');
+    const handleDisplayModeChange = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        markAppInstalled();
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('view') !== 'landing') {
+          const nextTab: ActiveTab = hasAppAccess() ? 'dashboard' : 'welcome';
+          setActiveTab((prev) => (prev === 'landing' ? nextTab : prev));
+          setTabHistory((prev) => (prev.length === 1 && prev[0] === 'landing' ? [nextTab] : prev));
+        }
+      }
     };
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
     window.addEventListener('appinstalled', handleAppInstalled);
+    standaloneMedia?.addEventListener?.('change', handleDisplayModeChange);
 
     // Listen for custom open-install-modal event from anywhere in the app
     const handleOpenInstall = () => setShowInstallModal(true);
@@ -211,12 +226,13 @@ export default function App() {
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      standaloneMedia?.removeEventListener?.('change', handleDisplayModeChange);
       window.removeEventListener('open-install-modal', handleOpenInstall);
       window.removeEventListener('stellaway-subscription-cancelled', handleCancelled);
     };
   }, []);
 
-  // Automatically enter dashboard if access is restored while in welcome paywall, or when launched as installed PWA
+  // Automatically enter dashboard if access is restored while in welcome paywall or landing
   useEffect(() => {
     const syncAccessToView = () => {
       setActivePlanId(localStorage.getItem('stellaway_active_plan'));
@@ -224,13 +240,16 @@ export default function App() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('view') === 'landing') return;
       }
-      const canSkipLanding = isPwaShortcutLaunch();
       if (
         hasRegisteredAccess() &&
-        (activeTab === 'welcome' || (canSkipLanding && activeTab === 'landing'))
+        (activeTab === 'welcome' || activeTab === 'landing')
       ) {
         setActiveTab('dashboard');
         setTabHistory(['dashboard']);
+      } else if (shouldSkipLanding() && activeTab === 'landing') {
+        const nextTab: ActiveTab = hasAppAccess() ? 'dashboard' : 'welcome';
+        setActiveTab(nextTab);
+        setTabHistory([nextTab]);
       }
     };
 
@@ -242,14 +261,17 @@ export default function App() {
     };
   }, [activeTab]);
 
-  // If Firebase profile restores active subscription on a fresh install/re-download, enter dashboard directly (from welcome, or from landing in PWA)
+  // If Firebase profile restores active subscription on a fresh install/re-download, enter dashboard directly
   useEffect(() => {
     if (!userProfileData) return;
-    const canSkipLanding = isPwaShortcutLaunch();
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('view') === 'landing') return;
+    }
     if (
       userProfileData.accessActive === true &&
       hasRegisteredAccess() &&
-      (activeTab === 'welcome' || (canSkipLanding && activeTab === 'landing'))
+      (activeTab === 'welcome' || activeTab === 'landing')
     ) {
       setActiveTab('dashboard');
       setTabHistory(['dashboard']);
@@ -288,12 +310,12 @@ export default function App() {
   };
 
   const handleGoBack = () => {
-    // On the initial welcome/paywall page, if already registered go to dashboard, otherwise landing
+    // On the initial welcome/paywall page, if access active go to dashboard; otherwise only return to landing if not installed
     if (activeTab === 'welcome') {
-      if (hasRegisteredAccess()) {
+      if (hasAppAccess()) {
         setActiveTab('dashboard');
         setTabHistory(['dashboard']);
-      } else {
+      } else if (!shouldSkipLanding()) {
         setActiveTab('landing');
         setTabHistory(['landing']);
       }

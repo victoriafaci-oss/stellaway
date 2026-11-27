@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { markAppInstalled } from '../lib/previewAccess';
 
 interface InstallPromptModalProps {
   isOpen: boolean;
@@ -33,6 +34,9 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
         window.matchMedia?.('(display-mode: minimal-ui)').matches ||
         Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone);
       setIsStandalone(standaloneMode);
+      if (standaloneMode) {
+        markAppInstalled();
+      }
     }
   }, []);
 
@@ -44,6 +48,7 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === 'accepted') {
+          markAppInstalled();
           setInstallSuccess(true);
           setTimeout(() => {
             onClose();
