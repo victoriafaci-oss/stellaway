@@ -881,6 +881,31 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
 
           {/* Menu items compact grid */}
           <div className="overflow-y-auto space-y-2.5 pr-1">
+            {/* Eclipse Total 2 Ago 2027 */}
+            <button
+              onClick={() => {
+                closeModal();
+                setActiveTab('eclipse2027');
+              }}
+              className="p-3.5 rounded-2xl bg-gradient-to-r from-[#170E28] via-[#24153F] to-[#170E28] hover:from-[#24153F] hover:to-[#321C58] border-2 border-[#FEE685]/60 shadow-md transition-all flex items-center gap-3 text-left group cursor-pointer w-full"
+            >
+              <div className="w-10 h-10 rounded-xl bg-[#FEE685] text-[#120D1C] flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                <span className="material-symbols-outlined text-xl">wb_twilight</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-black text-white group-hover:text-[#FEE685] transition-colors font-['Plus_Jakarta_Sans'] truncate">
+                    {t('ec27QuickTitle', 'Eclipse Solar Total · 2 Ago 2027')}
+                  </h3>
+                  <span className="text-[10px] font-bold text-[#FEE685] tracking-wide">
+                    · 6m 23s
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-200 font-semibold truncate">{t('ec27QuickSub', 'Ruta, horarios C1–C4, seguridad ISO y checklist')}</p>
+              </div>
+              <span className="material-symbols-outlined text-[#FEE685] text-base shrink-0">arrow_forward</span>
+            </button>
+
             {/* 0. Tienda Astronómica (inside 3-bars menu) */}
             <button
               onClick={() => {

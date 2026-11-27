@@ -9,6 +9,7 @@ interface DashboardViewProps {
   onExploreDarkSky?: () => void;
   onExploreAuroras?: () => void;
   onExploreEvents?: () => void;
+  onExploreEclipse2027?: () => void;
   onExploreWeather?: () => void;
   onExploreShop?: () => void;
   openModal?: (type: any) => void;
@@ -21,6 +22,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onExploreDarkSky,
   onExploreAuroras,
   onExploreEvents,
+  onExploreEclipse2027,
   onExploreWeather,
   onExploreShop,
   openModal,
@@ -248,7 +250,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </p>
             <div className="pt-2 flex items-center justify-between">
               <button
-                onClick={() => onExploreEvents && onExploreEvents()}
+                onClick={() => (onExploreEclipse2027 ? onExploreEclipse2027() : onExploreEvents && onExploreEvents())}
                 className="px-4 py-2.5 bg-gradient-to-r from-[#FEE685] to-[#E5B54F] hover:from-white hover:to-[#FEE685] text-[#120D1C] font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-2 cursor-pointer transition-all active:scale-95"
               >
                 <span>{t('viewEclipseGuide', 'Ver Información y Ruta del Eclipse 2027 →')}</span>

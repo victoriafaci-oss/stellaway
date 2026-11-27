@@ -123,6 +123,22 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
 
             <li>
               <button
+                onClick={() => handleNavClick('eclipse2027')}
+                className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === 'eclipse2027'
+                    ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
+                    : 'text-white/80 hover:bg-white/10 font-semibold'
+                }`}
+              >
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'eclipse2027' ? "'FILL' 1" : "'FILL' 0" }}>
+                  wb_twilight
+                </span>
+                <span>{t('ec27NavMenuLabel', 'Eclipse 2 Ago 2027')}</span>
+              </button>
+            </li>
+
+            <li>
+              <button
                 onClick={() => handleNavClick('weather')}
                 className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
                   activeTab === 'weather'

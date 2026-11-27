@@ -8,6 +8,7 @@ import { SpotsView } from './components/SpotsView';
 import { DarkSkyView } from './components/DarkSkyView';
 import { AurorasView } from './components/AurorasView';
 import { EventsView } from './components/EventsView';
+import { Eclipse2027View } from './components/Eclipse2027View';
 import { WeatherView } from './components/WeatherView';
 import { ShopView } from './components/ShopView';
 import { ProfileView } from './components/ProfileView';
@@ -436,6 +437,7 @@ export default function App() {
             onExploreDarkSky={() => navigateTo('darksky')}
             onExploreAuroras={() => navigateTo('auroras')}
             onExploreEvents={() => navigateTo('events')}
+            onExploreEclipse2027={() => navigateTo('eclipse2027')}
             onExploreWeather={() => navigateTo('weather')}
             onExploreShop={() => navigateTo('shop')}
             openModal={(type) => setModalType(type)}
@@ -465,6 +467,16 @@ export default function App() {
         )}
 
         {hasAppAccess() && activeTab === 'events' && <EventsView />}
+
+        {hasAppAccess() && activeTab === 'eclipse2027' && (
+          <Eclipse2027View
+            onGoBack={handleGoBack}
+            onGoHome={() => navigateTo('dashboard')}
+            onExploreSpots={() => navigateTo('spots')}
+            onExploreWeather={() => navigateTo('weather')}
+            onExploreShop={() => navigateTo('shop')}
+          />
+        )}
 
         {hasAppAccess() && activeTab === 'weather' && <WeatherView />}
 
