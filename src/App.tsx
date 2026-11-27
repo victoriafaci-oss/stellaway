@@ -43,9 +43,8 @@ function isPwaShortcutLaunch(): boolean {
 export default function App() {
   const { language } = useLanguage();
   const { user, userProfileData, saveUserProfileData } = useAuth();
-  // Once registered (trial or subscription), always enter the app directly ('dashboard'),
-  // whether opened from the mobile home-screen shortcut or the browser.
-  // Unregistered visits from the PWA shortcut go to 'welcome'; regular web visits see 'landing'.
+  // Installed PWA / phone home-screen launches skip landing (direct to 'dashboard' if registered,
+  // or 'welcome' if not yet registered). Regular browser opens always show 'landing' first.
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -65,10 +64,6 @@ export default function App() {
       }
 
       if (isSuccessPayment) {
-        return 'dashboard';
-      }
-
-      if (hasRegisteredAccess()) {
         return 'dashboard';
       }
 
@@ -220,7 +215,7 @@ export default function App() {
     };
   }, []);
 
-  // Automatically enter dashboard if access is restored (e.g., from Firebase Auth / cookie / cross-tab)
+  // Automatically enter dashboard if access is restored while in welcome paywall, or when launched as installed PWA
   useEffect(() => {
     const syncAccessToView = () => {
       setActivePlanId(localStorage.getItem('stellaway_active_plan'));
@@ -228,7 +223,11 @@ export default function App() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('view') === 'landing') return;
       }
-      if (hasRegisteredAccess() && activeTab === 'landing') {
+      const canSkipLanding = isPwaShortcutLaunch();
+      if (
+        hasRegisteredAccess() &&
+        (activeTab === 'welcome' || (canSkipLanding && activeTab === 'landing'))
+      ) {
         setActiveTab('dashboard');
         setTabHistory(['dashboard']);
       }
@@ -242,13 +241,14 @@ export default function App() {
     };
   }, [activeTab]);
 
-  // If Firebase profile restores active subscription on a fresh install/re-download, enter dashboard directly
+  // If Firebase profile restores active subscription on a fresh install/re-download, enter dashboard directly (from welcome, or from landing in PWA)
   useEffect(() => {
     if (!userProfileData) return;
+    const canSkipLanding = isPwaShortcutLaunch();
     if (
       userProfileData.accessActive === true &&
       hasRegisteredAccess() &&
-      (activeTab === 'landing' || activeTab === 'welcome')
+      (activeTab === 'welcome' || (canSkipLanding && activeTab === 'landing'))
     ) {
       setActiveTab('dashboard');
       setTabHistory(['dashboard']);
