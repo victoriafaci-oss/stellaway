@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { SubscriptionCancellationModal } from './SubscriptionCancellationModal';
 import { withStripeLocale } from '../lib/i18nHelpers';
+import { persistAppAccess } from '../lib/previewAccess';
 import {
   watchLivePosition,
   formatCoordinatesDMS,
@@ -30,7 +31,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
   setNightVision,
 }) => {
   const { language, setLanguage, languageOptions, t } = useLanguage();
-  const { user, userLogs } = useAuth();
+  const { user, userLogs, saveUserProfileData } = useAuth();
   const currentLang = languageOptions.find((l) => l.code === language) || languageOptions[0];
   const [settingsTab, setSettingsTab] = useState<'perfil' | 'tarifas' | 'pagos' | 'idiomas'>('tarifas');
   const [selectedPlan, setSelectedPlan] = useState<'free2days' | 'mensual' | 'anual'>('free2days');
@@ -479,18 +480,25 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
                               const cleanFirst = trialFirstName.trim();
                               const cleanLast = trialLastName.trim();
                               const cleanEmail = trialEmailInput.trim().toLowerCase();
-                              const usedEmails = JSON.parse(localStorage.getItem('stellaway_used_trial_emails') || '[]');
-                              if (!usedEmails.includes(cleanEmail)) {
-                                usedEmails.push(cleanEmail);
-                                localStorage.setItem('stellaway_used_trial_emails', JSON.stringify(usedEmails));
+                              const trialExpiresAt = Date.now() + 172800000;
+
+                              persistAppAccess({
+                                planId: 'free2days',
+                                email: cleanEmail,
+                                name: `${cleanFirst} ${cleanLast}`.trim(),
+                                trialExpiresAt,
+                                provider: 'StellaWay 48h Trial',
+                              });
+
+                              if (user) {
+                                saveUserProfileData({
+                                  subscriptionPlan: 'free2days',
+                                  accessActive: true,
+                                  trialEmail: cleanEmail,
+                                  trialExpiresAt,
+                                  paymentProvider: 'StellaWay 48h Trial',
+                                }).catch(() => {});
                               }
-                              localStorage.setItem('stellaway_device_trial_used', 'true');
-                              localStorage.setItem('stellaway_trial_email', cleanEmail);
-                              localStorage.setItem('stellaway_user_email', cleanEmail);
-                              localStorage.setItem('stellaway_user_name', `${cleanFirst} ${cleanLast}`.trim());
-                              localStorage.setItem('stellaway_trial_expires', String(Date.now() + 172800000));
-                              localStorage.setItem('stellaway_subscription_active', 'true');
-                              localStorage.setItem('stellaway_active_plan', 'free2days');
 
                               fetch('/api/verify-trial-email', {
                                 method: 'POST',

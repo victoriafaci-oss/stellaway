@@ -17,8 +17,14 @@ import { LandingPageV2 } from './components/LandingPageV2';
 import { InstallPromptModal } from './components/InstallPromptModal';
 import { OfflineBanner } from './components/OfflineBanner';
 import { useLanguage } from './context/LanguageContext';
+import { useAuth } from './context/AuthContext';
 import { getLocalizedPlanName } from './lib/i18nHelpers';
-import { hasAppAccess, isPreviewOrLocalAccess } from './lib/previewAccess';
+import {
+  hasAppAccess,
+  hasRegisteredAccess,
+  isPreviewOrLocalAccess,
+  persistAppAccess,
+} from './lib/previewAccess';
 
 const isLocalOrAiStudioPreview = isPreviewOrLocalAccess();
 
@@ -36,11 +42,17 @@ function isPwaShortcutLaunch(): boolean {
 
 export default function App() {
   const { language } = useLanguage();
-  // Show landing page by default on regular web visits;
-  // when launched from installed home-screen shortcut or returning from Stripe, enter the app directly.
+  const { user, userProfileData, saveUserProfileData } = useAuth();
+  // Once registered (trial or subscription), always enter the app directly ('dashboard'),
+  // whether opened from the mobile home-screen shortcut or the browser.
+  // Unregistered visits from the PWA shortcut go to 'welcome'; regular web visits see 'landing'.
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('view') === 'landing') {
+        return 'landing';
+      }
+
       const isSuccessPayment =
         urlParams.get('pago') === 'exito' ||
         urlParams.get('success') === 'true' ||
@@ -53,6 +65,10 @@ export default function App() {
       }
 
       if (isSuccessPayment) {
+        return 'dashboard';
+      }
+
+      if (hasRegisteredAccess()) {
         return 'dashboard';
       }
 
@@ -133,55 +149,61 @@ export default function App() {
       if (isSuccessPayment) {
         const planParam = urlParams.get('plan') || 'anual';
         const sessionId = urlParams.get('session_id') || 'stripe_checkout_success';
-        
-        localStorage.setItem('stellaway_active_plan', planParam);
-        localStorage.setItem('stellaway_payment_provider', 'Stripe Payments');
-        localStorage.setItem('stellaway_transaction_id', sessionId);
+        const resolvedPlan =
+          planParam === 'free2days' || planParam === 'trial_48h'
+            ? 'free2days'
+            : planParam === 'mensual'
+            ? 'mensual'
+            : planParam === 'promocion' || planParam === 'promo'
+            ? 'promocion'
+            : 'anual';
+
+        const trialExpiresAt =
+          resolvedPlan === 'free2days' ? Date.now() + 48 * 3600 * 1000 : undefined;
+
+        persistAppAccess({
+          planId: resolvedPlan,
+          email: localStorage.getItem('stellaway_user_email') || undefined,
+          trialExpiresAt,
+          provider: 'Stripe Payments',
+          transactionId: sessionId,
+        });
+        setActivePlanId(resolvedPlan);
+
+        if (user) {
+          saveUserProfileData({
+            subscriptionPlan: resolvedPlan,
+            accessActive: true,
+            ...(trialExpiresAt ? { trialExpiresAt } : {}),
+            paymentProvider: 'Stripe Payments',
+          }).catch(() => {});
+        }
 
         if (sessionId && sessionId.startsWith('cs_')) {
           fetch(`/api/stripe-session-details?sessionId=${encodeURIComponent(sessionId)}`)
             .then((r) => r.json())
             .then((info) => {
-              if (info?.customerEmail) {
-                localStorage.setItem('stellaway_user_email', info.customerEmail);
-                localStorage.setItem('stellaway_customer_email', info.customerEmail);
-              }
-              if (info?.subscriptionId) {
-                localStorage.setItem('stellaway_transaction_id', info.subscriptionId);
+              if (info?.customerEmail || info?.subscriptionId) {
+                persistAppAccess({
+                  planId: resolvedPlan,
+                  email: info?.customerEmail || localStorage.getItem('stellaway_user_email') || undefined,
+                  trialExpiresAt,
+                  provider: 'Stripe Payments',
+                  transactionId: info?.subscriptionId || sessionId,
+                });
               }
             })
             .catch(() => {});
         }
 
-        if (planParam === 'free2days' || planParam === 'trial_48h') {
-          // Strict 48h access
-          const expiresAt = Date.now() + 48 * 3600 * 1000;
-          localStorage.setItem('stellaway_trial_expires', expiresAt.toString());
-          localStorage.setItem(
-            'stellaway_trial_email',
-            localStorage.getItem('stellaway_user_email') || 'Stripe (48h)'
-          );
-          localStorage.removeItem('stellaway_subscription_active'); // Not lifetime/infinite
-          setActivePlanId('free2days');
-        } else {
-          localStorage.setItem('stellaway_subscription_active', 'true');
-          if (planParam === 'mensual') {
-            setActivePlanId('mensual');
-          } else if (planParam === 'promocion' || planParam === 'promo') {
-            setActivePlanId('promocion');
-          } else {
-            setActivePlanId('anual');
-          }
-        }
-        
-        // Clean URL params without refresh
-        window.history.replaceState({}, document.title, window.location.pathname);
+        // Clean Stripe params without losing PWA source marker if present
+        const cleanSearch = urlParams.get('source') === 'pwa' ? '?source=pwa' : '';
+        window.history.replaceState({}, document.title, window.location.pathname + cleanSearch);
 
         setActiveTab('dashboard');
         setTabHistory(['dashboard']);
         setIsAfterPayment(true);
         setShowInstallModal(true);
-        return;
       }
     }
 
@@ -197,6 +219,41 @@ export default function App() {
       window.removeEventListener('stellaway-subscription-cancelled', handleCancelled);
     };
   }, []);
+
+  // Automatically enter dashboard if access is restored (e.g., from Firebase Auth / cookie / cross-tab)
+  useEffect(() => {
+    const syncAccessToView = () => {
+      setActivePlanId(localStorage.getItem('stellaway_active_plan'));
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('view') === 'landing') return;
+      }
+      if (hasRegisteredAccess() && activeTab === 'landing') {
+        setActiveTab('dashboard');
+        setTabHistory(['dashboard']);
+      }
+    };
+
+    window.addEventListener('stellaway-access-updated', syncAccessToView);
+    window.addEventListener('storage', syncAccessToView);
+    return () => {
+      window.removeEventListener('stellaway-access-updated', syncAccessToView);
+      window.removeEventListener('storage', syncAccessToView);
+    };
+  }, [activeTab]);
+
+  // If Firebase profile restores active subscription on a fresh install/re-download, enter dashboard directly
+  useEffect(() => {
+    if (!userProfileData) return;
+    if (
+      userProfileData.accessActive === true &&
+      hasRegisteredAccess() &&
+      (activeTab === 'landing' || activeTab === 'welcome')
+    ) {
+      setActiveTab('dashboard');
+      setTabHistory(['dashboard']);
+    }
+  }, [userProfileData, activeTab]);
 
   const navigateTo = (newTab: ActiveTab) => {
     // If navigating to landing, always allow
@@ -230,10 +287,15 @@ export default function App() {
   };
 
   const handleGoBack = () => {
-    // On the initial welcome/paywall page, back button redirects to landing page
+    // On the initial welcome/paywall page, if already registered go to dashboard, otherwise landing
     if (activeTab === 'welcome') {
-      setActiveTab('landing');
-      setTabHistory(['landing']);
+      if (hasRegisteredAccess()) {
+        setActiveTab('dashboard');
+        setTabHistory(['dashboard']);
+      } else {
+        setActiveTab('landing');
+        setTabHistory(['landing']);
+      }
       return;
     }
 

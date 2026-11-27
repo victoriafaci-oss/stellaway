@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ActiveTab } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { StellaLogo } from './StellaLogo';
 import { SubscriptionCancellationModal } from './SubscriptionCancellationModal';
 import { withStripeLocale, getLocalizedPlanName } from '../lib/i18nHelpers';
-import { hasAppAccess } from '../lib/previewAccess';
+import { hasAppAccess, persistAppAccess } from '../lib/previewAccess';
 import heroNebulaImg from '../assets/images/v2_hero_nebula_sky_1795505139848.jpg';
 
 interface WelcomePaywallViewProps {
@@ -23,8 +24,13 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
   onTriggerInstall,
 }) => {
   const { t, language } = useLanguage();
+  const { user, signIn, saveUserProfileData } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<'free2days' | 'mensual' | 'anual'>(selectedPlanDefault);
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
+  const [restoreEmail, setRestoreEmail] = useState('');
+  const [restoreStatusMsg, setRestoreStatusMsg] = useState('');
+  const [restoreErrorMsg, setRestoreErrorMsg] = useState('');
+  const [isRestoringAccess, setIsRestoringAccess] = useState(false);
 
   useEffect(() => {
     if (selectedPlanDefault) {
@@ -200,18 +206,24 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
     setIsVerifyingEmail(true);
 
     const persistTrialActivation = () => {
-      const usedEmails = JSON.parse(localStorage.getItem('stellaway_used_trial_emails') || '[]');
-      if (!usedEmails.includes(cleanEmail)) {
-        usedEmails.push(cleanEmail);
-        localStorage.setItem('stellaway_used_trial_emails', JSON.stringify(usedEmails));
+      const trialExpiresAt = Date.now() + 48 * 3600 * 1000;
+      persistAppAccess({
+        planId: 'free2days',
+        email: cleanEmail,
+        name: `${cleanFirst} ${cleanLast}`.trim(),
+        trialExpiresAt,
+        provider: 'StellaWay 48h Trial',
+      });
+
+      if (user) {
+        saveUserProfileData({
+          subscriptionPlan: 'free2days',
+          accessActive: true,
+          trialEmail: cleanEmail,
+          trialExpiresAt,
+          paymentProvider: 'StellaWay 48h Trial',
+        }).catch(() => {});
       }
-      localStorage.setItem('stellaway_device_trial_used', 'true');
-      localStorage.setItem('stellaway_trial_email', cleanEmail);
-      localStorage.setItem('stellaway_user_email', cleanEmail);
-      localStorage.setItem('stellaway_user_name', `${cleanFirst} ${cleanLast}`.trim());
-      localStorage.setItem('stellaway_trial_expires', String(Date.now() + 48 * 3600 * 1000));
-      localStorage.setItem('stellaway_subscription_active', 'true');
-      localStorage.setItem('stellaway_active_plan', 'free2days');
 
       setActiveTrialEmail(cleanEmail);
       setEmailStep('verified');
@@ -282,10 +294,21 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
       }
 
       if (data.success) {
-        localStorage.setItem('stellaway_subscription_active', 'true');
-        localStorage.setItem('stellaway_active_plan', selectedPlan);
-        localStorage.setItem('stellaway_payment_provider', 'Stripe Payments');
-        localStorage.setItem('stellaway_transaction_id', data.transactionId);
+        persistAppAccess({
+          planId: selectedPlan,
+          email: billingEmail.trim() || undefined,
+          name: cardHolder.trim() || undefined,
+          provider: 'Stripe Payments',
+          transactionId: data.transactionId,
+        });
+
+        if (user) {
+          saveUserProfileData({
+            subscriptionPlan: selectedPlan,
+            accessActive: true,
+            paymentProvider: 'Stripe Payments',
+          }).catch(() => {});
+        }
 
         setPaymentSuccessData({
           provider: 'Stripe Payments',
@@ -318,10 +341,20 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
 
       const data = await res.json();
       if (data.success) {
-        localStorage.setItem('stellaway_subscription_active', 'true');
-        localStorage.setItem('stellaway_active_plan', selectedPlan);
-        localStorage.setItem('stellaway_payment_provider', 'PayPal');
-        localStorage.setItem('stellaway_transaction_id', data.orderId);
+        persistAppAccess({
+          planId: selectedPlan,
+          email: billingEmail.trim() || undefined,
+          provider: 'PayPal',
+          transactionId: data.orderId,
+        });
+
+        if (user) {
+          saveUserProfileData({
+            subscriptionPlan: selectedPlan,
+            accessActive: true,
+            paymentProvider: 'PayPal',
+          }).catch(() => {});
+        }
 
         setPaymentSuccessData({
           provider: 'PayPal Express',
@@ -334,6 +367,88 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
       console.error('Error in PayPal payment flow:', err);
     } finally {
       setIsProcessingPayment(false);
+    }
+  };
+
+  const handleRestoreByEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRestoreErrorMsg('');
+    setRestoreStatusMsg('');
+    const cleanEmail = restoreEmail.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setRestoreErrorMsg(t('welcomeErrInvalidPhone', 'Por favor introduce un correo electrónico válido.'));
+      return;
+    }
+
+    setIsRestoringAccess(true);
+    try {
+      // Check if an active non-expired local trial matches this email
+      const savedTrialEmail = localStorage.getItem('stellaway_trial_email')?.toLowerCase();
+      const savedTrialExpires = Number(localStorage.getItem('stellaway_trial_expires') || '0');
+      if (savedTrialEmail === cleanEmail && savedTrialExpires > Date.now()) {
+        persistAppAccess({
+          planId: 'free2days',
+          email: cleanEmail,
+          trialExpiresAt: savedTrialExpires,
+          provider: 'StellaWay 48h Trial',
+        });
+        onEnterApp();
+        return;
+      }
+
+      const res = await fetch('/api/verify-existing-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail, language }),
+      });
+      const data = await res.json();
+      if (res.ok && data?.hasAccess) {
+        persistAppAccess({
+          planId: data.planId || 'anual',
+          email: data.customerEmail || cleanEmail,
+          provider: data.provider || 'Stripe Payments',
+          transactionId: data.subscriptionId,
+        });
+        onEnterApp();
+        return;
+      }
+
+      setRestoreErrorMsg(
+        t(
+          'welcomeRestoreNotFound',
+          'No encontramos una suscripción activa para ese email. Si usaste Google, pulsa «Entrar con Google», o activa tu pase abajo.'
+        )
+      );
+    } catch {
+      setRestoreErrorMsg(
+        t(
+          'welcomeRestoreNetworkErr',
+          'No se pudo comprobar tu suscripción en este momento. Inténtalo de nuevo o entra con Google.'
+        )
+      );
+    } finally {
+      setIsRestoringAccess(false);
+    }
+  };
+
+  const handleRestoreWithGoogle = async () => {
+    setRestoreErrorMsg('');
+    setRestoreStatusMsg('');
+    setIsRestoringAccess(true);
+    try {
+      await signIn();
+      setRestoreStatusMsg(
+        t(
+          'welcomeRestoreGoogleChecking',
+          'Cuenta Google conectada. Si ya tenías un pase guardado, entrarás automáticamente.'
+        )
+      );
+    } catch {
+      setRestoreErrorMsg(
+        t('welcomeRestoreGoogleErr', 'No se pudo iniciar sesión con Google. Inténtalo de nuevo.')
+      );
+    } finally {
+      setIsRestoringAccess(false);
     }
   };
 
@@ -537,6 +652,73 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* ALREADY REGISTERED / DIRECT ACCESS RECOVERY (for fresh installs or iOS/Android PWA switches) */}
+      {!hasAccess && (
+        <div className="rounded-2xl p-5 sm:p-6 bg-[#0B1222] border border-sky-400/35 shadow-xl space-y-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-300">
+                <span className="material-symbols-outlined text-sm">login</span>
+                {t('welcomeAlreadyRegBadge', '¿Ya estabas registrado o reinstalaste la app?')}
+              </span>
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                {t('welcomeAlreadyRegTitle', 'Recupera tu acceso directo en un paso')}
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed max-w-2xl">
+                {t(
+                  'welcomeAlreadyRegDesc',
+                  'Si ya activaste tu suscripción o conectaste tu cuenta de Google en otro navegador o antes de instalar la app en tu teléfono, inicia sesión aquí para entrar directamente.'
+                )}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleRestoreWithGoogle}
+              disabled={isRestoringAccess}
+              className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+            >
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+              </svg>
+              <span>{t('welcomeRestoreGoogleBtn', 'Entrar con Google')}</span>
+            </button>
+          </div>
+
+          <form onSubmit={handleRestoreByEmail} className="flex flex-col sm:flex-row gap-2.5 pt-2 border-t border-white/10">
+            <input
+              type="email"
+              value={restoreEmail}
+              onChange={(e) => {
+                setRestoreEmail(e.target.value);
+                setRestoreErrorMsg('');
+                setRestoreStatusMsg('');
+              }}
+              placeholder={t('welcomeRestoreEmailPlaceholder', 'Introduce el email de tu suscripción Stripe...')}
+              className="flex-1 bg-[#06080F] border border-white/20 rounded-xl px-3.5 py-2.5 text-white text-xs sm:text-sm font-medium placeholder-slate-500 focus:border-sky-400 outline-none"
+            />
+            <button
+              type="submit"
+              disabled={isRestoringAccess}
+              className="px-5 py-2.5 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+            >
+              <span>{isRestoringAccess ? t('welcomeVerifying', 'Verificando...') : t('welcomeRestoreEmailBtn', 'Recuperar Acceso')}</span>
+              <span className="material-symbols-outlined text-base">arrow_forward</span>
+            </button>
+          </form>
+
+          {restoreStatusMsg && (
+            <p className="text-xs text-emerald-300 font-medium">{restoreStatusMsg}</p>
+          )}
+          {restoreErrorMsg && (
+            <p className="text-xs text-amber-300 font-medium">{restoreErrorMsg}</p>
+          )}
+        </div>
+      )}
 
       {/* 2. PAYMENT GATEWAYS VERIFICATION STATUS BAR (Stripe & PayPal) */}
       <div className="rounded-xl p-4 sm:px-6 bg-[#0B0F1A] border border-white/15 flex flex-wrap items-center justify-between gap-4">

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { getLocaleTag, withStripeLocale } from '../lib/i18nHelpers';
+import { clearPersistedAppAccess } from '../lib/previewAccess';
 
 interface SubscriptionCancellationModalProps {
   isOpen: boolean;
@@ -14,6 +16,7 @@ export const SubscriptionCancellationModal: React.FC<SubscriptionCancellationMod
   onCancellationSuccess,
 }) => {
   const { t, language } = useLanguage();
+  const { user, saveUserProfileData } = useAuth();
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [reason, setReason] = useState('not_needed');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -105,18 +108,19 @@ export const SubscriptionCancellationModal: React.FC<SubscriptionCancellationMod
       // Fallback gracefully if network drops
     }
 
-    // Immediate local unsubscription
-    localStorage.removeItem('stellaway_subscription_active');
-    localStorage.removeItem('stellaway_trial_phone');
-    localStorage.removeItem('stellaway_trial_email');
-    localStorage.removeItem('stellaway_trial_expires');
-    localStorage.removeItem('stellaway_active_plan');
-    localStorage.removeItem('stellaway_payment_provider');
-    localStorage.removeItem('stellaway_transaction_id');
+    // Immediate local unsubscription (localStorage + cookie)
+    clearPersistedAppAccess();
 
     localStorage.setItem('stellaway_subscription_status', 'cancelled');
     localStorage.setItem('stellaway_cancellation_ref', refCode);
     localStorage.setItem('stellaway_cancellation_date', dateFormatted);
+
+    if (user) {
+      saveUserProfileData({
+        accessActive: false,
+        subscriptionPlan: 'cancelled',
+      }).catch(() => {});
+    }
 
     // Notify other components of the unsubscription event
     window.dispatchEvent(new CustomEvent('stellaway-subscription-cancelled'));

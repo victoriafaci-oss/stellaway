@@ -9,8 +9,12 @@
         "email": { "type": "string", "description": "Email address" },
         "displayName": { "type": "string", "description": "Full name" },
         "photoURL": { "type": "string", "description": "Avatar URL" },
-        "subscriptionPlan": { "type": "string", "description": "Plan name: free2days, mensual, or anual" },
+        "subscriptionPlan": { "type": "string", "description": "Plan name: free2days, mensual, anual, promocion, or cancelled" },
         "trialPhone": { "type": "string", "description": "Verified phone for 2-day free trial" },
+        "trialEmail": { "type": "string", "description": "Verified email for 2-day free trial" },
+        "trialExpiresAt": { "type": "number", "description": "Epoch ms expiration timestamp for 48h free trial" },
+        "accessActive": { "type": "boolean", "description": "Whether user has active app access" },
+        "paymentProvider": { "type": "string", "description": "Payment or trial provider name" },
         "createdAt": { "type": "string", "description": "ISO timestamp of creation" },
         "updatedAt": { "type": "string", "description": "ISO timestamp of last update" }
       },

@@ -429,6 +429,70 @@ export function registerApiRoutes(app: Express) {
     }
   });
 
+  // Verify Existing Access by Email (Stripe Customers & Subscriptions)
+  app.post("/api/verify-existing-access", async (req, res) => {
+    const lang = normalizeLanguage(req.body?.language);
+    try {
+      const cleanEmail = String(req.body?.email || "").trim().toLowerCase();
+      const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail);
+      if (!isValidEmail) {
+        return res.status(400).json({ success: false, hasAccess: false, error: "Invalid email" });
+      }
+
+      const stripeSecret = process.env.STRIPE_SECRET_KEY;
+      if (stripeSecret) {
+        try {
+          const custRes = await fetch(
+            `https://api.stripe.com/v1/customers?email=${encodeURIComponent(cleanEmail)}&limit=5`,
+            { headers: { Authorization: `Bearer ${stripeSecret}` } }
+          );
+          const custData = (await custRes.json()) as any;
+          if (custData && Array.isArray(custData.data)) {
+            for (const cust of custData.data) {
+              const subRes = await fetch(
+                `https://api.stripe.com/v1/subscriptions?customer=${cust.id}&limit=10`,
+                { headers: { Authorization: `Bearer ${stripeSecret}` } }
+              );
+              const subData = (await subRes.json()) as any;
+              if (subData && Array.isArray(subData.data)) {
+                const validSub = subData.data.find(
+                  (s: any) => s.status === "active" || s.status === "trialing"
+                );
+                if (validSub) {
+                  const priceId = validSub.items?.data?.[0]?.price?.id || "";
+                  const interval = validSub.items?.data?.[0]?.price?.recurring?.interval || "";
+                  let planId = "anual";
+                  if (priceId === "price_1U1nTbQ89S9ikvKuVViJ2ajL" || interval === "month") {
+                    planId = "mensual";
+                  }
+                  return res.json({
+                    success: true,
+                    hasAccess: true,
+                    planId,
+                    customerEmail: cleanEmail,
+                    subscriptionId: validSub.id,
+                    provider: "Stripe Payments",
+                    language: lang,
+                  });
+                }
+              }
+            }
+          }
+        } catch (stripeErr) {
+          console.warn("[Verify Existing Access Stripe Warning]", stripeErr);
+        }
+      }
+
+      return res.json({
+        success: true,
+        hasAccess: false,
+        language: lang,
+      });
+    } catch {
+      return res.status(500).json({ success: false, hasAccess: false });
+    }
+  });
+
   // PayPal Order Creation & Capture
   app.post("/api/create-paypal-order", async (req, res) => {
     const lang = normalizeLanguage(req.body?.language);

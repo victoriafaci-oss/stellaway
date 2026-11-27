@@ -14,6 +14,16 @@ import {
 } from '../lib/firebase';
 import { createGoogleCalendarEvent, CalendarEventPayload } from '../lib/calendar';
 import { ObservationLog, StarlightSpot } from '../types';
+import { hasRegisteredAccess, persistAppAccess } from '../lib/previewAccess';
+
+export interface UserProfileData {
+  subscriptionPlan?: string;
+  trialPhone?: string;
+  trialEmail?: string;
+  trialExpiresAt?: number;
+  accessActive?: boolean;
+  paymentProvider?: string;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -28,11 +38,8 @@ interface AuthContextType {
   userSpots: StarlightSpot[];
   addLogToFirestore: (log: Omit<ObservationLog, 'id'>) => Promise<void>;
   addSpotToFirestore: (spot: Omit<StarlightSpot, 'id'>) => Promise<void>;
-  userProfileData: {
-    subscriptionPlan?: string;
-    trialPhone?: string;
-  } | null;
-  saveUserProfileData: (data: { subscriptionPlan?: string; trialPhone?: string }) => Promise<void>;
+  userProfileData: UserProfileData | null;
+  saveUserProfileData: (data: UserProfileData) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -43,10 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [userLogs, setUserLogs] = useState<ObservationLog[]>([]);
   const [userSpots, setUserSpots] = useState<StarlightSpot[]>([]);
-  const [userProfileData, setUserProfileData] = useState<{
-    subscriptionPlan?: string;
-    trialPhone?: string;
-  } | null>(null);
+  const [userProfileData, setUserProfileData] = useState<UserProfileData | null>(null);
 
   // Test Firebase connection on boot
   useEffect(() => {
@@ -86,15 +90,71 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       userDocRef,
       (docSnap) => {
         if (docSnap.exists()) {
-          setUserProfileData(docSnap.data());
+          const data = docSnap.data() as UserProfileData;
+          setUserProfileData(data);
+
+          const plan = data.subscriptionPlan;
+          const isTrialPlan = plan === 'free2days' || plan === 'trial_48h';
+          const trialValid = Boolean(data.trialExpiresAt && Number(data.trialExpiresAt) > Date.now());
+          const cloudAccessValid =
+            data.accessActive !== false &&
+            Boolean(
+              (plan && plan !== 'cancelled' && (!isTrialPlan || trialValid)) ||
+                (data.accessActive === true && (!isTrialPlan || trialValid))
+            );
+
+          if (cloudAccessValid && !hasRegisteredAccess()) {
+            persistAppAccess({
+              planId: plan || 'anual',
+              email: data.trialEmail || user.email || undefined,
+              name: user.displayName || undefined,
+              trialExpiresAt: data.trialExpiresAt,
+              provider: data.paymentProvider || 'Firebase Sync',
+            });
+          } else if (hasRegisteredAccess() && !cloudAccessValid && data.subscriptionPlan !== 'cancelled') {
+            // Backfill existing local access to Firestore profile for cross-reinstall recovery
+            const localPlan = localStorage.getItem('stellaway_active_plan') || 'anual';
+            const localExpiry = localStorage.getItem('stellaway_trial_expires');
+            const localEmail = localStorage.getItem('stellaway_trial_email') || localStorage.getItem('stellaway_user_email') || user.email || '';
+            const localProvider = localStorage.getItem('stellaway_payment_provider') || 'StellaWay';
+            setDoc(
+              userDocRef,
+              {
+                subscriptionPlan: localPlan,
+                accessActive: true,
+                trialEmail: localEmail,
+                ...(localExpiry ? { trialExpiresAt: Number(localExpiry) } : {}),
+                paymentProvider: localProvider,
+                updatedAt: new Date().toISOString(),
+              },
+              { merge: true }
+            ).catch((err) =>
+              handleFirestoreError(err, OperationType.WRITE, `users/${user.uid}`)
+            );
+          }
         } else {
-          // Initialize user doc
+          const localActive = hasRegisteredAccess();
+          const localPlan = localStorage.getItem('stellaway_active_plan') || undefined;
+          const localExpiry = localStorage.getItem('stellaway_trial_expires');
+          const localEmail = localStorage.getItem('stellaway_trial_email') || localStorage.getItem('stellaway_user_email') || user.email || '';
+          const localProvider = localStorage.getItem('stellaway_payment_provider') || undefined;
+
+          // Initialize user doc (carrying over local subscription/trial if already active)
           setDoc(
             userDocRef,
             {
               userId: user.uid,
               email: user.email || '',
               displayName: user.displayName || 'Socio StellaWay',
+              ...(localActive && localPlan
+                ? {
+                    subscriptionPlan: localPlan,
+                    accessActive: true,
+                    trialEmail: localEmail,
+                    ...(localExpiry ? { trialExpiresAt: Number(localExpiry) } : {}),
+                    ...(localProvider ? { paymentProvider: localProvider } : {}),
+                  }
+                : {}),
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             },
@@ -231,7 +291,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
 
-  const saveUserProfileData = async (data: { subscriptionPlan?: string; trialPhone?: string }) => {
+  const saveUserProfileData = async (data: UserProfileData) => {
     if (!user) return;
     const userDocRef = doc(db, 'users', user.uid);
     await setDoc(
