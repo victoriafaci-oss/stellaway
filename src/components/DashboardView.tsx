@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import eclipseImg from '../assets/images/eclipse_total_2026_1787656886887.jpg';
-import milkyWayImg from '../assets/images/milky_way_sky_1787656902205.jpg';
 
 interface DashboardViewProps {
   nightVision: boolean;
@@ -221,18 +220,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </section>
 
-      {/* Visual Celestial Showcase Cards: Eclipse de Agosto 2026 & Vía Láctea */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto w-full">
-        {/* Card 1: Gran Eclipse Solar Total 2027 */}
-        <div className="relative rounded-3xl overflow-hidden border border-[#FEE685]/40 shadow-2xl bg-[#170E28]/90 backdrop-blur-xl group hover:border-[#FEE685] transition-all">
-          <div className="relative h-48 sm:h-56 w-full overflow-hidden">
+      {/* Visual Celestial Showcase Card: Gran Eclipse Solar Total 2027 */}
+      <section className="max-w-6xl mx-auto w-full">
+        <div className="relative rounded-3xl overflow-hidden border border-[#FEE685]/40 shadow-2xl bg-[#170E28]/90 backdrop-blur-xl group hover:border-[#FEE685] transition-all flex flex-col lg:flex-row">
+          <div className="relative h-48 sm:h-56 lg:h-auto lg:min-h-[260px] lg:w-5/12 w-full overflow-hidden shrink-0">
             <img
               src={eclipseImg}
               alt="Gran Eclipse Solar Total 2027 Corona"
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-95"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#170E28] via-[#170E28]/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-[#170E28] via-[#170E28]/40 to-transparent lg:from-transparent lg:via-[#170E28]/25 lg:to-[#170E28]" />
             <div className="absolute top-3 left-3">
               <span className="bg-[#130B22]/90 border border-[#FEE685] text-[#FEE685] font-extrabold text-[10px] sm:text-xs uppercase tracking-wider px-3 py-1 rounded-full shadow-lg backdrop-blur-md flex items-center gap-1.5">
                 <span className="material-symbols-outlined text-sm">wb_twilight</span>
@@ -241,8 +239,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
 
-          <div className="p-5 sm:p-6 flex flex-col gap-3 -mt-6 relative z-10">
-            <h3 className="font-['Plus_Jakarta_Sans'] text-lg sm:text-xl font-extrabold text-white leading-tight">
+          <div className="p-5 sm:p-6 lg:p-8 flex flex-col justify-center gap-3 -mt-6 lg:mt-0 relative z-10 flex-1">
+            <h3 className="font-['Plus_Jakarta_Sans'] text-lg sm:text-xl lg:text-2xl font-extrabold text-white leading-tight">
               {t('eclipseCardTitle', 'El Gran Eclipse del Siglo: 2 de Agosto de 2027')}
             </h3>
             <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-medium">
@@ -254,42 +252,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 className="px-4 py-2.5 bg-gradient-to-r from-[#FEE685] to-[#E5B54F] hover:from-white hover:to-[#FEE685] text-[#120D1C] font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-2 cursor-pointer transition-all active:scale-95"
               >
                 <span>{t('viewEclipseGuide', 'Ver Información y Ruta del Eclipse 2027 →')}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 2: Vía Láctea & Lluvia de Estrellas */}
-        <div className="relative rounded-3xl overflow-hidden border border-[#38BDF8]/40 shadow-2xl bg-[#0F172A]/90 backdrop-blur-xl group hover:border-[#38BDF8] transition-all">
-          <div className="relative h-48 sm:h-56 w-full overflow-hidden">
-            <img
-              src={milkyWayImg}
-              alt="Vía Láctea y Lluvia de Estrellas"
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-95"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/40 to-transparent" />
-            <div className="absolute top-3 left-3">
-              <span className="bg-[#082F49]/90 border border-[#38BDF8] text-[#7DD3FC] font-extrabold text-[10px] sm:text-xs uppercase tracking-wider px-3 py-1 rounded-full shadow-lg backdrop-blur-md flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-sm">auto_awesome</span>
-                {t('milkyWayCardBadge', 'Cielos Prístinos Bortle 1-3')}
-              </span>
-            </div>
-          </div>
-
-          <div className="p-5 sm:p-6 flex flex-col gap-3 -mt-6 relative z-10">
-            <h3 className="font-['Plus_Jakarta_Sans'] text-lg sm:text-xl font-extrabold text-white leading-tight">
-              {t('milkyWayCardTitle', 'Vía Láctea & Lluvia de Estrellas (Perseidas)')}
-            </h3>
-            <p className="text-xs sm:text-sm text-white/80 leading-relaxed font-medium">
-              {t('milkyWayCardDesc', 'Explora miradores astronómicos libres de contaminación lumínica para contemplar el brazo de Sagitario, la Vía Láctea y las Lágrimas de San Lorenzo.')}
-            </p>
-            <div className="pt-2 flex items-center justify-between">
-              <button
-                onClick={() => onExploreSpots && onExploreSpots()}
-                className="px-4 py-2.5 bg-gradient-to-r from-[#7DD3FC] to-[#38BDF8] hover:from-white hover:to-[#7DD3FC] text-[#082F49] font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-2 cursor-pointer transition-all active:scale-95"
-              >
-                <span>{t('viewMilkyWaySpots', 'Ver Miradores de Cielo Oscuro →')}</span>
               </button>
             </div>
           </div>
