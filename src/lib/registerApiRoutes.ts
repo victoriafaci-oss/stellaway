@@ -1,9 +1,5 @@
 import type { Express } from "express";
 import {
-  AssistantApiError,
-  runStellaAssistant,
-} from "./stellaAssistantEngine";
-import {
   SupportedLanguage,
   normalizeLanguage,
   getStripeLocale,
@@ -166,7 +162,7 @@ export function registerApiRoutes(app: Express) {
     > = {
       es: {
         freePeriod: "48 horas",
-        freeDesc: "Acceso total a mapas Bortle, telemetría y asistente IA con verificación telefónica o Stripe.",
+        freeDesc: "Acceso total a mapas Bortle, telemetría en vivo y tienda astronómica con verificación por email o Stripe.",
         monPeriod: "/ mes",
         monDesc: "Suscripción recurrente mensual cancelable en cualquier momento.",
         annPeriod: "/ año",
@@ -174,7 +170,7 @@ export function registerApiRoutes(app: Express) {
       },
       en: {
         freePeriod: "48 hours",
-        freeDesc: "Full access to Bortle maps, live telemetry & AI assistant via phone SMS or Stripe.",
+        freeDesc: "Full access to Bortle maps, live telemetry & astronomy shop via email or Stripe.",
         monPeriod: "/ month",
         monDesc: "Monthly recurring subscription, cancel anytime with zero fees.",
         annPeriod: "/ year",
@@ -182,7 +178,7 @@ export function registerApiRoutes(app: Express) {
       },
       fr: {
         freePeriod: "48 heures",
-        freeDesc: "Accès complet aux cartes Bortle, télémétrie et assistant IA via SMS ou Stripe.",
+        freeDesc: "Accès complet aux cartes Bortle, télémétrie et boutique astronomique via e-mail ou Stripe.",
         monPeriod: "/ mois",
         monDesc: "Abonnement mensuel résiliable à tout moment sans frais.",
         annPeriod: "/ an",
@@ -190,7 +186,7 @@ export function registerApiRoutes(app: Express) {
       },
       pt: {
         freePeriod: "48 horas",
-        freeDesc: "Acesso total a mapas Bortle, telemetria e assistente IA via SMS ou Stripe.",
+        freeDesc: "Acesso total a mapas Bortle, telemetria e loja astronómica via e-mail ou Stripe.",
         monPeriod: "/ mês",
         monDesc: "Assinatura mensal cancelável a qualquer momento sem custos.",
         annPeriod: "/ ano",
@@ -198,7 +194,7 @@ export function registerApiRoutes(app: Express) {
       },
       it: {
         freePeriod: "48 ore",
-        freeDesc: "Accesso totale a mappe Bortle, telemetria e assistente IA via SMS o Stripe.",
+        freeDesc: "Accesso totale a mappe Bortle, telemetria e negozio astronomico via e-mail o Stripe.",
         monPeriod: "/ mese",
         monDesc: "Abbonamento mensile disdicibile in qualsiasi momento senza penali.",
         annPeriod: "/ anno",
@@ -206,7 +202,7 @@ export function registerApiRoutes(app: Express) {
       },
       de: {
         freePeriod: "48 Stunden",
-        freeDesc: "Vollzugriff auf Bortle-Karten, Telemetrie & KI-Assistent per SMS oder Stripe.",
+        freeDesc: "Vollzugriff auf Bortle-Karten, Live-Telemetrie & Astronomie-Shop per E-Mail oder Stripe.",
         monPeriod: "/ Monat",
         monDesc: "Monatliches Abo, jederzeit ohne Gebühren kündbar.",
         annPeriod: "/ Jahr",
@@ -833,36 +829,4 @@ export function registerApiRoutes(app: Express) {
     }
   });
 
-  // Stargazing AI Assistant Route using Gemini 4 Hydrogen + live StellaWay tools & Search Grounding
-  app.post("/api/assistant", async (req, res) => {
-    const lang = normalizeLanguage(req.body?.language);
-    try {
-      const { message, conversationHistory = [] } = req.body || {};
-      if (!message || typeof message !== "string" || !message.trim()) {
-        return res.status(400).json({ error: "Message required", code: "BAD_REQUEST" });
-      }
-
-      const result = await runStellaAssistant({
-        message,
-        language: lang,
-        conversationHistory,
-      });
-
-      return res.json(result);
-    } catch (error: any) {
-      if (error instanceof AssistantApiError) {
-        return res.status(error.status).json({
-          error: error.message,
-          code: error.code,
-          language: lang,
-        });
-      }
-      console.error("Unexpected error in /api/assistant:", error);
-      return res.status(500).json({
-        error: "Failed to process assistant request",
-        code: "INTERNAL_ERROR",
-        language: lang,
-      });
-    }
-  });
 }

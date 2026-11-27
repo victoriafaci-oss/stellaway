@@ -10,8 +10,25 @@ import {
   getLocaleTag,
   translateElement,
   translateEventCategory,
-  formatCountdownLabel,
 } from '../lib/i18nHelpers';
+
+function getTodayMadridISO(): string {
+  try {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Madrid',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(new Date());
+    const y = parts.find((p) => p.type === 'year')?.value;
+    const m = parts.find((p) => p.type === 'month')?.value;
+    const d = parts.find((p) => p.type === 'day')?.value;
+    if (y && m && d) return `${y}-${m}-${d}`;
+  } catch {
+    // Fallback below
+  }
+  return new Date().toISOString().slice(0, 10);
+}
 
 export const EventsView: React.FC = () => {
   const { user, signIn, syncEventToCalendar } = useAuth();
@@ -20,26 +37,29 @@ export const EventsView: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<'upcoming' | 'energy'>('upcoming');
   const [selectedCategory, setSelectedCategory] = useState<string>('todos');
   const [timeFilter, setTimeFilter] = useState<'active_upcoming' | 'archived_past'>('active_upcoming');
-  const [currentDateString, setCurrentDateString] = useState<string>('2 Oct 2026');
-  const [currentTimeString, setCurrentTimeString] = useState<string>('12:14');
-
-  // Real-time live date reference: 2 de Octubre de 2026
-  const todayISO = '2026-10-02';
+  const [showDossier, setShowDossier] = useState<boolean>(true);
+  const [todayISO, setTodayISO] = useState<string>(() => getTodayMadridISO());
+  const [currentDateString, setCurrentDateString] = useState<string>('');
+  const [currentTimeString, setCurrentTimeString] = useState<string>('');
 
   useEffect(() => {
     const localeTag = getLocaleTag(language);
-    try {
-      const formattedDate = new Intl.DateTimeFormat(localeTag, {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }).format(new Date(`${todayISO}T12:00:00Z`));
-      setCurrentDateString(formattedDate);
-    } catch {
-      setCurrentDateString(todayISO);
-    }
 
-    const updateTime = () => {
+    const updateDateAndTime = () => {
+      const iso = getTodayMadridISO();
+      setTodayISO(iso);
+      try {
+        const formattedDate = new Intl.DateTimeFormat(localeTag, {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          timeZone: 'Europe/Madrid',
+        }).format(new Date());
+        setCurrentDateString(formattedDate);
+      } catch {
+        setCurrentDateString(iso);
+      }
+
       try {
         const now = new Date();
         const madridTimeStr = now.toLocaleTimeString(localeTag, {
@@ -48,17 +68,14 @@ export const EventsView: React.FC = () => {
           minute: '2-digit',
           hour12: false,
         });
-        if (madridTimeStr && madridTimeStr.includes(':')) {
-          setCurrentTimeString(madridTimeStr);
-        } else {
-          setCurrentTimeString('12:14');
-        }
+        setCurrentTimeString(madridTimeStr && madridTimeStr.includes(':') ? madridTimeStr : '');
       } catch {
-        setCurrentTimeString('12:14');
+        setCurrentTimeString('');
       }
     };
-    updateTime();
-    const interval = setInterval(updateTime, 30000);
+
+    updateDateAndTime();
+    const interval = setInterval(updateDateAndTime, 30000);
     return () => clearInterval(interval);
   }, [language]);
 
@@ -70,39 +87,19 @@ export const EventsView: React.FC = () => {
   const [pendingEventPayload, setPendingEventPayload] = useState<CalendarEventPayload | null>(null);
   const [syncedEvents, setSyncedEvents] = useState<{ [evtId: string]: string }>({}); // map evtId to googleLink
 
-  // Helper to check if event is in the future/active vs past
+  // Helper to check if event is active/upcoming vs archived past (purely date-based)
   const isEventUpcoming = (evt: CelestialEvent) => {
     return evt.endDateISO >= todayISO;
   };
 
-  // Helper to calculate days remaining
-  const getDaysRemaining = (startDateISO: string) => {
-    const today = new Date(`${todayISO}T00:00:00Z`).getTime();
-    const eventDate = new Date(`${startDateISO}T00:00:00Z`).getTime();
-    const diffDays = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
+  // Strictly chronological sorting: upcoming ascending, archived descending
+  const allUpcomingEvents = [...CELESTIAL_EVENTS]
+    .filter((e) => isEventUpcoming(e))
+    .sort((a, b) => a.startDateISO.localeCompare(b.startDateISO));
 
-    if (diffDays < 0) return { label: formatCountdownLabel(diffDays, language), isPast: true, days: diffDays };
-    if (diffDays === 0) return { label: formatCountdownLabel(0, language), isPast: false, isToday: true, days: 0 };
-    if (diffDays === 1) return { label: formatCountdownLabel(1, language), isPast: false, days: 1 };
-    if (diffDays < 30) return { label: formatCountdownLabel(diffDays, language), isPast: false, days: diffDays };
-    if (diffDays < 60) {
-      return {
-        label: `${t('eventsWeeksPrefix')} ${Math.round(diffDays / 7)} ${t('eventsWeeksSuffix')}`,
-        isPast: false,
-        days: diffDays,
-      };
-    }
-    const months = Math.round(diffDays / 30.5);
-    return {
-      label: `${t('eventsMonthsPrefix')} ${months} ${t('eventsMonthsMiddle')} ${diffDays} ${t('eventsDaysSuffix')}`,
-      isPast: false,
-      days: diffDays,
-    };
-  };
-
-  // Split events into upcoming and past
-  const allUpcomingEvents = CELESTIAL_EVENTS.filter((e) => isEventUpcoming(e));
-  const allPastEvents = CELESTIAL_EVENTS.filter((e) => !isEventUpcoming(e));
+  const allPastEvents = [...CELESTIAL_EVENTS]
+    .filter((e) => !isEventUpcoming(e))
+    .sort((a, b) => b.startDateISO.localeCompare(a.startDateISO));
 
   // Current list based on timeFilter
   const baseList = timeFilter === 'active_upcoming' ? allUpcomingEvents : allPastEvents;
@@ -182,10 +179,10 @@ export const EventsView: React.FC = () => {
             {t('eventsLiveAgenda')}:
           </span>
           <span className="text-white font-extrabold">
-            {currentDateString} • {currentTimeString} h ({t('eventsSpainTime')} CEST)
+            {currentDateString}{currentTimeString ? ` • ${currentTimeString} h (${t('eventsSpainTime')} CET)` : ''}
           </span>
           <span className="text-[#38BDF8] text-[11px] font-medium hidden sm:inline">
-            | {t('eventsPastFiltered')}
+            | Diciembre 2026 actualizado
           </span>
         </div>
       </header>
@@ -391,6 +388,88 @@ export const EventsView: React.FC = () => {
             ))}
           </div>
 
+          {/* Structured December 2026 Summary Dossier */}
+          <div className="rounded-3xl bg-[#081A2E]/85 border border-[#38BDF8]/40 backdrop-blur-md overflow-hidden shadow-xl">
+            <button
+              type="button"
+              onClick={() => setShowDossier((prev) => !prev)}
+              className="w-full px-5 py-4 flex items-center justify-between gap-3 text-left hover:bg-white/5 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-[#FFD700]/15 border border-[#FFD700]/40 text-[#FFD700] flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-xl">calendar_month</span>
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-sm sm:text-base font-extrabold text-white truncate">
+                    Guía Rápida Diciembre 2026 · Fases Lunares, Lanzamientos y Auroras
+                  </h3>
+                  <p className="text-xs text-[#BAE6FD] truncate">
+                    Horarios UTC/CET, lluvias menores, lanzamientos espaciales, zonas Starlight/DarkSky y nota de eclipses
+                  </p>
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-[#7DD3FC] shrink-0">
+                {showDossier ? 'expand_less' : 'expand_more'}
+              </span>
+            </button>
+
+            {showDossier && (
+              <div className="px-5 pb-5 pt-2 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                {/* Fases Lunares Diciembre 2026 */}
+                <div className="p-4 rounded-2xl bg-black/30 border border-white/10 space-y-2">
+                  <div className="flex items-center gap-2 text-amber-300 font-extrabold uppercase tracking-wider text-[11px]">
+                    <span className="material-symbols-outlined text-base">nightlight</span>
+                    <span>Fases Lunares (Dic 2026)</span>
+                  </div>
+                  <ul className="space-y-1.5 text-slate-200">
+                    <li><strong className="text-white">9 Dic · 00:51 UTC</strong> (01:51 CET) — Luna Nueva (0%)</li>
+                    <li><strong className="text-white">17 Dic · 05:42 UTC</strong> (06:42 CET) — Primer Cuarto (~50%)</li>
+                    <li><strong className="text-white">24 Dic · 01:28 UTC</strong> (02:28 CET) — Luna Llena “Luna Fría” / Superluna ~358.000 km (100%, salida atardecer 23 Dic)</li>
+                    <li><strong className="text-white">30 Dic · 18:59 UTC</strong> (19:59 CET) — Último Cuarto (~50%)</li>
+                  </ul>
+                  <p className="text-[11px] text-sky-300 pt-1 border-t border-white/10">
+                    <strong>Eclipses:</strong> Sin eclipses solares ni lunares en diciembre de 2026. Próximo gran eclipse total: <strong>2 Ago 2027</strong>.
+                  </p>
+                </div>
+
+                {/* Lanzamientos Espaciales, Satélites y Lluvias Menores */}
+                <div className="p-4 rounded-2xl bg-black/30 border border-white/10 space-y-2">
+                  <div className="flex items-center gap-2 text-sky-300 font-extrabold uppercase tracking-wider text-[11px]">
+                    <span className="material-symbols-outlined text-base">rocket_launch</span>
+                    <span>Lanzamientos & Satélites (Dic 2026)</span>
+                  </div>
+                  <ul className="space-y-1 text-slate-200">
+                    <li><strong className="text-white">2 Dic:</strong> SpaceX NROL-132 (Falcon 9 · EE. UU.)</li>
+                    <li><strong className="text-white">4 Dic:</strong> SpaceX CHORUS C (Falcon 9 · Canadá)</li>
+                    <li><strong className="text-white">10 Dic:</strong> CASC SatNet LEO (CZ-12 · China)</li>
+                    <li><strong className="text-white">18 Dic:</strong> Ariane 6 / Vega-C MetOp-SG B1 (Europa)</li>
+                    <li><strong className="text-white">30 Dic:</strong> SpaceX Globalstar 2R / Telesat & Vulcan NROL-64</li>
+                  </ul>
+                  <p className="text-[11px] text-slate-300 pt-1 border-t border-white/10">
+                    <strong>Satélites y lluvias menores:</strong> Pases de la ISS (hasta mag -3) y trenes Starlink al crepúsculo. Lluvias débiles: φ-Casiopeidas (6 Dic), Monocerótidas (9 Dic), σ-Hídridas (12 Dic), Comae Berenícidas (17 Dic) y Leónidas Menores (21 Dic).
+                  </p>
+                </div>
+
+                {/* Auroras, Zonas Certificadas & Consejos */}
+                <div className="p-4 rounded-2xl bg-black/30 border border-white/10 space-y-2 md:col-span-2 lg:col-span-1">
+                  <div className="flex items-center gap-2 text-emerald-300 font-extrabold uppercase tracking-wider text-[11px]">
+                    <span className="material-symbols-outlined text-base">auto_awesome</span>
+                    <span>Auroras, Cielos Oscuros & Campo</span>
+                  </div>
+                  <p className="text-slate-200 leading-relaxed">
+                    <strong className="text-white">Auroras Dic 2026:</strong> Noches largas árticas con tormentas previstas de <strong>Kp ≥ 5</strong> (Tromsø, Abisko, Kiruna, Fairbanks, Yellowknife, Murmansk) y brotes australes ocasionales (Patagonia, Tasmania, Isla Sur NZ).
+                  </p>
+                  <p className="text-slate-200 leading-relaxed">
+                    <strong className="text-white">Zonas recomendadas:</strong> Montsec, Teide, La Palma, Fuerteventura, Mont-Mégantic, Aoraki Mackenzie, NamibRand y Torres del Paine.
+                  </p>
+                  <p className="text-[11px] text-amber-200/90 pt-1 border-t border-white/10">
+                    <strong>Astrofoto:</strong> RAW, f/2.8, ISO 1600–3200, 15–30 s, enfoque manual en estrella brillante, trípode sólido, abrigo térmico y linterna de luz roja.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* List of Celestial Events */}
           <div className="space-y-5">
             {filteredEvents.length === 0 ? (
@@ -400,12 +479,12 @@ export const EventsView: React.FC = () => {
               </div>
             ) : (
               filteredEvents.map((evt) => {
-                const countdown = getDaysRemaining(evt.startDateISO);
+                const isPast = !isEventUpcoming(evt);
                 return (
                   <div
                     key={evt.id}
                     className={`card-pastel-gold card-pastel-gold-hover rounded-3xl p-6 md:p-8 shadow-xl transition-all border ${
-                      countdown.isPast ? 'border-gray-500/50 opacity-85' : 'border-[#7DD3FC]/50'
+                      isPast ? 'border-gray-500/50 opacity-85' : 'border-[#7DD3FC]/50'
                     }`}
                   >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
@@ -425,18 +504,16 @@ export const EventsView: React.FC = () => {
                             <span className="px-3 py-0.5 rounded-full bg-[#082F49]/90 text-[#7DD3FC] border border-[#38BDF8]/40 text-[11px] font-extrabold font-['JetBrains_Mono'] uppercase">
                               {translateEventCategory(evt.categoryLabel, language)}
                             </span>
-                            {/* Days remaining badge */}
-                            <span
-                              className={`px-3 py-0.5 rounded-full text-[11px] font-extrabold uppercase font-['JetBrains_Mono'] shadow-sm ${
-                                countdown.isPast
-                                  ? 'bg-gray-700 text-gray-200'
-                                  : countdown.days < 30
-                                  ? 'bg-[#DC2626] text-white animate-pulse'
-                                  : 'bg-[#0284C7] text-white'
-                              }`}
-                            >
-                              {countdown.isPast ? formatCountdownLabel(-1, language) : `⏳ ${countdown.label}`}
-                            </span>
+                            {evt.isMajor && !isPast && (
+                              <span className="px-3 py-0.5 rounded-full bg-amber-300/20 text-amber-200 border border-amber-300/50 text-[11px] font-extrabold font-['JetBrains_Mono'] uppercase">
+                                ★ Destacado
+                              </span>
+                            )}
+                            {isPast && (
+                              <span className="px-3 py-0.5 rounded-full bg-gray-700 text-gray-200 text-[11px] font-extrabold uppercase font-['JetBrains_Mono']">
+                                Archivo
+                              </span>
+                            )}
                           </div>
                           <h3 className="text-xl md:text-2xl font-extrabold text-white font-['Plus_Jakarta_Sans'] mt-1 tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
                             {evt.title}
@@ -444,12 +521,12 @@ export const EventsView: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="text-left md:text-right bg-[#082F49]/80 backdrop-blur-sm p-3 rounded-2xl border border-[#38BDF8]/40 shadow-sm">
+                      <div className="text-left md:text-right bg-[#082F49]/80 backdrop-blur-sm p-3 rounded-2xl border border-[#38BDF8]/40 shadow-sm shrink-0">
                         <span className="block text-sm font-extrabold text-white font-['JetBrains_Mono']">
                           📅 {evt.date}
                         </span>
                         <span className="text-xs text-[#BAE6FD] font-bold">
-                          ⏰ {t('eventsPeakLabel')}: {evt.peakTime}
+                          ⏰ {evt.peakTime}
                         </span>
                       </div>
                     </div>
@@ -473,7 +550,7 @@ export const EventsView: React.FC = () => {
                     {/* Actions: Google Calendar Sync + Selective Offline Save */}
                     <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#38BDF8]/30">
                       <div className="flex flex-wrap items-center gap-2">
-                        {countdown.isPast ? (
+                        {isPast ? (
                           <span className="text-xs font-bold text-[#BAE6FD] flex items-center gap-1.5">
                             <span className="material-symbols-outlined text-base text-gray-400">task_alt</span>
                             {t('eventsPastRecorded')}

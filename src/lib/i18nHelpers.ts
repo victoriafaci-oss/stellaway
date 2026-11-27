@@ -326,6 +326,14 @@ export function translateEventCategory(value: string, lang: SupportedLanguage): 
       it: 'Superluna',
       de: 'Supermond',
     },
+    'solsticio & efemérides': {
+      es: 'Solsticio & Efemérides',
+      en: 'Solstice & Ephemeris',
+      fr: 'Solstice & Éphémérides',
+      pt: 'Solstício & Efemérides',
+      it: 'Solstizio & Effemeridi',
+      de: 'Sonnenwende & Ephemeriden',
+    },
   };
   return map[key]?.[l] || value;
 }

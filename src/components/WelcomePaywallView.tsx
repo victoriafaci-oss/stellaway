@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { StellaLogo } from './StellaLogo';
 import { SubscriptionCancellationModal } from './SubscriptionCancellationModal';
 import { withStripeLocale, getLocalizedPlanName } from '../lib/i18nHelpers';
+import { hasAppAccess } from '../lib/previewAccess';
 import heroNebulaImg from '../assets/images/v2_hero_nebula_sky_1795505139848.jpg';
 
 interface WelcomePaywallViewProps {
@@ -76,11 +77,8 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
   const [cardCvc, setCardCvc] = useState('');
   const [cardZip, setCardZip] = useState('');
 
-  // Check saved subscription or trial status
-  const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
-  const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
-  const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
-  const hasAccess = isSubscribed || isTrialValid || Boolean(paymentSuccessData);
+  // Check saved subscription, trial, or preview status
+  const hasAccess = hasAppAccess() || Boolean(paymentSuccessData);
 
   // Check saved trial on mount & query payment config from backend
   useEffect(() => {
@@ -433,16 +431,16 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
 
                 <button
                   type="button"
-                  onClick={() => handleNavigate('assistant')}
+                  onClick={() => handleNavigate('shop')}
                   className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border cursor-pointer ${
                     hasAccess
                       ? 'bg-white/10 hover:bg-white/20 border-white/25 text-white'
                       : 'bg-[#06080F]/70 border-white/15 text-slate-300 hover:border-amber-300/50 hover:text-white'
                   }`}
-                  title={hasAccess ? t('assistant', 'Asistente IA Starlight') : t('welcomeModulesLock', 'Requiere Registro o Pase Activo')}
+                  title={hasAccess ? t('shopMenuTitle', 'Tienda Astronómica') : t('welcomeModulesLock', 'Requiere Registro o Pase Activo')}
                 >
-                  <span className="material-symbols-outlined text-sm text-emerald-300">smart_toy</span>
-                  <span>{t('assistant', 'Asistente IA Starlight')}</span>
+                  <span className="material-symbols-outlined text-sm text-amber-300">storefront</span>
+                  <span>{t('shopMenuTitle', 'Tienda Astronómica')}</span>
                   {!hasAccess && <span className="material-symbols-outlined text-[13px] text-amber-300/80 ml-0.5">lock</span>}
                 </button>
 
@@ -640,7 +638,7 @@ export const WelcomePaywallView: React.FC<WelcomePaywallViewProps> = ({
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm text-sky-300">check</span>
-                  <span>{t('welcomePlanFreeF3', 'Asistente IA astronómico Starlight')}</span>
+                  <span>{t('welcomePlanFreeF3', 'Tienda de material astronómico y guía Eclipse 2027')}</span>
                 </li>
               </ul>
             </div>

@@ -18,6 +18,7 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
 }) => {
   const { t } = useLanguage();
   const [isIOS, setIsIOS] = useState<boolean>(false);
+  const [isStandalone, setIsStandalone] = useState<boolean>(false);
   const [manualGuideOpen, setManualGuideOpen] = useState<boolean>(false);
   const [installSuccess, setInstallSuccess] = useState<boolean>(false);
 
@@ -26,6 +27,12 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
       const ua = window.navigator.userAgent;
       const isIosDevice = /iPhone|iPad|iPod/i.test(ua);
       setIsIOS(isIosDevice);
+      const standaloneMode =
+        window.matchMedia?.('(display-mode: standalone)').matches ||
+        window.matchMedia?.('(display-mode: fullscreen)').matches ||
+        window.matchMedia?.('(display-mode: minimal-ui)').matches ||
+        Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone);
+      setIsStandalone(standaloneMode);
     }
   }, []);
 
@@ -142,8 +149,15 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
           </p>
         </div>
 
+        {isStandalone && (
+          <div className="mb-4 p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-400 text-emerald-200 text-center text-xs font-bold flex items-center justify-center gap-2">
+            <span className="material-symbols-outlined text-emerald-400">verified</span>
+            <span>{t('installAlreadyStandalone', '¡Acceso directo ya instalado! Estás abriendo StellaWay directamente en modo app.')}</span>
+          </div>
+        )}
+
         {/* PRIMARY ACTION BUTTON: Prominent Install Button with Star & Orbit Icon */}
-        {!installSuccess && (
+        {!installSuccess && !isStandalone && (
           <div className="mb-4">
             <button
               onClick={handleNativeInstall}
@@ -183,7 +197,7 @@ export const InstallPromptModal: React.FC<InstallPromptModalProps> = ({
         )}
 
         {/* Step-by-step instructions based on device (visible immediately on iOS or when user clicks on Android) */}
-        {(isIOS || manualGuideOpen || !deferredPrompt) && (
+        {!isStandalone && (isIOS || manualGuideOpen || !deferredPrompt) && (
           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-4 text-left animate-fadeIn">
             {isIOS ? (
               <>

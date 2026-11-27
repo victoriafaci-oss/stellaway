@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ActiveTab } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { StellaLogo } from './StellaLogo';
+import { hasAppAccess } from '../lib/previewAccess';
 
 interface HeaderAndNavProps {
   activeTab: ActiveTab;
@@ -25,17 +26,7 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleNavClick = (tab: ActiveTab) => {
-    const isLocalOrAiStudioPreview =
-      typeof window !== 'undefined' &&
-      (window.location.hostname === 'localhost' ||
-        window.location.hostname === '127.0.0.1' ||
-        (window.location.hostname.startsWith('ais-') && window.location.hostname.endsWith('.run.app')));
-
-    // Check if user has active subscription or valid trial
-    const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
-    const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
-    const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
-    const hasAccess = isSubscribed || isTrialValid || isLocalOrAiStudioPreview;
+    const hasAccess = hasAppAccess();
 
     if (!hasAccess && tab !== 'welcome') {
       // Redirigir a la pantalla de planes y suscripción si no ha pagado ni verificado 48h
@@ -148,17 +139,17 @@ export const HeaderAndNav: React.FC<HeaderAndNavProps> = ({
 
             <li>
               <button
-                onClick={() => handleNavClick('assistant')}
+                onClick={() => handleNavClick('shop')}
                 className={`w-full flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-200 ${
-                  activeTab === 'assistant'
+                  activeTab === 'shop'
                     ? 'bg-gradient-to-r from-[#FEE685] to-[#E5B54F] text-[#0D071B] font-extrabold border border-[#D5A02E] shadow-lg shadow-black/30'
                     : 'text-white/80 hover:bg-white/10 font-semibold'
                 }`}
               >
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'assistant' ? "'FILL' 1" : "'FILL' 0" }}>
-                  smart_toy
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: activeTab === 'shop' ? "'FILL' 1" : "'FILL' 0" }}>
+                  storefront
                 </span>
-                <span>{t('assistant', 'Asistente Estelar AI')}</span>
+                <span>{t('shopMenuTitle', 'Tienda Astronómica')}</span>
               </button>
             </li>
 

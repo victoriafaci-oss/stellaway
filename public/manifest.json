@@ -3,7 +3,7 @@
   "name": "StellaWay Astroturismo",
   "short_name": "StellaWay",
   "description": "Tu portal astronómico Starlight, telemetría y mapas de cielo oscuro",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "background_color": "#170E28",

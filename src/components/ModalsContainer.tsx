@@ -877,29 +877,29 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
 
           {/* Menu items compact grid */}
           <div className="overflow-y-auto space-y-2.5 pr-1">
-            {/* 0. Stella IA (Featured at top) */}
+            {/* 0. Tienda Astronómica (inside 3-bars menu) */}
             <button
               onClick={() => {
                 closeModal();
-                setActiveTab('assistant');
+                setActiveTab('shop');
               }}
-              className="p-3.5 rounded-2xl bg-gradient-to-r from-[#0284C7]/20 via-[#38BDF8]/25 to-[#0284C7]/20 hover:from-[#0284C7]/30 hover:to-[#0284C7]/30 border-2 border-[#0284C7] shadow-md transition-all flex items-center gap-3 text-left group cursor-pointer w-full"
+              className="p-3.5 rounded-2xl bg-gradient-to-r from-[#FEE685]/20 via-[#E5B54F]/25 to-[#FEE685]/20 hover:from-[#FEE685]/35 hover:to-[#E5B54F]/35 border-2 border-[#D4AF37] shadow-md transition-all flex items-center gap-3 text-left group cursor-pointer w-full"
             >
-              <div className="w-10 h-10 rounded-xl bg-[#0284C7] text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
-                <span className="material-symbols-outlined text-xl text-amber-300">smart_toy</span>
+              <div className="w-10 h-10 rounded-xl bg-[#24153F] text-[#FEE685] flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform border border-[#FEE685]/40">
+                <span className="material-symbols-outlined text-xl">storefront</span>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xs sm:text-sm font-black text-[#082F49] group-hover:text-[#0284C7] transition-colors font-['Plus_Jakarta_Sans'] truncate">
-                    {t('mcQuickAiTitle', 'Stella IA (Asistente Estelar)')}
+                  <h3 className="text-xs sm:text-sm font-black text-white group-hover:text-[#FEE685] transition-colors font-['Plus_Jakarta_Sans'] truncate">
+                    {t('mcQuickShopTitle', 'Tienda Astronómica')}
                   </h3>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-black uppercase tracking-wider">
-                    {t('mcQuickAiBadge', 'Online')}
+                  <span className="text-[10px] font-bold text-[#FEE685] tracking-wide">
+                    · {t('mcQuickShopBadge', 'Equipo')}
                   </span>
                 </div>
-                <p className="text-[11px] text-[#0369A1] font-bold truncate">{t('mcQuickAiDesc', 'Consultas astronómicas, telescopios y eclipse 2027')}</p>
+                <p className="text-[11px] text-slate-200 font-semibold truncate">{t('mcQuickShopDesc', 'Telescopios, prismáticos, astrofotografía y gafas ISO')}</p>
               </div>
-              <span className="material-symbols-outlined text-[#0284C7] text-base shrink-0">arrow_forward</span>
+              <span className="material-symbols-outlined text-[#FEE685] text-base shrink-0">arrow_forward</span>
             </button>
 
 
@@ -991,24 +991,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
               <span className="material-symbols-outlined text-red-700 text-base shrink-0">arrow_forward</span>
             </button>
 
-            {/* 4. Accesorios */}
-            <button
-              onClick={() => {
-                openModal('accesorios');
-              }}
-              className="p-3.5 rounded-2xl bg-white/70 hover:bg-white border border-[#E6CA65] hover:border-[#24153F] shadow-sm transition-all flex items-center gap-3 text-left group cursor-pointer w-full"
-            >
-              <div className="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-900 flex items-center justify-center shrink-0 border border-cyan-300 group-hover:scale-105 transition-transform">
-                <span className="material-symbols-outlined text-xl">shopping_bag</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-xs sm:text-sm font-extrabold text-[#120D1C] group-hover:text-[#24153F] transition-colors font-['Plus_Jakarta_Sans'] truncate">
-                  {t('mcQuickShopTitle', 'Accesorios & Tienda')}
-                </h3>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">{t('mcQuickShopDesc', 'Filtros solares ISO 12312-2 y linternas rojas')}</p>
-              </div>
-              <span className="material-symbols-outlined text-[#594A70] group-hover:text-[#24153F] text-base shrink-0">arrow_forward</span>
-            </button>
+
 
             {/* 5. Idiomas */}
             <button
@@ -1350,107 +1333,7 @@ export const ModalsContainer: React.FC<ModalsContainerProps> = ({
         </div>
       )}
 
-      {/* MODAL 5: ACCESORIOS & EQUIPAMIENTO - COMPACT */}
-      {modalType === 'accesorios' && (
-        <div className="card-pastel-gold relative w-full max-w-xl border-2 border-[#D4AF37] rounded-3xl p-4 sm:p-6 shadow-2xl z-10 overflow-hidden flex flex-col max-h-[85vh]">
-          {/* Header with Navigation */}
-          <div className="flex items-center justify-between pb-3 border-b border-[#E6CA65] mb-4 gap-2 shrink-0">
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="w-9 h-9 rounded-2xl bg-[#24153F] text-[#FEE685] flex items-center justify-center font-extrabold shadow-md shrink-0">
-                <span className="material-symbols-outlined text-lg">shopping_bag</span>
-              </div>
-              <div className="truncate">
-                <h2 className="text-base sm:text-lg font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans'] truncate">
-                  {t('mcAccTitle', 'Accesorios Starlight')}
-                </h2>
-                <p className="text-[11px] text-[#594A70] font-bold truncate">{t('mcAccSub', 'Equipamiento homologado Eclipse 2026–2027')}</p>
-              </div>
-            </div>
 
-            {/* Header Navigation Buttons */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              <button
-                onClick={() => openModal('quickMenu')}
-                className="px-2.5 py-1.5 bg-white/70 hover:bg-white text-[#120D1C] border border-[#E6CA65] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer"
-                title={t('mcBackBtn', 'Atrás')}
-              >
-                <span className="material-symbols-outlined text-sm">undo</span>
-                <span className="hidden xs:inline">{t('mcBackBtn', 'Atrás')}</span>
-              </button>
-
-              <button
-                onClick={handleGoHome}
-                className="px-2.5 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] rounded-xl text-xs font-extrabold flex items-center gap-1 cursor-pointer shadow-md"
-                title={t('mcHomeBtn', 'Inicio')}
-              >
-                <span className="material-symbols-outlined text-sm">home</span>
-                <span className="hidden xs:inline">{t('mcHomeBtn', 'Inicio')}</span>
-              </button>
-
-              <button
-                onClick={closeModal}
-                className="p-1.5 rounded-xl bg-white/70 hover:bg-white text-[#24153F] hover:text-black border border-[#E6CA65] transition-all cursor-pointer"
-                title={t('mcCloseBtn', 'Cerrar')}
-              >
-                <span className="material-symbols-outlined text-base">close</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="overflow-y-auto space-y-2.5 pr-1">
-            {[
-              {
-                title: t('mcAcc1Title', 'Gafas Filtro Solar ISO 12312-2 (Pack 4u)'),
-                desc: t('mcAcc1Desc', 'Observación segura de las fases parciales del Eclipse Solar 2026–2027.'),
-                icon: 'visibility',
-                searchQuery: 'gafas eclipse solar ISO 12312-2 homologadas',
-              },
-              {
-                title: t('mcAcc2Title', 'Linterna LED de Luz Roja Regulable astronómica'),
-                desc: t('mcAcc2Desc', 'Preserva 100% tu visión nocturna en el campo de observación.'),
-                icon: 'highlight',
-                searchQuery: 'linterna astronomica luz roja regulable',
-              },
-              {
-                title: t('mcAcc3Title', 'Adaptador Smartphone para Telescopio'),
-                desc: t('mcAcc3Desc', 'Captura fotos de la Luna y planetas alineando la cámara.'),
-                icon: 'photo_camera',
-                searchQuery: 'adaptador smartphone telescopio universal',
-              },
-              {
-                title: t('mcAcc4Title', 'Ocular Baader Hyperion 13mm Gran Campo 68°'),
-                desc: t('mcAcc4Desc', 'Nitidez cristalina para espacio profundo y la corona solar.'),
-                icon: 'auto_awesome',
-                searchQuery: 'ocular Baader Hyperion 13mm 68',
-              },
-            ].map((prod, idx) => (
-              <div key={idx} className="bg-white/80 rounded-2xl p-3.5 border border-[#E6CA65] flex items-center justify-between gap-3 shadow-sm hover:border-[#24153F] transition-all">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-900 border border-cyan-300 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-xl">{prod.icon}</span>
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="text-xs sm:text-sm font-extrabold text-[#120D1C] font-['Plus_Jakarta_Sans'] truncate">{prod.title}</h3>
-                    <p className="text-[11px] text-[#594A70] font-bold line-clamp-1">{prod.desc}</p>
-                  </div>
-                </div>
-
-                <div className="text-right shrink-0">
-                  <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(prod.searchQuery)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1.5 bg-[#24153F] hover:bg-black text-[#FFF8D6] font-extrabold rounded-xl text-xs transition-all cursor-pointer shadow-md inline-flex items-center gap-1"
-                  >
-                    <span>{t('mcAccSearchBtn', 'Buscar')}</span>
-                    <span className="material-symbols-outlined text-xs">open_in_new</span>
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* MODAL IDIOMAS */}
       {modalType === 'languages' && (

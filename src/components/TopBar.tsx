@@ -49,7 +49,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <div className="w-full bg-[#130B22]/95 backdrop-blur-xl border-b border-[#FEE685]/20 px-2 sm:px-4 md:px-6 py-2 sm:py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-lg shadow-black/40">
-      {/* Left Area: Unified 3-Bars Menu Button + Ultra-Compact Stella IA + (Atrás on Subpages) */}
+      {/* Left Area: Unified 3-Bars Menu Button + (Atrás on Subpages) */}
       <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 z-10">
         {/* Unified Menu Button (Las 3 barras) */}
         <button
@@ -59,21 +59,6 @@ export const TopBar: React.FC<TopBarProps> = ({
           id="btn-top-menu-unified"
         >
           <span className="material-symbols-outlined text-base sm:text-lg font-bold">menu</span>
-        </button>
-
-        {/* Dedicated Ultra-Compact Stella IA Button (Non-intrusive icon button) */}
-        <button
-          onClick={() => setActiveTab('assistant')}
-          className={`h-8 px-2 sm:px-2.5 rounded-lg font-['Plus_Jakarta_Sans'] font-extrabold text-[10px] sm:text-xs flex items-center gap-1 transition-all cursor-pointer active:scale-95 shadow-sm shrink-0 ${
-            activeTab === 'assistant'
-              ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-black border border-amber-300 shadow-[0_0_8px_rgba(251,191,36,0.4)]'
-              : 'bg-[#0284C7]/90 hover:bg-[#0284C7] text-white border border-[#38BDF8]/60 hover:border-[#38BDF8]'
-          }`}
-          title={t('openAssistantAria', 'Abrir Asistente IA Stella')}
-          id="btn-top-stella-ia"
-        >
-          <span className="material-symbols-outlined text-xs sm:text-sm text-amber-300">smart_toy</span>
-          <span className="font-black tracking-tight hidden xs:inline">AI</span>
         </button>
 
         {/* ONLY ON SUBPAGES: Atrás */}

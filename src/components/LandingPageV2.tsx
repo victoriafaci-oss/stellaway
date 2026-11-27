@@ -12,6 +12,7 @@ import eclipseTotalImg from '../assets/images/eclipse_total_2026_1787656886887.j
 
 interface LandingPageV2Props {
   onEnterApp: () => void;
+  onOpenShop?: () => void;
   nightVision?: boolean;
   setNightVision?: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -281,6 +282,7 @@ type ZoneFilter = 'all' | 'starlight' | 'darksky' | 'auroras';
 
 export const LandingPageV2: React.FC<LandingPageV2Props> = ({
   onEnterApp,
+  onOpenShop,
   nightVision: propNightVision,
   setNightVision: propSetNightVision,
 }) => {
@@ -697,25 +699,37 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
             </div>
           </div>
 
-          {/* Bottom AI Assistant Strip inside Hero Block */}
+          {/* Bottom Astronomy Shop Strip inside Hero Block */}
           <div className="mt-4 px-5 py-4 rounded-xl border border-white/15 bg-[#0B0E17]/85 backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-start sm:items-center gap-3.5">
-              <div className="w-9 h-9 rounded-lg bg-emerald-400/15 border border-emerald-400/35 text-emerald-300 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-lg">smart_toy</span>
+              <div className="w-9 h-9 rounded-lg bg-amber-400/15 border border-amber-400/35 text-amber-300 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-lg">storefront</span>
               </div>
               <div>
                 <div className="text-sm font-bold text-white flex flex-wrap items-center gap-2">
-                  <span>{t('landingAiStripTitle', 'Asistente IA para localizaciones')}</span>
-                  <span className="text-xs font-semibold text-emerald-300">· {t('landingAiStripBadge', 'Incluido en la App')}</span>
+                  <span>{t('landingAiStripTitle', 'Tienda Astronómica de equipamiento')}</span>
+                  <span className="text-xs font-semibold text-amber-300">· {t('landingAiStripBadge', 'Incluida en el menú')}</span>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed mt-0.5">
                   {t(
                     'landingAiStripDesc',
-                    'Pregunta al asistente inteligente de StellaWay para localizar al instante las zonas certificadas de la app (Starlight, DarkSky y enclaves de auroras) y las poblaciones cercanas.'
+                    'Selección curada de telescopios, prismáticos, monturas de astrofotografía, linternas de luz roja y gafas solares homologadas para principiantes y aficionados avanzados.'
                   )}
                 </p>
               </div>
             </div>
+
+            {onOpenShop && (
+              <button
+                type="button"
+                onClick={onOpenShop}
+                id="v2-hero-shop-btn"
+                className="px-4 py-2 rounded-lg bg-amber-300/15 hover:bg-amber-300 text-amber-200 hover:text-slate-950 border border-amber-300/45 text-xs font-bold transition-colors cursor-pointer whitespace-nowrap shrink-0 self-start sm:self-center flex items-center gap-1.5"
+              >
+                <span>{t('shopMenuTitle', 'Tienda Astronómica')}</span>
+                <span aria-hidden="true">→</span>
+              </button>
+            )}
           </div>
 
           {/* Monthly Stellar Events Strip inside Hero Block */}
@@ -1155,7 +1169,7 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
                       title: t('landingAudienceItem2Title', 'Eres amante del cielo nocturno y la astronomía'),
                       desc: t(
                         'landingAudienceItem2Desc',
-                        'y quieres localizar miradores oscuros, consultar el cielo con Luz Roja (~650 nm) y preguntar a Stella IA.'
+                        'y quieres localizar miradores oscuros, consultar el cielo con Luz Roja (~650 nm) y elegir el equipo adecuado.'
                       ),
                     },
                     {
@@ -1237,7 +1251,7 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
                 <p className="text-sm text-slate-300 leading-relaxed mb-6">
                   {t(
                     'landingAccessDesc',
-                    'Desbloquea los 3 buscadores mundiales (Starlight, DarkSky y Auroras), el clima astronómico, el asistente Stella y la guía del Eclipse 2027.'
+                    'Desbloquea los 3 buscadores mundiales (Starlight, DarkSky y Auroras), el clima astronómico en directo, la guía del Eclipse 2027 y la Tienda Astronómica.'
                   )}
                 </p>
 

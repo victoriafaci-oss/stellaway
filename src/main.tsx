@@ -15,6 +15,17 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 );
 
+// Capture beforeinstallprompt early in case browser fires it before React mounts
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    (window as Window & { __stellawayDeferredPrompt?: Event | null }).__stellawayDeferredPrompt = e;
+  });
+  window.addEventListener('appinstalled', () => {
+    (window as Window & { __stellawayDeferredPrompt?: Event | null }).__stellawayDeferredPrompt = null;
+  });
+}
+
 // Register Service Worker for PWA home screen installation
 if ('serviceWorker' in navigator && process.env.NODE_ENV !== 'test') {
   window.addEventListener('load', () => {

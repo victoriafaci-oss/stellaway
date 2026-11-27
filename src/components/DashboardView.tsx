@@ -11,6 +11,7 @@ interface DashboardViewProps {
   onExploreAuroras?: () => void;
   onExploreEvents?: () => void;
   onExploreWeather?: () => void;
+  onExploreShop?: () => void;
   openModal?: (type: any) => void;
 }
 
@@ -22,6 +23,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onExploreAuroras,
   onExploreEvents,
   onExploreWeather,
+  onExploreShop,
   openModal,
 }) => {
   const { t } = useLanguage();
@@ -83,8 +85,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        {/* FIVE PRIMARY ACTION CARDS: Starlight, DarkSky Mundial, Auroras, Eventos, Previsión del Tiempo */}
-        <div className="mt-5 sm:mt-6 flex flex-col gap-2.5 sm:gap-3 max-w-xl w-full mx-auto lg:max-w-6xl lg:grid lg:grid-cols-3 xl:grid-cols-5 lg:gap-4">
+        {/* SIX PRIMARY ACTION CARDS: Starlight, DarkSky Mundial, Auroras, Eventos, Previsión del Tiempo, Tienda Astronómica */}
+        <div className="mt-5 sm:mt-6 flex flex-col gap-2.5 sm:gap-3 max-w-xl w-full mx-auto lg:max-w-6xl lg:grid lg:grid-cols-3 lg:gap-4">
           {/* Card 1: Encuentra Zonas Starlight */}
           <button
             onClick={() => onExploreSpots && onExploreSpots()}
@@ -191,6 +193,28 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </span>
               <span className="mt-2 lg:mt-3.5 inline-flex items-center text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-[#F0F9FF] bg-[#0284C7]/90 group-hover:bg-[#0284C7] px-3.5 py-1 lg:px-3.5 lg:py-1.5 rounded-full border border-[#7DD3FC]/80 shadow-md backdrop-blur-sm max-w-full truncate">
                 {t('checkSkyBadge', 'Consultar Cielo →')}
+              </span>
+            </div>
+          </button>
+
+          {/* Card 6: Tienda Astronómica */}
+          <button
+            onClick={() => onExploreShop && onExploreShop()}
+            className="w-full px-3.5 py-3 sm:px-4 sm:py-3.5 lg:p-5 rounded-2xl lg:rounded-[26px] card-celestial-blue-glass transition-all flex flex-row lg:flex-col items-center justify-start lg:justify-center gap-3.5 lg:gap-0 text-left lg:text-center group cursor-pointer shadow-xl relative overflow-hidden backdrop-blur-md border border-[#FEE685]/45 hover:border-[#FEE685]"
+            id="btn-main-shop"
+          >
+            <div className="w-11 h-11 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl bg-[#24153F]/90 backdrop-blur-sm flex items-center justify-center text-[#FEE685] shrink-0 lg:mb-3 group-hover:scale-105 transition-transform shadow-lg border border-[#FEE685]/60">
+              <span className="material-symbols-outlined text-2xl lg:text-3xl font-bold">storefront</span>
+            </div>
+            <div className="flex-1 min-w-0 flex flex-col items-start lg:items-center">
+              <span className="font-['Plus_Jakarta_Sans'] text-[15px] sm:text-base lg:text-lg font-black text-white leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+                {t('shopMenuTitle', 'Tienda Astronómica')}
+              </span>
+              <span className="text-xs text-[#FDE68A] mt-0.5 lg:mt-1 font-semibold line-clamp-1 lg:line-clamp-2">
+                {t('mcQuickShopDesc', 'Telescopios, prismáticos, astrofotografía y gafas ISO')}
+              </span>
+              <span className="mt-2 lg:mt-3.5 inline-flex items-center text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-[#120D1C] bg-gradient-to-r from-[#FEE685] to-[#E5B54F] group-hover:from-white group-hover:to-[#FEE685] px-3.5 py-1 lg:px-3.5 lg:py-1.5 rounded-full border border-[#FEE685] shadow-md max-w-full truncate">
+                {t('mcQuickShopBadge', 'Equipo')} →
               </span>
             </div>
           </button>

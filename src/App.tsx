@@ -9,7 +9,7 @@ import { DarkSkyView } from './components/DarkSkyView';
 import { AurorasView } from './components/AurorasView';
 import { EventsView } from './components/EventsView';
 import { WeatherView } from './components/WeatherView';
-import { AssistantView } from './components/AssistantView';
+import { ShopView } from './components/ShopView';
 import { ProfileView } from './components/ProfileView';
 import { WelcomePaywallView } from './components/WelcomePaywallView';
 import { StarrySkyBackground } from './components/StarrySkyBackground';
@@ -18,16 +18,26 @@ import { InstallPromptModal } from './components/InstallPromptModal';
 import { OfflineBanner } from './components/OfflineBanner';
 import { useLanguage } from './context/LanguageContext';
 import { getLocalizedPlanName } from './lib/i18nHelpers';
+import { hasAppAccess, isPreviewOrLocalAccess } from './lib/previewAccess';
 
-const isLocalOrAiStudioPreview =
-  typeof window !== 'undefined' &&
-  (window.location.hostname === 'localhost' ||
-    window.location.hostname === '127.0.0.1' ||
-    (window.location.hostname.startsWith('ais-') && window.location.hostname.endsWith('.run.app')));
+const isLocalOrAiStudioPreview = isPreviewOrLocalAccess();
+
+function isPwaShortcutLaunch(): boolean {
+  if (typeof window === 'undefined') return false;
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('source') === 'pwa') return true;
+  const isStandalone =
+    window.matchMedia?.('(display-mode: standalone)').matches ||
+    window.matchMedia?.('(display-mode: fullscreen)').matches ||
+    window.matchMedia?.('(display-mode: minimal-ui)').matches ||
+    Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone);
+  return isStandalone;
+}
 
 export default function App() {
   const { language } = useLanguage();
-  // Show landing page by default unless returning from a Stripe payment
+  // Show landing page by default on regular web visits;
+  // when launched from installed home-screen shortcut or returning from Stripe, enter the app directly.
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -35,11 +45,19 @@ export default function App() {
         urlParams.get('pago') === 'exito' ||
         urlParams.get('success') === 'true' ||
         urlParams.get('status') === 'success' ||
-        urlParams.get('view') === 'app' ||
         urlParams.has('session_id');
+
+      const requestedTab = urlParams.get('tab') || urlParams.get('view');
+      if (requestedTab === 'shop' && hasAppAccess()) {
+        return 'shop';
+      }
 
       if (isSuccessPayment) {
         return 'dashboard';
+      }
+
+      if (isPwaShortcutLaunch()) {
+        return hasAppAccess() ? 'dashboard' : 'welcome';
       }
     }
     return 'landing';
@@ -69,7 +87,12 @@ export default function App() {
   }, [nightVision]);
 
   // Mobile installation prompt & Post-Payment welcome state
-  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<any>(null);
+  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      return (window as Window & { __stellawayDeferredPrompt?: Event | null }).__stellawayDeferredPrompt || null;
+    }
+    return null;
+  });
   const [showInstallModal, setShowInstallModal] = useState<boolean>(false);
   const [isAfterPayment, setIsAfterPayment] = useState<boolean>(false);
   const [activePlanId, setActivePlanId] = useState<string | null>(() => {
@@ -84,9 +107,15 @@ export default function App() {
     // Listen for PWA install prompt event
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
+      (window as Window & { __stellawayDeferredPrompt?: Event | null }).__stellawayDeferredPrompt = e;
       setDeferredInstallPrompt(e);
     };
+    const handleAppInstalled = () => {
+      (window as Window & { __stellawayDeferredPrompt?: Event | null }).__stellawayDeferredPrompt = null;
+      setDeferredInstallPrompt(null);
+    };
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     // Listen for custom open-install-modal event from anywhere in the app
     const handleOpenInstall = () => setShowInstallModal(true);
@@ -99,7 +128,6 @@ export default function App() {
         urlParams.get('pago') === 'exito' ||
         urlParams.get('success') === 'true' ||
         urlParams.get('status') === 'success' ||
-        urlParams.get('view') === 'app' ||
         urlParams.has('session_id');
 
       if (isSuccessPayment) {
@@ -164,6 +192,7 @@ export default function App() {
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('appinstalled', handleAppInstalled);
       window.removeEventListener('open-install-modal', handleOpenInstall);
       window.removeEventListener('stellaway-subscription-cancelled', handleCancelled);
     };
@@ -177,11 +206,8 @@ export default function App() {
       return;
     }
 
-    // Check subscription / trial status
-    const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
-    const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
-    const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
-    const hasAccess = isSubscribed || isTrialValid || isLocalOrAiStudioPreview;
+    // Check subscription / trial / preview access status
+    const hasAccess = hasAppAccess();
 
     // Once subscribed/trial active, user never sees welcome/paywall page again (in preview they can inspect it)
     if (!isLocalOrAiStudioPreview && hasAccess && newTab === 'welcome') {
@@ -216,11 +242,7 @@ export default function App() {
       newHist.pop(); // Remove current tab
       const prevTab = newHist[newHist.length - 1];
 
-      // If user has subscription and previous in history was welcome or landing, go to dashboard
-      const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
-      const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
-      const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
-      if ((isSubscribed || isTrialValid || isLocalOrAiStudioPreview) && prevTab === 'welcome') {
+      if (hasAppAccess() && prevTab === 'welcome') {
         setTabHistory(['dashboard']);
         setActiveTab('dashboard');
         return;
@@ -239,12 +261,18 @@ export default function App() {
       <LandingPageV2
         nightVision={nightVision}
         setNightVision={setNightVision}
+        onOpenShop={() => {
+          if (hasAppAccess()) {
+            setTabHistory(['landing', 'dashboard', 'shop']);
+            setActiveTab('shop');
+          } else {
+            setTabHistory(['welcome']);
+            setActiveTab('welcome');
+          }
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        }}
         onEnterApp={() => {
-          const isSubscribed = typeof window !== 'undefined' && localStorage.getItem('stellaway_subscription_active') === 'true';
-          const savedExpires = typeof window !== 'undefined' ? localStorage.getItem('stellaway_trial_expires') : null;
-          const isTrialValid = Boolean(savedExpires && Number(savedExpires) > Date.now());
-
-          if (isSubscribed || isTrialValid || isLocalOrAiStudioPreview) {
+          if (hasAppAccess()) {
             setActiveTab('dashboard');
             setTabHistory(['dashboard']);
           } else {
@@ -331,7 +359,7 @@ export default function App() {
           nightVision={nightVision}
         />
 
-        {activeTab === 'welcome' && (
+        {(!hasAppAccess() || activeTab === 'welcome') && (
           <WelcomePaywallView
             onEnterApp={() => navigateTo('dashboard')}
             onNavigateTab={(tab) => navigateTo(tab)}
@@ -340,7 +368,7 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'dashboard' && (
+        {hasAppAccess() && activeTab === 'dashboard' && (
           <DashboardView
             nightVision={nightVision}
             setNightVision={setNightVision}
@@ -349,11 +377,12 @@ export default function App() {
             onExploreAuroras={() => navigateTo('auroras')}
             onExploreEvents={() => navigateTo('events')}
             onExploreWeather={() => navigateTo('weather')}
+            onExploreShop={() => navigateTo('shop')}
             openModal={(type) => setModalType(type)}
           />
         )}
 
-        {activeTab === 'spots' && (
+        {hasAppAccess() && activeTab === 'spots' && (
           <SpotsView
             onGoBack={handleGoBack}
             onGoHome={() => navigateTo('dashboard')}
@@ -361,27 +390,27 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'darksky' && (
+        {hasAppAccess() && activeTab === 'darksky' && (
           <DarkSkyView
             onGoBack={handleGoBack}
             onGoHome={() => navigateTo('dashboard')}
           />
         )}
 
-        {activeTab === 'auroras' && (
+        {hasAppAccess() && activeTab === 'auroras' && (
           <AurorasView
             onGoBack={handleGoBack}
             onGoHome={() => navigateTo('dashboard')}
           />
         )}
 
-        {activeTab === 'events' && <EventsView />}
+        {hasAppAccess() && activeTab === 'events' && <EventsView />}
 
-        {activeTab === 'weather' && <WeatherView />}
+        {hasAppAccess() && activeTab === 'weather' && <WeatherView />}
 
-        {activeTab === 'assistant' && <AssistantView />}
+        {hasAppAccess() && activeTab === 'shop' && <ShopView />}
 
-        {activeTab === 'profile' && (
+        {hasAppAccess() && activeTab === 'profile' && (
           <ProfileView nightVision={nightVision} setNightVision={setNightVision} />
         )}
       </main>

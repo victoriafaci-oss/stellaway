@@ -1,4 +1,4 @@
-export type ActiveTab = 'landing' | 'welcome' | 'dashboard' | 'spots' | 'darksky' | 'auroras' | 'events' | 'weather' | 'assistant' | 'profile';
+export type ActiveTab = 'landing' | 'welcome' | 'dashboard' | 'spots' | 'darksky' | 'auroras' | 'events' | 'weather' | 'shop' | 'profile';
 
 export type WeatherType = 'clear' | 'rain' | 'snow' | 'wind' | 'clouds' | 'storm';
 
@@ -128,19 +128,8 @@ export interface WeatherLocation {
   weatherData: WeatherData;
 }
 
-export type ModalType = 'settings' | 'quickMenu' | 'hosteleria' | 'emergencias' | 'accesorios' | 'languages' | null;
+export type ModalType = 'settings' | 'quickMenu' | 'hosteleria' | 'emergencias' | 'languages' | null;
 
 export interface SettingsTabType {
   activeTab: 'perfil' | 'tarifas' | 'pagos';
-}
-
-
-export interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: string;
-  sources?: { title: string; uri: string }[];
-  isError?: boolean;
-  isOffline?: boolean;
 }

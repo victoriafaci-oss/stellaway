@@ -1,6 +1,7 @@
-const CACHE_NAME = 'stellaway-v1';
+const CACHE_NAME = 'stellaway-v2';
 const STATIC_ASSETS = [
   '/',
+  '/?source=pwa',
   '/index.html',
   '/manifest.json',
   '/icon.svg',
