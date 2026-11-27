@@ -389,8 +389,6 @@ export default function App() {
         closeModal={() => setModalType(null)}
         setActiveTab={navigateTo}
         openModal={(type) => setModalType(type)}
-        nightVision={nightVision}
-        setNightVision={setNightVision}
       />
 
       {/* Mobile Install Prompt & Post-Payment Welcome Modal */}
